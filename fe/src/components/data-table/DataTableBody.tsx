@@ -1,6 +1,6 @@
 import type { Column } from "./types";
 
-interface DataTableBodyProps<T = any> {
+interface DataTableBodyProps<T extends { id: string }> {
   data: T[];
   columns: Column<T>[];
   onRowClick?: (row: T) => void;

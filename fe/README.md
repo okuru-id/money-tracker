@@ -34,7 +34,7 @@ go run ./cmd/server
 
 ```bash
 cd /opt/deploy/money-tracker/fe
-cp apps/web/.env.example apps/web/.env
+cp .env.example .env
 ```
 
 Nilai default lokal:
@@ -47,7 +47,7 @@ Nilai default lokal:
 ```bash
 cd /opt/deploy/money-tracker/fe
 corepack pnpm install
-corepack pnpm --filter @money-tracker/web dev --host
+corepack pnpm dev --host
 ```
 
 Frontend dev server default: `http://localhost:5173`.
@@ -67,9 +67,9 @@ Pastikan:
 Jalankan dari `/opt/deploy/money-tracker/fe`:
 
 ```bash
-corepack pnpm --filter @money-tracker/web lint
-corepack pnpm -r typecheck
-corepack pnpm -r build
+corepack pnpm lint
+corepack pnpm typecheck
+corepack pnpm build
 ```
 
 ## KPI Check Singkat: Add Flow < 15 Detik

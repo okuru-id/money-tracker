@@ -12,20 +12,20 @@
 
 ## File Structure Map
 
-- `apps/web/src/lib/pwa-install.ts` (new)
+- `src/lib/pwa-install.ts` (new)
   - Store kecil untuk status prompt install, deferred event browser, dismissal per sesi, dan helper prompt install.
-- `apps/web/src/components/pwa-install-prompt.tsx` (new)
+- `src/components/pwa-install-prompt.tsx` (new)
   - UI prompt install persistent ringan di atas bottom nav.
-- `apps/web/src/app/providers.tsx`
+- `src/app/providers.tsx`
   - Titik integrasi global agar prompt bisa tampil lintas halaman.
-- `apps/web/src/styles/global.css`
+- `src/styles/global.css`
   - Style prompt install, tombol action, dan safe-area positioning di atas bottom nav.
 
 
 ### Task 1: Buat Store PWA Install Prompt
 
 **Files:**
-- Create: `apps/web/src/lib/pwa-install.ts`
+- Create: `src/lib/pwa-install.ts`
 
 - [ ] **Step 1: Definisikan type untuk deferred install prompt event**
 
@@ -47,8 +47,8 @@ Expose helper seperti `initializePwaInstallPrompt()`, `dismissPwaInstallPrompt()
 ### Task 2: Bangun Komponen UI Prompt Install
 
 **Files:**
-- Create: `apps/web/src/components/pwa-install-prompt.tsx`
-- Modify: `apps/web/src/styles/global.css`
+- Create: `src/components/pwa-install-prompt.tsx`
+- Modify: `src/styles/global.css`
 
 - [ ] **Step 1: Render prompt hanya saat install tersedia**
 
@@ -70,7 +70,7 @@ Pastikan CTA tidak spam-click dan fallback aman jika prompt gagal.
 ### Task 3: Integrasi Prompt ke Shell Global
 
 **Files:**
-- Modify: `apps/web/src/app/providers.tsx`
+- Modify: `src/app/providers.tsx`
 
 - [ ] **Step 1: Inisialisasi store install prompt di entry global**
 
@@ -88,7 +88,7 @@ Susun urutan render dan class positioning supaya prompt install dan toast tetap 
 ### Task 4: Styling Positioning dan Safe Area Mobile
 
 **Files:**
-- Modify: `apps/web/src/styles/global.css`
+- Modify: `src/styles/global.css`
 
 - [ ] **Step 1: Tambah class layout untuk install prompt**
 
@@ -106,8 +106,8 @@ Pastikan prompt tidak menutupi bottom nav pada perangkat dengan inset bawah.
 ### Task 5: Verifikasi Event Flow dan Edge Case
 
 **Files:**
-- Modify: `apps/web/src/lib/pwa-install.ts`
-- Modify: `apps/web/src/components/pwa-install-prompt.tsx`
+- Modify: `src/lib/pwa-install.ts`
+- Modify: `src/components/pwa-install-prompt.tsx`
 
 - [ ] **Step 1: Pastikan dismissal bertahan pada reload tab yang sama**
 
@@ -133,7 +133,7 @@ Jika user menolak prompt native browser, sembunyikan banner untuk sesi aktif aga
 
 - [ ] **Step 1: Jalankan quality checks frontend**
 
-Run: `corepack pnpm --filter @money-tracker/web lint && corepack pnpm --filter @money-tracker/web typecheck && corepack pnpm --filter @money-tracker/web build`
+Run: `corepack pnpm lint && corepack pnpm typecheck && corepack pnpm build`
 Expected: semua command selesai tanpa error.
 
 - [ ] **Step 2: Tambahkan catatan QA untuk install prompt**

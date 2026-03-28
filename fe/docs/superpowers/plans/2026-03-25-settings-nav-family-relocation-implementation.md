@@ -12,27 +12,27 @@
 
 ## File Structure Map
 
-- `apps/web/src/layouts/mobile-shell.tsx`
+- `src/layouts/mobile-shell.tsx`
   - Sumber kebenaran konfigurasi bottom nav (urutan, label, icon, featured tab).
-- `apps/web/src/app/router.tsx`
+- `src/app/router.tsx`
   - Definisi route private/public, route baru settings, dan redirect route legacy `/family`.
-- `apps/web/src/features/settings/pages/settings-page.tsx` (new)
+- `src/features/settings/pages/settings-page.tsx` (new)
   - Hub halaman Settings berisi menu `Family Management`, placeholder `Account`, placeholder `App Preferences`, dan tombol `Logout`.
-- `apps/web/src/features/family/pages/family-management-page.tsx` (new)
+- `src/features/family/pages/family-management-page.tsx` (new)
   - Wrapper route untuk memuat ulang konten Family existing di bawah jalur `/settings/family`.
-- `apps/web/src/features/family/pages/family-page.tsx`
+- `src/features/family/pages/family-page.tsx`
   - Diekstrak agar konten family bisa direuse oleh `family-management-page.tsx` tanpa duplikasi logika.
-- `apps/web/src/styles/global.css`
+- `src/styles/global.css`
   - Styling menu Settings, badge `Soon`, dan konsistensi visual bottom nav 5 tab.
-- `apps/web/src/features/auth/api.ts`
+- `src/features/auth/api.ts`
   - Memakai fungsi `logout()` existing untuk aksi keluar dari Settings.
 
 
 ### Task 1: Ubah Bottom Nav ke Home · History · Add · Insights · Settings
 
 **Files:**
-- Modify: `apps/web/src/layouts/mobile-shell.tsx`
-- Modify: `apps/web/src/styles/global.css`
+- Modify: `src/layouts/mobile-shell.tsx`
+- Modify: `src/styles/global.css`
 
 - [ ] **Step 1: Ganti item tab `Family` menjadi `Settings`**
 
@@ -50,7 +50,7 @@ Rapikan style label/icon agar tidak overflow di layar kecil setelah penggantian 
 ### Task 2: Tambah Routing Settings dan Legacy Redirect
 
 **Files:**
-- Modify: `apps/web/src/app/router.tsx`
+- Modify: `src/app/router.tsx`
 
 - [ ] **Step 1: Tambah route `/settings` untuk Settings hub**
 
@@ -72,8 +72,8 @@ Pastikan route baru tetap mengikuti `SessionGate` dan guard private existing.
 ### Task 3: Implement Settings Hub Page
 
 **Files:**
-- Create: `apps/web/src/features/settings/pages/settings-page.tsx`
-- Modify: `apps/web/src/styles/global.css`
+- Create: `src/features/settings/pages/settings-page.tsx`
+- Modify: `src/styles/global.css`
 
 - [ ] **Step 1: Buat struktur halaman settings**
 
@@ -95,8 +95,8 @@ Panggil `logout()` dari `features/auth/api.ts`, tampilkan loading state, lalu re
 ### Task 4: Relokasi Family ke `/settings/family` dengan Reuse Komponen
 
 **Files:**
-- Create: `apps/web/src/features/family/pages/family-management-page.tsx`
-- Modify: `apps/web/src/features/family/pages/family-page.tsx`
+- Create: `src/features/family/pages/family-management-page.tsx`
+- Modify: `src/features/family/pages/family-page.tsx`
 
 - [ ] **Step 1: Ekstrak konten family agar reusable**
 
@@ -118,7 +118,7 @@ Saat family context tidak tersedia, tampilkan CTA ke setup/join sesuai pola erro
 ### Task 5: Styling dan UX Polishing untuk Settings + Family Management
 
 **Files:**
-- Modify: `apps/web/src/styles/global.css`
+- Modify: `src/styles/global.css`
 
 - [ ] **Step 1: Tambah class style untuk settings list dan action rows**
 
@@ -140,12 +140,12 @@ Pastikan disabled state dan feedback visual konsisten dengan komponen form exist
 
 - [ ] **Step 1: Jalankan typecheck frontend**
 
-Run: `corepack pnpm --filter @money-tracker/web typecheck`
+Run: `corepack pnpm typecheck`
 Expected: command selesai tanpa TypeScript error.
 
 - [ ] **Step 2: Jalankan build frontend**
 
-Run: `corepack pnpm --filter @money-tracker/web build`
+Run: `corepack pnpm build`
 Expected: artifact produksi terbentuk sukses.
 
 - [ ] **Step 3: Verifikasi route dan nav secara manual**

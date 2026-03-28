@@ -46,12 +46,12 @@ App sudah mendukung PWA, tetapi user belum mendapatkan CTA yang jelas untuk meng
 
 ## Technical Design
 ### Modules
-- `apps/web/src/lib/pwa-install.ts`
+- `src/lib/pwa-install.ts`
   - menyimpan deferred install prompt event
   - expose state install availability
   - expose action `promptInstall()`
   - expose action dismiss per sesi
-- `apps/web/src/components/pwa-install-prompt.tsx`
+- `src/components/pwa-install-prompt.tsx`
   - render banner install saat state availability aktif
 - Integrasi global di shell/provider utama agar prompt bisa muncul di semua halaman utama.
 

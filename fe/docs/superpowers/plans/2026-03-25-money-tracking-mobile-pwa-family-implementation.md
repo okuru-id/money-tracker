@@ -15,10 +15,10 @@
 **Files:**
 - Create: `package.json`
 - Create: `pnpm-workspace.yaml`
-- Create: `apps/web/package.json`
+- Create: `package.json`
 - Create: `apps/api/package.json`
-- Create: `apps/web/vite.config.ts`
-- Create: `apps/web/tsconfig.json`
+- Create: `vite.config.ts`
+- Create: `tsconfig.json`
 - Create: `apps/api/tsconfig.json`
 - Create: `.env.example`
 
@@ -33,8 +33,8 @@ Buat `pnpm-workspace.yaml` dengan package scope `apps/*`.
 
 - [ ] **Step 3: Scaffold app web dan api**
 
-Run: `pnpm create vite apps/web --template react-ts`
-Expected: struktur dasar frontend tersedia di `apps/web`.
+Run: `pnpm create vite . --template react-ts`
+Expected: struktur dasar frontend tersedia di `fe/`.
 
 - [ ] **Step 4: Setup backend minimal Fastify + TypeScript**
 
@@ -176,7 +176,7 @@ Implement query `period` (`today`, `week`, `month`) dan kembalikan `totalIncome`
 **Files:**
 - Create: `apps/api/prisma/seed.ts`
 - Create: `apps/api/src/modules/category/category.routes.ts`
-- Create: `apps/web/src/features/categories/favorites.ts`
+- Create: `src/features/categories/favorites.ts`
 - Modify: `apps/api/src/server.ts`
 
 - [ ] **Step 1: Seed kategori default**
@@ -195,12 +195,12 @@ Buat util untuk ambil maksimal 6 kategori terbaru dari histori user (tanpa endpo
 ### Task 7: Fondasi UI Mobile PWA dan Navigasi 4 Tab
 
 **Files:**
-- Create: `apps/web/src/app/router.tsx`
-- Create: `apps/web/src/app/providers.tsx`
-- Create: `apps/web/src/layouts/mobile-shell.tsx`
-- Create: `apps/web/src/styles/tokens.css`
-- Create: `apps/web/src/styles/global.css`
-- Modify: `apps/web/src/main.tsx`
+- Create: `src/app/router.tsx`
+- Create: `src/app/providers.tsx`
+- Create: `src/layouts/mobile-shell.tsx`
+- Create: `src/styles/tokens.css`
+- Create: `src/styles/global.css`
+- Modify: `src/main.tsx`
 
 - [ ] **Step 1: Setup router dan provider global**
 
@@ -222,13 +222,13 @@ Pastikan viewport, safe-area, dan layout satu tangan berjalan baik di layar keci
 ### Task 8: Auth Screens dan Family Onboarding Screens
 
 **Files:**
-- Create: `apps/web/src/features/auth/pages/login-page.tsx`
-- Create: `apps/web/src/features/auth/pages/register-page.tsx`
-- Create: `apps/web/src/features/auth/api.ts`
-- Create: `apps/web/src/features/family/pages/family-setup-page.tsx`
-- Create: `apps/web/src/features/family/pages/invite-join-page.tsx`
-- Create: `apps/web/src/features/family/api.ts`
-- Create: `apps/web/src/features/auth/session-store.ts`
+- Create: `src/features/auth/pages/login-page.tsx`
+- Create: `src/features/auth/pages/register-page.tsx`
+- Create: `src/features/auth/api.ts`
+- Create: `src/features/family/pages/family-setup-page.tsx`
+- Create: `src/features/family/pages/invite-join-page.tsx`
+- Create: `src/features/family/api.ts`
+- Create: `src/features/auth/session-store.ts`
 
 - [ ] **Step 1: Implement halaman login/register**
 
@@ -250,12 +250,12 @@ Saat sesi habis, setelah login ulang user kembali ke layar yang dituju sebelumny
 ### Task 9: Home dan Add Screen (KPI Path)
 
 **Files:**
-- Create: `apps/web/src/features/home/pages/home-page.tsx`
-- Create: `apps/web/src/features/home/components/balance-cards.tsx`
-- Create: `apps/web/src/features/transactions/pages/add-page.tsx`
-- Create: `apps/web/src/features/transactions/components/amount-input.tsx`
-- Create: `apps/web/src/features/transactions/components/category-picker.tsx`
-- Create: `apps/web/src/features/transactions/api.ts`
+- Create: `src/features/home/pages/home-page.tsx`
+- Create: `src/features/home/components/balance-cards.tsx`
+- Create: `src/features/transactions/pages/add-page.tsx`
+- Create: `src/features/transactions/components/amount-input.tsx`
+- Create: `src/features/transactions/components/category-picker.tsx`
+- Create: `src/features/transactions/api.ts`
 
 - [ ] **Step 1: Bangun Home card personal + family summary bulanan**
 
@@ -277,12 +277,12 @@ Tampilkan toast sukses + shortcut `Add Another`; saat gagal jaringan, pertahanka
 ### Task 10: History dan Family Screen
 
 **Files:**
-- Create: `apps/web/src/features/history/pages/history-page.tsx`
-- Create: `apps/web/src/features/history/components/period-filter.tsx`
-- Create: `apps/web/src/features/history/components/transaction-item.tsx`
-- Create: `apps/web/src/features/family/pages/family-page.tsx`
-- Create: `apps/web/src/features/family/components/member-list.tsx`
-- Create: `apps/web/src/features/family/components/contribution-summary.tsx`
+- Create: `src/features/history/pages/history-page.tsx`
+- Create: `src/features/history/components/period-filter.tsx`
+- Create: `src/features/history/components/transaction-item.tsx`
+- Create: `src/features/family/pages/family-page.tsx`
+- Create: `src/features/family/components/member-list.tsx`
+- Create: `src/features/family/components/contribution-summary.tsx`
 
 - [ ] **Step 1: Implement history list personal**
 
@@ -304,12 +304,12 @@ Expose aksi generate token baru dengan status sukses/gagal yang jelas.
 ### Task 11: PWA, Observability, dan Hardening MVP
 
 **Files:**
-- Create: `apps/web/public/manifest.webmanifest`
-- Create: `apps/web/public/icons/*`
-- Create: `apps/web/src/lib/analytics.ts`
-- Create: `apps/web/src/lib/toast.ts`
+- Create: `public/manifest.webmanifest`
+- Create: `public/icons/*`
+- Create: `src/lib/analytics.ts`
+- Create: `src/lib/toast.ts`
 - Create: `apps/api/src/plugins/rate-limit.ts`
-- Modify: `apps/web/vite.config.ts`
+- Modify: `vite.config.ts`
 - Modify: `apps/api/src/server.ts`
 
 - [ ] **Step 1: Aktifkan PWA installable shell**
@@ -334,7 +334,7 @@ Pastikan field validation tampil inline di UI dan error API konsisten.
 **Files:**
 - Create: `README.md`
 - Create: `docs/superpowers/runbooks/mvp-manual-qa-money-tracking.md`
-- Modify: `apps/web/.env.example`
+- Modify: `.env.example`
 - Modify: `apps/api/.env.example`
 
 - [ ] **Step 1: Dokumentasikan setup lokal end-to-end**

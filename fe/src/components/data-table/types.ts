@@ -1,4 +1,4 @@
-export interface Column<T = any> {
+export interface Column<T extends object = Record<string, unknown>> {
   id: string;
   label: string;
   sortable?: boolean;
@@ -17,7 +17,7 @@ export interface PaginationMeta {
   total: number;
 }
 
-export interface PaginatedData<T = any> {
+export interface PaginatedData<T extends object = Record<string, unknown>> {
   data: T[];
   current_page: number;
   last_page: number;

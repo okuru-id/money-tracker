@@ -16,7 +16,7 @@ Runbook ini mengikuti skenario manual QA pada spec MVP money tracking (auth, fam
 
 1. Backend jalan di `http://localhost:8081`.
 2. Frontend jalan di `http://localhost:5173`.
-3. `apps/web/.env` sudah mengarah ke backend lokal.
+3. `.env` sudah mengarah ke backend lokal.
 4. Siapkan 2 akun untuk uji family (`member-a`, `member-b`).
 5. Pastikan bottom nav menampilkan `Home`, `History`, `Add`, `Insights`, dan `Settings`.
 6. Gunakan browser Chromium yang mendukung event `beforeinstallprompt` dan buka app dalam mode tab biasa (bukan PWA yang sudah terpasang).

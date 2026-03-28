@@ -45,17 +45,17 @@ cd fe
 # Install dependencies
 pnpm install
 
-# Run dev server (all apps)
+# Run dev server
 pnpm dev
 
-# Build all apps
+# Build
 pnpm build
 
 # Type check
 pnpm typecheck
 
-# Run single app
-cd apps/web && pnpm dev
+# Lint
+pnpm lint
 ```
 
 ## Architecture
@@ -72,7 +72,7 @@ Flow: HTTP Request → Handler → Service → Repository → Database → Respo
 ### Frontend (fe/) - Feature-Based Structure
 
 ```
-fe/apps/web/src/
+fe/src/
 ├── app/           # Router, providers, gates
 ├── features/      # Feature modules (auth, family, transactions, etc.)
 ├── layouts/       # Mobile shell layout

@@ -46,7 +46,7 @@ Gunakan 4-layer clean architecture yang sudah ada:
 
 Flow standar: HTTP -> Handler -> Service -> Repository -> Database -> Response.
 
-### Frontend (`fe/apps/web/src/`)
+### Frontend (`fe/src/`)
 
 Struktur berbasis fitur:
 
@@ -110,26 +110,21 @@ pnpm install
 pnpm dev
 pnpm build
 pnpm typecheck
-pnpm -r build
-pnpm -r typecheck
-pnpm --filter @money-tracker/web dev
-pnpm --filter @money-tracker/web build
-pnpm --filter @money-tracker/web typecheck
-pnpm --filter @money-tracker/web lint
-pnpm --filter @money-tracker/web preview
+pnpm lint
+pnpm preview
 ```
 
 Single test frontend:
 
-- Belum ada test runner proyek yang dikonfigurasi di `fe/package.json` atau `fe/apps/web/package.json`.
-- Belum ditemukan test file milik aplikasi di `fe/apps/web/src/`.
+- Belum ada test runner proyek yang dikonfigurasi di `fe/package.json`.
+- Belum ditemukan test file milik aplikasi di `fe/src/`.
 - Jangan mengasumsikan `vitest`, `jest`, atau `playwright` tersedia untuk app kecuali user meminta penambahan.
 
 Jika nanti test runner ditambahkan, pola yang paling konsisten untuk single test kemungkinan akan berbentuk:
 
 ```bash
-pnpm --filter @money-tracker/web test -- <path-to-test>
-pnpm --filter @money-tracker/web test -- -t "test name"
+pnpm test -- <path-to-test>
+pnpm test -- -t "test name"
 ```
 
 Namun anggap command di atas hanya template, bukan command aktif saat ini.
@@ -140,7 +135,7 @@ Panduan lokal yang sudah ada:
 
 - Backend lokal biasanya di `http://localhost:8081`.
 - Frontend dev default biasanya di `http://localhost:5173`.
-- Frontend `.env` memakai `apps/web/.env.example`.
+- Frontend `.env` memakai `fe/.env.example`.
 
 ## Code Style Guidelines
 
@@ -247,7 +242,7 @@ Panduan lokal yang sudah ada:
 ## Frontend Implementation Notes
 
 - Gunakan React Query untuk server state.
-- Konfigurasi global query client sudah ada di `fe/apps/web/src/app/providers.tsx`.
+- Konfigurasi global query client sudah ada di `fe/src/app/providers.tsx`.
 - Session/auth state memakai external store, bukan Redux.
 - Routing dan access control harus lewat gate yang ada, bukan condition tersebar di page.
 - PWA behavior sudah aktif; hati-hati pada side effect startup seperti `registerSW`.
@@ -256,8 +251,8 @@ Panduan lokal yang sudah ada:
 ## Validation and Verification Expectations
 
 - Untuk backend change: minimal jalankan `go build ./...`.
-- Untuk frontend change: minimal jalankan `pnpm --filter @money-tracker/web typecheck`.
-- Jika menyentuh frontend UI logic signifikan, jalankan juga `pnpm --filter @money-tracker/web lint` dan `pnpm --filter @money-tracker/web build` bila memungkinkan.
+- Untuk frontend change: minimal jalankan `pnpm typecheck`.
+- Jika menyentuh frontend UI logic signifikan, jalankan juga `pnpm lint` dan `pnpm build` bila memungkinkan.
 - Jika command verifikasi tidak bisa dijalankan, sebutkan alasannya secara eksplisit.
 
 ## Things Agents Should Not Assume
@@ -309,7 +304,7 @@ Menu items di `/settings`:
 
 ## Navigation Components
 
-### TopBar (`fe/apps/web/src/components/top-bar.tsx`)
+### TopBar (`fe/src/components/top-bar.tsx`)
 Komponen top bar yang ditampilkan di semua halaman authenticated.
 
 **Fitur:**
@@ -317,7 +312,7 @@ Komponen top bar yang ditampilkan di semua halaman authenticated.
 - Badge "Admin" (hanya jika `session.isAdmin === true`)
 - Button logout dengan icon `IconLogout`
 
-### MobileShell (`fe/apps/web/src/layouts/mobile-shell.tsx`)
+### MobileShell (`fe/src/layouts/mobile-shell.tsx`)
 Layout utama untuk halaman user dengan bottom tab navigation.
 
 **Structure:**
@@ -333,7 +328,7 @@ MobileShell
 - Jika `session.hasFamily === false`: Tabs Home, History, Add, Insights disembunyikan
 - Tab Settings selalu visible
 
-### AdminPage (`fe/apps/web/src/features/admin/pages/admin-page.tsx`)
+### AdminPage (`fe/src/features/admin/pages/admin-page.tsx`)
 Layout untuk halaman admin dengan internal tab navigation.
 
 **Structure:**

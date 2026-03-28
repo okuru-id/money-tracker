@@ -13,7 +13,7 @@
 ### Task 1: Perbaiki logika izin edit history
 
 **Files:**
-- Modify: `fe/apps/web/src/features/history/pages/history-page.tsx`
+- Modify: `fe/src/features/history/pages/history-page.tsx`
 
 - [ ] **Step 1: Tinjau logika `canEdit` saat ini**
 
@@ -35,6 +35,6 @@ Acceptance behavior:
 
 - [ ] **Step 3: Verifikasi typecheck frontend**
 
-Run: `pnpm --filter @money-tracker/web typecheck`
+Run: `pnpm typecheck`
 
 Expected: selesai tanpa error TypeScript.

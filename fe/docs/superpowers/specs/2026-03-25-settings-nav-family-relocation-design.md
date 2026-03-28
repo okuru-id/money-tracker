@@ -109,5 +109,5 @@ Tab `Family` di bottom navigation terasa kurang proporsional dengan kebutuhan ut
 - Logout dari Settings -> redirect ke `/login`.
 
 ## Implementation Notes
-- Perubahan ini fokus pada frontend (`apps/web`).
+- Perubahan ini fokus pada frontend (`fe`).
 - Tidak butuh perubahan backend API.

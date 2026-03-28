@@ -66,10 +66,13 @@ export function DataTable<T extends { id: string }>({
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   // Column visibility state
-  const getStorageKey = () =>
-    columnVisibilityKey
-      ? `data-table-column-visibility:${columnVisibilityKey}`
-      : null;
+  const getStorageKey = useCallback(
+    () =>
+      columnVisibilityKey
+        ? `data-table-column-visibility:${columnVisibilityKey}`
+        : null,
+    [columnVisibilityKey]
+  );
 
   const getDefaultHiddenIds = (): Set<string> =>
     new Set(columns.filter((col) => col.hidden).map((col) => col.id));
@@ -105,7 +108,7 @@ export function DataTable<T extends { id: string }>({
     const key = getStorageKey();
     if (!key) return;
     window.localStorage.setItem(key, JSON.stringify([...hiddenColumnIds]));
-  }, [hiddenColumnIds]);
+  }, [getStorageKey, hiddenColumnIds]);
 
   const toggleColumnVisibility = (columnId: string) => {
     const next = new Set(hiddenColumnIds);

@@ -5,21 +5,21 @@ import {
 } from "@tabler/icons-react";
 import type { Column, SortDirection } from "./types";
 
-interface DataTableHeaderProps {
-  columns: Column[];
+interface DataTableHeaderProps<T extends object> {
+  columns: Column<T>[];
   sortColumn?: string;
   sortDirection?: SortDirection;
   hasActions?: boolean;
   onSort?: (columnId: string) => void;
 }
 
-export function DataTableHeader({
+export function DataTableHeader<T extends object>({
   columns,
   sortColumn,
   sortDirection,
   hasActions = false,
   onSort,
-}: DataTableHeaderProps) {
+}: DataTableHeaderProps<T>) {
   const getAlignmentClass = (align?: Column["align"]) => {
     switch (align) {
       case "center":
@@ -31,7 +31,7 @@ export function DataTableHeader({
     }
   };
 
-  const getSortIcon = (column: Column) => {
+  const getSortIcon = (column: Column<T>) => {
     if (!column.sortable) return null;
     if (sortColumn !== column.id) return <IconArrowsSort size={14} />;
     return sortDirection === "asc" ? (
