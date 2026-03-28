@@ -48,10 +48,6 @@ import { logout, ApiError } from "../../auth/api";
 import { showToast } from "../../../lib/toast";
 import { Dropdown } from "../../../components/dropdown";
 import { DataTable, type Column } from "../../../components/data-table";
-import {
-  Dialog,
-  DialogFooter,
-} from "../../../components/dialog";
 
 type Tab = "transactions" | "families" | "users";
 
@@ -536,37 +532,32 @@ export function AdminPage() {
       )}
 
       {/* Create User Modal */}
-      <Dialog
-        open={showCreateUserModal}
-        onOpenChange={setShowCreateUserModal}
-        title="Create New User"
-        description="Add a new user to the system."
-        size="sm"
-      >
-        <form
-          className="form-modal"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const data: CreateUserRequest = {
-              email: formData.get("email") as string,
-              password: formData.get("password") as string,
-              role: createUserRole as "user" | "admin",
-            };
-            createUserMutation.mutate(data);
-          }}
-        >
-          <div className="form-field">
-            <label>Email</label>
-            <input type="email" name="email" required placeholder="user@example.com" />
-          </div>
-          <div className="form-field">
-            <label>Password</label>
-            <input type="password" name="password" required minLength={8} placeholder="Min 8 characters" />
-          </div>
-          <div className="form-field">
-            <label>Role</label>
+      {showCreateUserModal && (
+        <DetailModal onClose={() => setShowCreateUserModal(false)}>
+          <h3>Create New User</h3>
+          <form
+            className="create-user-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const data: CreateUserRequest = {
+                email: formData.get("email") as string,
+                password: formData.get("password") as string,
+                role: createUserRole as "user" | "admin",
+              };
+              createUserMutation.mutate(data);
+            }}
+          >
+            <div className="form-field">
+              <label>Email</label>
+              <input type="email" name="email" required placeholder="user@example.com" />
+            </div>
+            <div className="form-field">
+              <label>Password</label>
+              <input type="password" name="password" required minLength={8} placeholder="Min 8 characters" />
+            </div>
             <Dropdown
+              label="Role"
               value={createUserRole}
               onChange={setCreateUserRole}
               options={[
@@ -574,35 +565,17 @@ export function AdminPage() {
                 { value: "admin", label: "Admin" },
               ]}
             />
-          </div>
-        </form>
-        <DialogFooter>
-          <button type="button" className="btn-secondary" onClick={() => setShowCreateUserModal(false)}>
-            Cancel
-          </button>
-          <button
-            type="button"
-            className="btn-primary"
-            disabled={createUserMutation.isPending}
-            onClick={() => {
-              const form = document.querySelector('.form-modal') as HTMLFormElement;
-              if (form?.checkValidity()) {
-                const formData = new FormData(form);
-                const data: CreateUserRequest = {
-                  email: formData.get("email") as string,
-                  password: formData.get("password") as string,
-                  role: createUserRole as "user" | "admin",
-                };
-                createUserMutation.mutate(data);
-              } else {
-                form?.reportValidity();
-              }
-            }}
-          >
-            {createUserMutation.isPending ? "Creating..." : "Create User"}
-          </button>
-        </DialogFooter>
-      </Dialog>
+            <div className="form-actions">
+              <button type="button" className="btn-secondary" onClick={() => setShowCreateUserModal(false)}>
+                Cancel
+              </button>
+              <button type="submit" className="btn-primary" disabled={createUserMutation.isPending}>
+                {createUserMutation.isPending ? "Creating..." : "Create User"}
+              </button>
+            </div>
+          </form>
+        </DetailModal>
+      )}
 
       {/* Edit User Modal */}
       {showEditUserModal && editingUser && (
@@ -1061,39 +1034,37 @@ function TransactionsTab({
       />
 
       {/* Filter Modal */}
-      <Dialog
-        open={showFilterModal}
-        onOpenChange={setShowFilterModal}
-        title="Filter Transactions"
-        size="sm"
-      >
-        <div className="filter-modal__content">
-          <Dropdown
-            label="Family"
-            placeholder="All Families"
-            value={filterFamilyId}
-            onChange={onFilterFamilyChange}
-            options={(families ?? []).map((f) => ({ value: f.id, label: f.name }))}
-          />
-          <Dropdown
-            label="Created By"
-            placeholder="All Users"
-            value={filterUserId}
-            onChange={onFilterUserChange}
-            options={(users ?? []).map((u) => ({ value: u.id, label: u.email }))}
-          />
-        </div>
-        <DialogFooter>
-          {activeFilterCount > 0 && (
-            <button className="btn-secondary" onClick={handleResetFilters}>
-              Reset
+      {showFilterModal && (
+        <DetailModal onClose={() => setShowFilterModal(false)}>
+          <h3>Filter Transactions</h3>
+          <div className="filter-modal__content">
+            <Dropdown
+              label="Family"
+              placeholder="All Families"
+              value={filterFamilyId}
+              onChange={onFilterFamilyChange}
+              options={(families ?? []).map((f) => ({ value: f.id, label: f.name }))}
+            />
+            <Dropdown
+              label="Created By"
+              placeholder="All Users"
+              value={filterUserId}
+              onChange={onFilterUserChange}
+              options={(users ?? []).map((u) => ({ value: u.id, label: u.email }))}
+            />
+          </div>
+          <div className="form-actions">
+            {activeFilterCount > 0 && (
+              <button type="button" className="btn-secondary" onClick={handleResetFilters}>
+                Reset
+              </button>
+            )}
+            <button type="button" className="btn-primary" onClick={() => setShowFilterModal(false)}>
+              Apply
             </button>
-          )}
-          <button className="btn-primary" onClick={() => setShowFilterModal(false)}>
-            Apply
-          </button>
-        </DialogFooter>
-      </Dialog>
+          </div>
+        </DetailModal>
+      )}
     </>
   );
 }

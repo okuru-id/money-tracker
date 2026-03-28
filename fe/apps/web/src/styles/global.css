@@ -1953,27 +1953,8 @@ p {
 .filter-modal__content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
-}
-
-.filter-modal__content .dropdown {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.filter-modal__content .dropdown__label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.filter-modal__content .dropdown__trigger {
-  padding: var(--space-3);
-  border: 1px solid color-mix(in srgb, var(--color-border), #fff 20%);
-  border-radius: var(--radius-md);
-  background: #fff;
-  font-size: 0.9rem;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
 }
 
 /* Button Styles */
@@ -2434,23 +2415,15 @@ p {
   gap: var(--space-3);
 }
 
-/* Form Modal */
-.form-modal {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
 .form-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+  display: grid;
+  gap: var(--space-1);
 }
 
 .form-field label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
 }
 
 .form-field select,
