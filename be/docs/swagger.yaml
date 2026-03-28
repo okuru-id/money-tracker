@@ -1,0 +1,668 @@
+basePath: /api
+definitions:
+  model.CategoryResponse:
+    properties:
+      id:
+        type: string
+      is_default:
+        type: boolean
+      name:
+        type: string
+      type:
+        type: string
+    type: object
+  model.CreateFamilyRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  model.CreateInviteResponse:
+    properties:
+      expires_at:
+        type: string
+      token:
+        type: string
+    type: object
+  model.CreateTransactionRequest:
+    properties:
+      amount:
+        type: number
+      category_id:
+        type: string
+      note:
+        type: string
+      transaction_date:
+        type: string
+      type:
+        enum:
+        - income
+        - expense
+        - debit
+        - credit
+        type: string
+      wallet_owner_id:
+        type: string
+    required:
+    - amount
+    - transaction_date
+    - type
+    type: object
+  model.ErrorDetail:
+    properties:
+      code:
+        type: string
+      details:
+        additionalProperties: true
+        type: object
+      message:
+        type: string
+    type: object
+  model.ErrorResponse:
+    properties:
+      error:
+        $ref: '#/definitions/model.ErrorDetail'
+    type: object
+  model.FamilyMemberResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      joined_at:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    type: object
+  model.FamilyResponse:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  model.FamilySummaryResponse:
+    properties:
+      net_balance:
+        type: number
+      period:
+        type: string
+      total_expense:
+        type: number
+      total_income:
+        type: number
+    type: object
+  model.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  model.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  model.TransactionListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.TransactionResponse'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  model.TransactionResponse:
+    properties:
+      amount:
+        type: number
+      category_id:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      family_id:
+        type: string
+      id:
+        type: string
+      note:
+        type: string
+      transaction_date:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
+      wallet_owner_id:
+        type: string
+    type: object
+  model.UpdateTransactionRequest:
+    properties:
+      amount:
+        type: number
+      category_id:
+        type: string
+      note:
+        type: string
+      transaction_date:
+        type: string
+      type:
+        enum:
+        - income
+        - expense
+        - debit
+        - credit
+        type: string
+      wallet_owner_id:
+        type: string
+    type: object
+info:
+  contact:
+    email: support@money-tracker.local
+    name: API Support
+  description: Backend API for Money Tracker - a mobile-first PWA for family financial
+    management.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Money Tracker API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and create session
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request data
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: User login
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      description: End user session and clear cookie
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Logout successful
+          schema:
+            additionalProperties: true
+            type: object
+      summary: User logout
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account
+      parameters:
+      - description: Register request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request data
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "409":
+          description: Email already registered
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Register new user
+      tags:
+      - auth
+  /categories:
+    get:
+      description: Get list of transaction categories (income/expense)
+      parameters:
+      - description: Filter by type (income, expense)
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of categories
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/model.CategoryResponse'
+              type: array
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Get categories
+      tags:
+      - category
+  /families:
+    post:
+      consumes:
+      - application/json
+      description: Create a new family group. User becomes the owner.
+      parameters:
+      - description: Family creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateFamilyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Family created successfully
+          schema:
+            $ref: '#/definitions/model.FamilyResponse'
+        "400":
+          description: Invalid request data
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Create new family
+      tags:
+      - family
+  /families/{id}/invites:
+    post:
+      description: Generate an invite token for family membership. Only family owner
+        can create invites.
+      parameters:
+      - description: Family ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Invite created successfully
+          schema:
+            $ref: '#/definitions/model.CreateInviteResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: Only family owner can create invites
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Create family invite
+      tags:
+      - invite
+  /families/{id}/members:
+    get:
+      description: Get list of all members in the family
+      parameters:
+      - description: Family ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Family members
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/model.FamilyMemberResponse'
+              type: array
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Get family members
+      tags:
+      - family
+  /families/{id}/summary:
+    get:
+      description: Get total income, expense, and net balance for the family
+      parameters:
+      - description: Family ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: month
+        description: Time period (today, week, month)
+        in: query
+        name: period
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Family summary
+          schema:
+            $ref: '#/definitions/model.FamilySummaryResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Get family financial summary
+      tags:
+      - family
+  /invites/{token}/join:
+    post:
+      description: Join a family using an invite token
+      parameters:
+      - description: Invite token
+        in: path
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully joined family
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: Invalid invite token
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "409":
+          description: Token expired/used or already a member
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Join family with invite token
+      tags:
+      - invite
+  /transactions:
+    get:
+      description: Get paginated list of transactions for the user's family
+      parameters:
+      - description: Filter by wallet owner ID
+        in: query
+        name: ownerId
+        type: string
+      - description: Time period (today, week, month)
+        in: query
+        name: period
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of transactions
+          schema:
+            $ref: '#/definitions/model.TransactionListResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: List transactions
+      tags:
+      - transaction
+    post:
+      consumes:
+      - application/json
+      description: Create a new transaction for the authenticated user's family
+      parameters:
+      - description: Transaction data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Transaction created successfully
+          schema:
+            $ref: '#/definitions/model.TransactionResponse'
+        "400":
+          description: Invalid request data
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Create transaction
+      tags:
+      - transaction
+  /transactions/{id}:
+    delete:
+      description: Delete a transaction. Only the creator can delete.
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Transaction deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: Not authorized to delete
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: Transaction not found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Delete transaction
+      tags:
+      - transaction
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing transaction. Only the creator can modify.
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Transaction update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Transaction updated successfully
+          schema:
+            $ref: '#/definitions/model.TransactionResponse'
+        "400":
+          description: Invalid request data
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: Not authorized to modify
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: Transaction not found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Update transaction
+      tags:
+      - transaction
+swagger: "2.0"
