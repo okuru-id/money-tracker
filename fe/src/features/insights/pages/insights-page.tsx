@@ -38,19 +38,20 @@ function getBankColor(name: string): string {
 
 type BankAccountFormProps = {
   account?: BankAccount
-  onSave: (data: { name: string; balance: number }) => void
+  onSave: (data: { name: string; accountNumber: string; balance: number }) => void
   onCancel: () => void
   isLoading: boolean
 }
 
 function BankAccountForm({ account, onSave, onCancel, isLoading }: BankAccountFormProps) {
   const [name, setName] = useState(account?.name ?? '')
+  const [accountNumber, setAccountNumber] = useState(account?.accountNumber ?? '')
   const [balance, setBalance] = useState(String(account?.balance ?? ''))
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim()) return
-    onSave({ name: name.trim(), balance: Number(balance) || 0 })
+    onSave({ name: name.trim(), accountNumber: accountNumber.trim(), balance: Number(balance) || 0 })
   }
 
   return (
@@ -62,6 +63,16 @@ function BankAccountForm({ account, onSave, onCancel, isLoading }: BankAccountFo
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Contoh: BCA, Mandiri, Jago"
+          disabled={isLoading}
+        />
+      </label>
+      <label className="bank-form__field">
+        <span>No. Rekening</span>
+        <input
+          type="text"
+          value={accountNumber}
+          onChange={(e) => setAccountNumber(e.target.value)}
+          placeholder="Nomor rekening (untuk match transaksi)"
           disabled={isLoading}
         />
       </label>
@@ -110,7 +121,7 @@ export function InsightsPage() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { name: string; balance: number } }) =>
+    mutationFn: ({ id, data }: { id: string; data: { name: string; accountNumber: string; balance: number } }) =>
       updateBankAccount(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bank-accounts'] })

@@ -95,7 +95,7 @@ export function AddPage() {
   const [manualType, setManualType] = useState<TransactionType | null>(() => storedLastUsedType)
   const [amountInput, setAmountInput] = useState('')
   const [categoryId, setCategoryId] = useState('')
-  const [bankAccountId, setBankAccountId] = useState('')
+  const [selectedBankAccountId, setSelectedBankAccountId] = useState('')
   const [notes, setNotes] = useState('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [retryMode, setRetryMode] = useState(false)
@@ -184,13 +184,15 @@ export function AddPage() {
     setRetryMode(false)
     submitStartedAtRef.current = performance.now()
 
+    const selectedBankAccount = bankAccountsQuery.data?.find((acc) => acc.id === selectedBankAccountId)
+
     submitMutation.mutate({
       amount: amountValue,
       type,
       categoryId,
       notes: notes.trim() || undefined,
       transactionDate: formatToday(),
-      bankAccountId: bankAccountId || undefined,
+      accountNumber: selectedBankAccount?.accountNumber || undefined,
     })
   }
 
@@ -265,8 +267,8 @@ export function AddPage() {
             <span>Rekening Bank (opsional)</span>
             <select
               id="bank-account-select"
-              value={bankAccountId}
-              onChange={(event) => setBankAccountId(event.target.value)}
+              value={selectedBankAccountId}
+              onChange={(event) => setSelectedBankAccountId(event.target.value)}
             >
               <option value="">-- Pilih rekening --</option>
               {bankAccountsQuery.data.map((account: BankAccount) => (

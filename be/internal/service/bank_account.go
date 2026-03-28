@@ -15,6 +15,7 @@ import (
 type BankAccountService interface {
 	Create(ctx context.Context, familyID string, req *model.CreateBankAccountRequest) (*model.BankAccount, error)
 	GetByID(ctx context.Context, id string) (*model.BankAccount, error)
+	GetByAccountNumber(ctx context.Context, familyID string, accountNumber string) (*model.BankAccount, error)
 	List(ctx context.Context, familyID string) ([]model.BankAccount, error)
 	Update(ctx context.Context, id string, req *model.UpdateBankAccountRequest) (*model.BankAccount, error)
 	Delete(ctx context.Context, id string) error
@@ -35,14 +36,15 @@ func NewBankAccountService(bankAccountRepo repository.BankAccountRepository) Ban
 func (s *bankAccountService) Create(ctx context.Context, familyID string, req *model.CreateBankAccountRequest) (*model.BankAccount, error) {
 	now := time.Now()
 	account := &model.BankAccount{
-		ID:        uuid.New().String(),
-		FamilyID:  familyID,
-		Name:      req.Name,
-		Balance:   req.Balance,
-		Icon:      req.Icon,
-		Color:     req.Color,
-		CreatedAt: now,
-		UpdatedAt: now,
+		ID:            uuid.New().String(),
+		FamilyID:      familyID,
+		Name:          req.Name,
+		AccountNumber: req.AccountNumber,
+		Balance:       req.Balance,
+		Icon:          req.Icon,
+		Color:         req.Color,
+		CreatedAt:     now,
+		UpdatedAt:     now,
 	}
 
 	if err := s.bankAccountRepo.Create(ctx, account); err != nil {
@@ -54,6 +56,10 @@ func (s *bankAccountService) Create(ctx context.Context, familyID string, req *m
 
 func (s *bankAccountService) GetByID(ctx context.Context, id string) (*model.BankAccount, error) {
 	return s.bankAccountRepo.FindByID(ctx, id)
+}
+
+func (s *bankAccountService) GetByAccountNumber(ctx context.Context, familyID string, accountNumber string) (*model.BankAccount, error) {
+	return s.bankAccountRepo.FindByAccountNumber(ctx, familyID, accountNumber)
 }
 
 func (s *bankAccountService) List(ctx context.Context, familyID string) ([]model.BankAccount, error) {
@@ -71,6 +77,9 @@ func (s *bankAccountService) Update(ctx context.Context, id string, req *model.U
 
 	if req.Name != nil {
 		account.Name = *req.Name
+	}
+	if req.AccountNumber != nil {
+		account.AccountNumber = *req.AccountNumber
 	}
 	if req.Balance != nil {
 		account.Balance = *req.Balance

@@ -79,25 +79,28 @@ type InsightsResponse struct {
 
 // Bank Account DTOs
 type CreateBankAccountRequest struct {
-	Name   string          `json:"name" binding:"required,max=100"`
-	Balance decimal.Decimal `json:"balance"`
-	Icon    *string         `json:"icon,omitempty" binding:"omitempty,max=50"`
-	Color   *string         `json:"color,omitempty" binding:"omitempty,max=20"`
+	Name          string          `json:"name" binding:"required,max=100"`
+	AccountNumber string          `json:"account_number" binding:"required,max=50"`
+	Balance       decimal.Decimal `json:"balance"`
+	Icon          *string         `json:"icon,omitempty" binding:"omitempty,max=50"`
+	Color         *string         `json:"color,omitempty" binding:"omitempty,max=20"`
 }
 
 type UpdateBankAccountRequest struct {
-	Name    *string         `json:"name,omitempty" binding:"omitempty,max=100"`
-	Balance *decimal.Decimal `json:"balance,omitempty"`
-	Icon    *string         `json:"icon,omitempty" binding:"omitempty,max=50"`
-	Color   *string         `json:"color,omitempty" binding:"omitempty,max=20"`
+	Name          *string         `json:"name,omitempty" binding:"omitempty,max=100"`
+	AccountNumber *string         `json:"account_number,omitempty" binding:"omitempty,max=50"`
+	Balance       *decimal.Decimal `json:"balance,omitempty"`
+	Icon          *string         `json:"icon,omitempty" binding:"omitempty,max=50"`
+	Color         *string         `json:"color,omitempty" binding:"omitempty,max=20"`
 }
 
 type BankAccountResponse struct {
-	ID      string          `json:"id"`
-	Name    string          `json:"name"`
-	Balance decimal.Decimal `json:"balance"`
-	Icon    *string         `json:"icon,omitempty"`
-	Color   *string         `json:"color,omitempty"`
+	ID            string          `json:"id"`
+	Name          string          `json:"name"`
+	AccountNumber string          `json:"account_number"`
+	Balance       decimal.Decimal `json:"balance"`
+	Icon          *string         `json:"icon,omitempty"`
+	Color         *string         `json:"color,omitempty"`
 }
 
 // Invite DTOs
@@ -113,7 +116,7 @@ type JoinInviteRequest struct {
 // Transaction DTOs
 type CreateTransactionRequest struct {
 	WalletOwnerID   *string         `json:"wallet_owner_id,omitempty"`
-	BankAccountID   *string         `json:"bank_account_id,omitempty"`
+	AccountNumber   *string         `json:"account_number,omitempty"`
 	Type            string          `json:"type" binding:"required,oneof=income expense debit credit"`
 	Amount          decimal.Decimal `json:"amount" binding:"required"`
 	CategoryID      *string         `json:"category_id,omitempty"`
@@ -123,7 +126,6 @@ type CreateTransactionRequest struct {
 
 type UpdateTransactionRequest struct {
 	WalletOwnerID   *string         `json:"wallet_owner_id,omitempty"`
-	BankAccountID   *string         `json:"bank_account_id,omitempty"`
 	Type            *string         `json:"type,omitempty" binding:"omitempty,oneof=income expense debit credit"`
 	Amount          *decimal.Decimal `json:"amount,omitempty"`
 	CategoryID      *string         `json:"category_id,omitempty"`
@@ -136,8 +138,7 @@ type TransactionResponse struct {
 	FamilyID          string          `json:"family_id"`
 	WalletOwnerID     string          `json:"wallet_owner_id"`
 	WalletOwnerName   string          `json:"wallet_owner_name,omitempty"`
-	BankAccountID     *string         `json:"bank_account_id,omitempty"`
-	BankAccountName   string          `json:"bank_account_name,omitempty"`
+	AccountNumber     *string         `json:"account_number,omitempty"`
 	Type              string          `json:"type"`
 	Amount            decimal.Decimal `json:"amount"`
 	CategoryID        *string         `json:"category_id,omitempty"`

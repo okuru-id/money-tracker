@@ -208,7 +208,7 @@ export async function createTransaction(payload: {
   categoryId: string
   notes?: string
   transactionDate?: string
-  bankAccountId?: string
+  accountNumber?: string
 }): Promise<void> {
   await request('/transactions', {
     method: 'POST',
@@ -218,7 +218,7 @@ export async function createTransaction(payload: {
       category_id: payload.categoryId,
       note: payload.notes,
       transaction_date: payload.transactionDate,
-      bank_account_id: payload.bankAccountId,
+      account_number: payload.accountNumber,
     }),
   })
 }
@@ -321,6 +321,7 @@ export async function getFamilyMonthlySummary(familyId: string): Promise<FamilyM
 export type BankAccount = {
   id: string
   name: string
+  accountNumber: string
   balance: number
   icon?: string
   color?: string
@@ -336,6 +337,7 @@ export async function getBankAccounts(): Promise<BankAccount[]> {
     return {
       id: typeof row.id === 'string' ? row.id : '',
       name: typeof row.name === 'string' ? row.name : '',
+      accountNumber: typeof row.account_number === 'string' ? row.account_number : '',
       balance: toNumber(row.balance),
       icon: typeof row.icon === 'string' ? row.icon : undefined,
       color: typeof row.color === 'string' ? row.color : undefined,
@@ -345,6 +347,7 @@ export async function getBankAccounts(): Promise<BankAccount[]> {
 
 export async function createBankAccount(data: {
   name: string
+  accountNumber: string
   balance?: number
   icon?: string
   color?: string
@@ -353,6 +356,7 @@ export async function createBankAccount(data: {
     method: 'POST',
     body: JSON.stringify({
       name: data.name,
+      account_number: data.accountNumber,
       balance: data.balance ?? 0,
       icon: data.icon,
       color: data.color,
@@ -362,6 +366,7 @@ export async function createBankAccount(data: {
   return {
     id: typeof row.id === 'string' ? row.id : '',
     name: typeof row.name === 'string' ? row.name : '',
+    accountNumber: typeof row.account_number === 'string' ? row.account_number : '',
     balance: toNumber(row.balance),
     icon: typeof row.icon === 'string' ? row.icon : undefined,
     color: typeof row.color === 'string' ? row.color : undefined,
@@ -372,6 +377,7 @@ export async function updateBankAccount(
   id: string,
   data: {
     name?: string
+    accountNumber?: string
     balance?: number
     icon?: string
     color?: string
@@ -379,12 +385,19 @@ export async function updateBankAccount(
 ): Promise<BankAccount> {
   const payload = await request<unknown>(`/bank-accounts/${encodeURIComponent(id)}`, {
     method: 'PATCH',
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      name: data.name,
+      account_number: data.accountNumber,
+      balance: data.balance,
+      icon: data.icon,
+      color: data.color,
+    }),
   })
   const row = (payload ?? {}) as Record<string, unknown>
   return {
     id: typeof row.id === 'string' ? row.id : '',
     name: typeof row.name === 'string' ? row.name : '',
+    accountNumber: typeof row.account_number === 'string' ? row.account_number : '',
     balance: toNumber(row.balance),
     icon: typeof row.icon === 'string' ? row.icon : undefined,
     color: typeof row.color === 'string' ? row.color : undefined,

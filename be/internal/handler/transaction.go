@@ -146,7 +146,7 @@ func (h *TransactionHandler) Create(c *gin.Context) {
 		"id":               tx.ID,
 		"family_id":        tx.FamilyID,
 		"wallet_owner_id":  tx.WalletOwnerID,
-		"bank_account_id":  tx.BankAccountID,
+		"account_number":   tx.AccountNumber,
 		"type":             tx.Type,
 		"amount":           tx.Amount,
 		"category_id":      tx.CategoryID,

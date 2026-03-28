@@ -48,7 +48,7 @@ func NewTransactionRepository(db *pgxpool.Pool) TransactionRepository {
 func (r *transactionRepository) Create(ctx context.Context, tx *model.Transaction) error {
 	query := `
 		INSERT INTO transactions (
-			id, family_id, wallet_owner_id, bank_account_id, type, amount, category_id, note,
+			id, family_id, wallet_owner_id, account_number, type, amount, category_id, note,
 			transaction_date, created_by, created_at
 		)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
@@ -57,7 +57,7 @@ func (r *transactionRepository) Create(ctx context.Context, tx *model.Transactio
 		tx.ID,
 		tx.FamilyID,
 		tx.WalletOwnerID,
-		tx.BankAccountID,
+		tx.AccountNumber,
 		tx.Type,
 		tx.Amount,
 		tx.CategoryID,
@@ -71,7 +71,7 @@ func (r *transactionRepository) Create(ctx context.Context, tx *model.Transactio
 
 func (r *transactionRepository) FindByID(ctx context.Context, id string) (*model.Transaction, error) {
 	query := `
-		SELECT id, family_id, wallet_owner_id, bank_account_id, type, amount, category_id, note,
+		SELECT id, family_id, wallet_owner_id, type, amount, category_id, note,
 			   transaction_date, created_by, created_at, updated_at,
 			   message_id, bank_name, account_number, balance, raw_email
 		FROM transactions
@@ -85,7 +85,6 @@ func (r *transactionRepository) FindByID(ctx context.Context, id string) (*model
 		&tx.ID,
 		&tx.FamilyID,
 		&tx.WalletOwnerID,
-		&tx.BankAccountID,
 		&tx.Type,
 		&tx.Amount,
 		&tx.CategoryID,
@@ -154,13 +153,11 @@ func (r *transactionRepository) List(ctx context.Context, filter TransactionFilt
 	// Get paginated results
 	offset := (filter.Page - 1) * filter.Limit
 	dataQuery := `
-		SELECT t.id, t.family_id, t.wallet_owner_id, t.bank_account_id,
-			   COALESCE(ba.name, '') as bank_account_name,
+		SELECT t.id, t.family_id, t.wallet_owner_id, t.account_number,
 			   t.type, t.amount, t.category_id,
 			   COALESCE(c.name, '') as category_name,
 			   t.note, t.transaction_date, t.created_by, t.created_at, t.updated_at
 		` + baseQuery + `
-		LEFT JOIN bank_accounts ba ON t.bank_account_id = ba.id
 		ORDER BY t.transaction_date DESC, t.created_at DESC
 		LIMIT $` + string(rune('0'+argIdx)) + ` OFFSET $` + string(rune('0'+argIdx+1))
 	args = append(args, filter.Limit, offset)
@@ -174,13 +171,12 @@ func (r *transactionRepository) List(ctx context.Context, filter TransactionFilt
 	var transactions []model.TransactionResponse
 	for rows.Next() {
 		var tx model.TransactionResponse
-		var categoryName, bankAccountName string
+		var categoryName string
 		err := rows.Scan(
 			&tx.ID,
 			&tx.FamilyID,
 			&tx.WalletOwnerID,
-			&tx.BankAccountID,
-			&bankAccountName,
+			&tx.AccountNumber,
 			&tx.Type,
 			&tx.Amount,
 			&tx.CategoryID,
@@ -195,7 +191,6 @@ func (r *transactionRepository) List(ctx context.Context, filter TransactionFilt
 			return nil, err
 		}
 		tx.CategoryName = categoryName
-		tx.BankAccountName = bankAccountName
 		transactions = append(transactions, tx)
 	}
 

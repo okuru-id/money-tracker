@@ -22,7 +22,6 @@ type Transaction struct {
 	AccountNumber   *string         `json:"account_number,omitempty" db:"account_number"`
 	FamilyID        string          `json:"family_id" db:"family_id"`
 	WalletOwnerID   string          `json:"wallet_owner_id" db:"wallet_owner_id"`
-	BankAccountID   *string         `json:"bank_account_id,omitempty" db:"bank_account_id"`
 	Type            TransactionType `json:"type" db:"type"`
 	Amount          decimal.Decimal `json:"amount" db:"amount"`
 	CategoryID      *string         `json:"category_id,omitempty" db:"category_id"`

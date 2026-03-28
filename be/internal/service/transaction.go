@@ -51,7 +51,7 @@ func (s *transactionService) Create(ctx context.Context, familyID, userID string
 		ID:              uuid.New().String(),
 		FamilyID:        familyID,
 		WalletOwnerID:   walletOwnerID,
-		BankAccountID:   req.BankAccountID,
+		AccountNumber:   req.AccountNumber,
 		Type:            model.TransactionType(req.Type),
 		Amount:          req.Amount,
 		CategoryID:      req.CategoryID,
@@ -65,19 +65,22 @@ func (s *transactionService) Create(ctx context.Context, familyID, userID string
 		return nil, err
 	}
 
-	// Update bank account balance if bank_account_id is provided
-	if req.BankAccountID != nil && *req.BankAccountID != "" {
-		// Determine delta: positive for income/credit, negative for expense/debit
-		var delta decimal.Decimal
-		if tx.Type == model.TransactionIncome || tx.Type == model.TransactionCredit {
-			delta = tx.Amount
-		} else {
-			delta = tx.Amount.Neg()
-		}
+	// Update bank account balance if account_number is provided and matches a bank account
+	if req.AccountNumber != nil && *req.AccountNumber != "" {
+		bankAccount, err := s.bankAccountRepo.FindByAccountNumber(ctx, familyID, *req.AccountNumber)
+		if err == nil && bankAccount != nil {
+			// Determine delta: positive for income/credit, negative for expense/debit
+			var delta decimal.Decimal
+			if tx.Type == model.TransactionIncome || tx.Type == model.TransactionCredit {
+				delta = tx.Amount
+			} else {
+				delta = tx.Amount.Neg()
+			}
 
-		if err := s.bankAccountRepo.UpdateBalance(ctx, *req.BankAccountID, delta); err != nil {
-			// Log the error but don't fail the transaction
-			// Balance can be manually corrected later
+			if err := s.bankAccountRepo.UpdateBalance(ctx, bankAccount.ID, delta); err != nil {
+				// Log the error but don't fail the transaction
+				// Balance can be manually corrected later
+			}
 		}
 	}
 
