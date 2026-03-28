@@ -7,23 +7,18 @@
 
 /* Card variant */
 .data-table-wrapper--card {
-  background: #fff;
+  position: relative;
+  overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--color-border), #fff 20%);
   border-radius: var(--radius-lg);
-  box-shadow: 0 2px 8px -4px rgb(0 0 0 / 0.1);
-  overflow: hidden;
+  background:
+    radial-gradient(circle at right top, color-mix(in srgb, var(--color-brand-soft), #fff 50%), transparent 36%),
+    var(--color-surface);
+  box-shadow: var(--shadow-elevated);
 }
 
-.data-table-wrapper--card .data-table__header-section {
-  border-bottom: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
-}
-
-.data-table-wrapper--card .data-table__toolbar {
-  border-bottom: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
-}
-
+.data-table-wrapper--card .data-table__toolbar,
 .data-table-wrapper--card .data-table__pagination {
-  border-top: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
   background: color-mix(in srgb, var(--color-surface-soft), #fff 50%);
 }
 
@@ -33,12 +28,16 @@
   flex-direction: column;
   gap: var(--space-3);
   padding: var(--space-4);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
 }
 
-/* No card variant - add border */
+/* No card variant - add border and margin */
 .data-table-wrapper:not(.data-table-wrapper--card) .data-table__header-section {
-  border-bottom: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
   margin-bottom: var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--color-border), #fff 20%);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
 }
 
 @media (min-width: 768px) {
@@ -80,13 +79,15 @@
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   background: color-mix(in srgb, var(--color-surface-soft), #fff 50%);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
 }
 
-/* No card variant - add border and margin */
+/* No card variant - add border, radius, shadow */
 .data-table-wrapper:not(.data-table-wrapper--card) .data-table__toolbar {
-  border: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
-  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--color-border), #fff 20%);
+  border-radius: var(--radius-lg);
   margin-bottom: var(--space-4);
+  box-shadow: var(--shadow-elevated);
 }
 
 @media (min-width: 768px) {
@@ -218,14 +219,15 @@
   flex-direction: column;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
+  border-top: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
 }
 
-/* No card variant - add border and margin */
+/* No card variant - add card style */
 .data-table-wrapper:not(.data-table-wrapper--card) .data-table__pagination {
-  border: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
-  border-radius: var(--radius-md);
-  margin-top: var(--space-4);
-  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--color-border), #fff 20%);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
 }
 
 @media (min-width: 768px) {
@@ -333,15 +335,18 @@
   overflow-x: auto;
 }
 
-/* No card variant - add border to table */
-.data-table-wrapper:not(.data-table-wrapper--card) .data-table {
-  border: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
-  border-radius: var(--radius-md);
-}
-
 .data-table table {
   width: 100%;
   border-collapse: collapse;
+}
+
+/* No card variant - wrap table in card style */
+.data-table-wrapper:not(.data-table-wrapper--card) .data-table {
+  border: 1px solid color-mix(in srgb, var(--color-border), #fff 20%);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+  margin-bottom: var(--space-4);
 }
 
 .data-table th,
