@@ -46,6 +46,7 @@ import { setSessionUnauthenticated } from "../../auth/session-store";
 import { logout, ApiError } from "../../auth/api";
 import { showToast } from "../../../lib/toast";
 import { Dropdown } from "../../../components/dropdown";
+import { DataTable, type Column } from "../../../components/data-table";
 
 type Tab = "transactions" | "families" | "users";
 
@@ -920,99 +921,110 @@ function TransactionsTab({
   families: FamilyItem[];
   users: UserItem[];
 }) {
+  const columns: Column<TransactionItem>[] = [
+    {
+      id: "type",
+      label: "Type",
+      width: "100px",
+      cell: (tx) => (
+        <span className={`type-${tx.type}`}>
+          {tx.type === "income" || tx.type === "credit" ? (
+            <IconArrowUp size={14} />
+          ) : (
+            <IconArrowDown size={14} />
+          )}
+          {tx.type}
+        </span>
+      ),
+    },
+    {
+      id: "amount",
+      label: "Amount",
+      width: "120px",
+      align: "right",
+      cell: (tx) => (
+        <span className={`amount type-${tx.type}`}>
+          {formatCurrency(tx.amount)}
+        </span>
+      ),
+    },
+    {
+      id: "created_by",
+      label: "Created By",
+      cell: (tx) => tx.created_by_name || tx.created_by.slice(0, 8) + "...",
+    },
+    {
+      id: "note",
+      label: "Note",
+      cell: (tx) => tx.note || "-",
+      className: "note",
+    },
+    {
+      id: "transaction_date",
+      label: "Date",
+      width: "120px",
+      cell: (tx) => new Date(tx.transaction_date).toLocaleDateString("en-US"),
+    },
+  ];
+
   return (
-    <div className="data-tab">
-      <div className="tab-header">
-        <h2>All Transactions</h2>
+    <DataTable
+      title="All Transactions"
+      columns={columns}
+      data={data ? { ...data, current_page: page, last_page: data.total_pages, per_page: 20 } : []}
+      loading={isLoading}
+      emptyText="No transactions found"
+      pageSize={20}
+      onPageChange={onPageChange}
+      onRowClick={onSelect}
+      renderHeaderActions={() => (
         <button onClick={onRefresh} className="refresh-btn">
           <IconRefresh size={18} />
         </button>
-      </div>
-
-      {/* Filters */}
-      <div className="filters-row">
-        <Dropdown
-          label="Family"
-          placeholder="All Families"
-          value={filterFamilyId}
-          onChange={onFilterFamilyChange}
-          options={(families ?? []).map((f) => ({ value: f.id, label: f.name }))}
-        />
-        <Dropdown
-          label="Created By"
-          placeholder="All Users"
-          value={filterUserId}
-          onChange={onFilterUserChange}
-          options={(users ?? []).map((u) => ({ value: u.id, label: u.email }))}
-        />
-      </div>
-
-      {isLoading ? (
-        <div className="loading">Loading...</div>
-      ) : (
-        <>
-          {/* Desktop Table */}
-          <div className="data-table desktop-only">
-            <table>
-              <thead>
-                <tr>
-                  <th>Type</th>
-                  <th>Amount</th>
-                  <th>Created By</th>
-                  <th>Note</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(data?.data ?? []).map((tx) => (
-                  <tr key={tx.id} onClick={() => onSelect(tx)} className="clickable-row">
-                    <td className={`type-${tx.type}`}>{tx.type}</td>
-                    <td className="amount">{formatCurrency(tx.amount)}</td>
-                    <td>{tx.created_by_name || tx.created_by.slice(0, 8)}...</td>
-                    <td className="note">{tx.note || "-"}</td>
-                    <td>{new Date(tx.transaction_date).toLocaleDateString("en-US")}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile Cards */}
-          <div className="data-cards mobile-only">
-            {(data?.data ?? []).map((tx) => (
-              <div key={tx.id} className="data-card clickable" onClick={() => onSelect(tx)}>
-                <div className="data-card__header">
-                  <span className={`data-card__type type-${tx.type}`}>
-                    {tx.type === "income" || tx.type === "credit" ? (
-                      <IconArrowUp size={16} />
-                    ) : (
-                      <IconArrowDown size={16} />
-                    )}
-                    {tx.type}
-                  </span>
-                  <span className={`data-card__amount type-${tx.type}`}>
-                    {formatCurrency(tx.amount)}
-                  </span>
-                </div>
-                <div className="data-card__body">
-                  <p className="data-card__note">{tx.note || "No description"}</p>
-                  <div className="data-card__meta">
-                    <span>{new Date(tx.transaction_date).toLocaleDateString("en-US")}</span>
-                    <span className="truncate-id">Family: {tx.family_id.slice(0, 8)}...</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <Pagination
-            page={page}
-            totalPages={data?.total_pages || 1}
-            onPageChange={onPageChange}
-          />
-        </>
       )}
-    </div>
+      renderToolbarFilters={() => (
+        <div className="filters-row">
+          <Dropdown
+            label="Family"
+            placeholder="All Families"
+            value={filterFamilyId}
+            onChange={onFilterFamilyChange}
+            options={(families ?? []).map((f) => ({ value: f.id, label: f.name }))}
+          />
+          <Dropdown
+            label="Created By"
+            placeholder="All Users"
+            value={filterUserId}
+            onChange={onFilterUserChange}
+            options={(users ?? []).map((u) => ({ value: u.id, label: u.email }))}
+          />
+        </div>
+      )}
+      renderMobileCard={(tx) => (
+        <div key={tx.id} className="data-card clickable" onClick={() => onSelect(tx)}>
+          <div className="data-card__header">
+            <span className={`data-card__type type-${tx.type}`}>
+              {tx.type === "income" || tx.type === "credit" ? (
+                <IconArrowUp size={16} />
+              ) : (
+                <IconArrowDown size={16} />
+              )}
+              {tx.type}
+            </span>
+            <span className={`data-card__amount type-${tx.type}`}>
+              {formatCurrency(tx.amount)}
+            </span>
+          </div>
+          <div className="data-card__body">
+            <p className="data-card__note">{tx.note || "No description"}</p>
+            <div className="data-card__meta">
+              <span>{new Date(tx.transaction_date).toLocaleDateString("en-US")}</span>
+              <span className="truncate-id">Family: {tx.family_id.slice(0, 8)}...</span>
+            </div>
+          </div>
+        </div>
+      )}
+    />
   );
 }
 
@@ -1040,13 +1052,40 @@ function FamiliesTab({
   onDeleteFamily: (family: FamilyItem) => void;
   onManageMembers: (family: FamilyItem) => void;
 }) {
-  if (isLoading) return <div className="loading">Loading...</div>;
+  const columns: Column<FamilyItem>[] = [
+    {
+      id: "name",
+      label: "Name",
+      cell: (family) => (
+        <span className="clickable-row" onClick={() => onSelect(family)}>
+          {family.name}
+        </span>
+      ),
+    },
+    {
+      id: "created_by",
+      label: "Created By",
+      cell: (family) => family.created_by_name || family.created_by.slice(0, 8) + "...",
+    },
+    {
+      id: "created_at",
+      label: "Created At",
+      width: "120px",
+      cell: (family) => new Date(family.created_at).toLocaleDateString("en-US"),
+    },
+  ];
 
   return (
-    <div className="data-tab">
-      <div className="tab-header">
-        <h2>All Families</h2>
-        <div className="tab-actions">
+    <DataTable
+      title="All Families"
+      columns={columns}
+      data={data ? { ...data, current_page: page, last_page: data.total_pages, per_page: 20 } : []}
+      loading={isLoading}
+      emptyText="No families found"
+      pageSize={20}
+      onPageChange={onPageChange}
+      renderHeaderActions={() => (
+        <>
           <button onClick={onCreateFamily} className="add-btn">
             <IconPlus size={18} />
             <span>Add Family</span>
@@ -1054,75 +1093,44 @@ function FamiliesTab({
           <button onClick={onRefresh} className="refresh-btn">
             <IconRefresh size={18} />
           </button>
-        </div>
-      </div>
-
-      {/* Desktop Table */}
-      <div className="data-table desktop-only">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Created By</th>
-              <th>Created At</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.data.map((family) => (
-              <tr key={family.id}>
-                <td className="clickable-row" onClick={() => onSelect(family)}>{family.name}</td>
-                <td>{family.created_by_name || family.created_by.slice(0, 8)}...</td>
-                <td>{new Date(family.created_at).toLocaleDateString("en-US")}</td>
-                <td className="action-cell">
-                  <button className="action-btn" onClick={() => onManageMembers(family)} title="Manage Members">
-                    <IconSettings size={16} />
-                  </button>
-                  <button className="action-btn" onClick={() => onEditFamily(family)} title="Edit Family">
-                    <IconEdit size={16} />
-                  </button>
-                  <button className="action-btn danger" onClick={() => onDeleteFamily(family)} title="Delete Family">
-                    <IconTrash size={16} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile Cards */}
-      <div className="data-cards mobile-only">
-        {data?.data.map((family) => (
-          <div key={family.id} className="data-card">
-            <div className="data-card__header">
-              <span className="data-card__title">{family.name}</span>
-              <span className="truncate-id">{family.id.slice(0, 8)}...</span>
-            </div>
-            <div className="data-card__meta">
-              <span>Created: {new Date(family.created_at).toLocaleDateString("en-US")}</span>
-            </div>
-            <div className="data-card__actions">
-              <button className="action-btn" onClick={() => onManageMembers(family)} title="Manage Members">
-                <IconSettings size={16} />
-              </button>
-              <button className="action-btn" onClick={() => onEditFamily(family)} title="Edit Family">
-                <IconEdit size={16} />
-              </button>
-              <button className="action-btn danger" onClick={() => onDeleteFamily(family)} title="Delete Family">
-                <IconTrash size={16} />
-              </button>
-            </div>
+        </>
+      )}
+      renderActions={(family) => (
+        <>
+          <button className="action-btn" onClick={() => onManageMembers(family)} title="Manage Members">
+            <IconSettings size={16} />
+          </button>
+          <button className="action-btn" onClick={() => onEditFamily(family)} title="Edit Family">
+            <IconEdit size={16} />
+          </button>
+          <button className="action-btn danger" onClick={() => onDeleteFamily(family)} title="Delete Family">
+            <IconTrash size={16} />
+          </button>
+        </>
+      )}
+      renderMobileCard={(family) => (
+        <div key={family.id} className="data-card">
+          <div className="data-card__header">
+            <span className="data-card__title">{family.name}</span>
+            <span className="truncate-id">{family.id.slice(0, 8)}...</span>
           </div>
-        ))}
-      </div>
-
-      <Pagination
-        page={page}
-        totalPages={data?.total_pages || 1}
-        onPageChange={onPageChange}
-      />
-    </div>
+          <div className="data-card__meta">
+            <span>Created: {new Date(family.created_at).toLocaleDateString("en-US")}</span>
+          </div>
+          <div className="data-card__actions">
+            <button className="action-btn" onClick={() => onManageMembers(family)} title="Manage Members">
+              <IconSettings size={16} />
+            </button>
+            <button className="action-btn" onClick={() => onEditFamily(family)} title="Edit Family">
+              <IconEdit size={16} />
+            </button>
+            <button className="action-btn danger" onClick={() => onDeleteFamily(family)} title="Delete Family">
+              <IconTrash size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+    />
   );
 }
 
@@ -1148,13 +1156,46 @@ function UsersTab({
   onEditUser: (user: UserItem) => void;
   onDeleteUser: (user: UserItem) => void;
 }) {
-  if (isLoading) return <div className="loading">Loading...</div>;
+  const columns: Column<UserItem>[] = [
+    {
+      id: "id",
+      label: "ID",
+      width: "100px",
+      cell: (user) => (
+        <span className="truncate-id">{user.id.slice(0, 8)}...</span>
+      ),
+    },
+    {
+      id: "email",
+      label: "Email",
+    },
+    {
+      id: "role",
+      label: "Role",
+      width: "80px",
+      cell: (user) => (
+        <span className={`role-${user.role}`}>{user.role}</span>
+      ),
+    },
+    {
+      id: "created_at",
+      label: "Created At",
+      width: "120px",
+      cell: (user) => new Date(user.created_at).toLocaleDateString("en-US"),
+    },
+  ];
 
   return (
-    <div className="data-tab">
-      <div className="tab-header">
-        <h2>All Users</h2>
-        <div className="tab-actions">
+    <DataTable
+      title="All Users"
+      columns={columns}
+      data={data ? { ...data, current_page: page, last_page: data.total_pages, per_page: 20 } : []}
+      loading={isLoading}
+      emptyText="No users found"
+      pageSize={20}
+      onPageChange={onPageChange}
+      renderHeaderActions={() => (
+        <>
           <button onClick={onCreateUser} className="add-btn">
             <IconPlus size={18} />
             <span>Add User</span>
@@ -1162,108 +1203,44 @@ function UsersTab({
           <button onClick={onRefresh} className="refresh-btn">
             <IconRefresh size={18} />
           </button>
-        </div>
-      </div>
-
-      {/* Desktop Table */}
-      <div className="data-table desktop-only">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Created At</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.data.map((user) => (
-              <tr key={user.id}>
-                <td className="truncate-id">{user.id.slice(0, 8)}...</td>
-                <td>{user.email}</td>
-                <td className={`role-${user.role}`}>{user.role}</td>
-                <td>{new Date(user.created_at).toLocaleDateString("en-US")}</td>
-                <td className="action-cell">
-                  <button className="action-btn" onClick={() => onSelect(user)} title="View Details">
-                    <IconUsers size={16} />
-                  </button>
-                  <button className="action-btn" onClick={() => onEditUser(user)} title="Edit Role">
-                    <IconEdit size={16} />
-                  </button>
-                  <button className="action-btn danger" onClick={() => onDeleteUser(user)} title="Delete User">
-                    <IconTrash size={16} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile Cards */}
-      <div className="data-cards mobile-only">
-        {data?.data.map((user) => (
-          <div key={user.id} className="data-card">
-            <div className="data-card__header">
-              <span className="data-card__title">{user.email}</span>
-              <span className={`role-badge role-${user.role}`}>{user.role}</span>
-            </div>
-            <div className="data-card__meta">
-              <span>Registered: {new Date(user.created_at).toLocaleDateString("en-US")}</span>
-            </div>
-            <div className="data-card__actions">
-              <button className="action-btn" onClick={() => onSelect(user)} title="View Details">
-                <IconUsers size={16} />
-              </button>
-              <button className="action-btn" onClick={() => onEditUser(user)} title="Edit Role">
-                <IconEdit size={16} />
-              </button>
-              <button className="action-btn danger" onClick={() => onDeleteUser(user)} title="Delete User">
-                <IconTrash size={16} />
-              </button>
-            </div>
+        </>
+      )}
+      renderActions={(user) => (
+        <>
+          <button className="action-btn" onClick={() => onSelect(user)} title="View Details">
+            <IconUsers size={16} />
+          </button>
+          <button className="action-btn" onClick={() => onEditUser(user)} title="Edit Role">
+            <IconEdit size={16} />
+          </button>
+          <button className="action-btn danger" onClick={() => onDeleteUser(user)} title="Delete User">
+            <IconTrash size={16} />
+          </button>
+        </>
+      )}
+      renderMobileCard={(user) => (
+        <div key={user.id} className="data-card">
+          <div className="data-card__header">
+            <span className="data-card__title">{user.email}</span>
+            <span className={`role-badge role-${user.role}`}>{user.role}</span>
           </div>
-        ))}
-      </div>
-
-      <Pagination
-        page={page}
-        totalPages={data?.total_pages || 1}
-        onPageChange={onPageChange}
-      />
-    </div>
-  );
-}
-
-// Pagination component
-function Pagination({
-  page,
-  totalPages,
-  onPageChange,
-}: {
-  page: number;
-  totalPages: number;
-  onPageChange: (p: number) => void;
-}) {
-  return (
-    <div className="pagination">
-      <button
-        onClick={() => onPageChange(page - 1)}
-        disabled={page <= 1}
-      >
-        Prev
-      </button>
-      <span>
-        {page} / {totalPages}
-      </span>
-      <button
-        onClick={() => onPageChange(page + 1)}
-        disabled={page >= totalPages}
-      >
-        Next
-      </button>
-    </div>
+          <div className="data-card__meta">
+            <span>Registered: {new Date(user.created_at).toLocaleDateString("en-US")}</span>
+          </div>
+          <div className="data-card__actions">
+            <button className="action-btn" onClick={() => onSelect(user)} title="View Details">
+              <IconUsers size={16} />
+            </button>
+            <button className="action-btn" onClick={() => onEditUser(user)} title="Edit Role">
+              <IconEdit size={16} />
+            </button>
+            <button className="action-btn danger" onClick={() => onDeleteUser(user)} title="Delete User">
+              <IconTrash size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+    />
   );
 }
 
