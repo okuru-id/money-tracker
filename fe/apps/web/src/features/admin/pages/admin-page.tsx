@@ -536,32 +536,37 @@ export function AdminPage() {
       )}
 
       {/* Create User Modal */}
-      {showCreateUserModal && (
-        <DetailModal onClose={() => setShowCreateUserModal(false)}>
-          <h3>Create New User</h3>
-          <form
-            className="create-user-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.currentTarget);
-              const data: CreateUserRequest = {
-                email: formData.get("email") as string,
-                password: formData.get("password") as string,
-                role: createUserRole as "user" | "admin",
-              };
-              createUserMutation.mutate(data);
-            }}
-          >
-            <div className="form-field">
-              <label>Email</label>
-              <input type="email" name="email" required placeholder="user@example.com" />
-            </div>
-            <div className="form-field">
-              <label>Password</label>
-              <input type="password" name="password" required minLength={8} placeholder="Min 8 characters" />
-            </div>
+      <Dialog
+        open={showCreateUserModal}
+        onOpenChange={setShowCreateUserModal}
+        title="Create New User"
+        description="Add a new user to the system."
+        size="sm"
+      >
+        <form
+          className="form-modal"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            const data: CreateUserRequest = {
+              email: formData.get("email") as string,
+              password: formData.get("password") as string,
+              role: createUserRole as "user" | "admin",
+            };
+            createUserMutation.mutate(data);
+          }}
+        >
+          <div className="form-field">
+            <label>Email</label>
+            <input type="email" name="email" required placeholder="user@example.com" />
+          </div>
+          <div className="form-field">
+            <label>Password</label>
+            <input type="password" name="password" required minLength={8} placeholder="Min 8 characters" />
+          </div>
+          <div className="form-field">
+            <label>Role</label>
             <Dropdown
-              label="Role"
               value={createUserRole}
               onChange={setCreateUserRole}
               options={[
@@ -569,17 +574,35 @@ export function AdminPage() {
                 { value: "admin", label: "Admin" },
               ]}
             />
-            <div className="form-actions">
-              <button type="button" className="btn-secondary" onClick={() => setShowCreateUserModal(false)}>
-                Cancel
-              </button>
-              <button type="submit" className="btn-primary" disabled={createUserMutation.isPending}>
-                {createUserMutation.isPending ? "Creating..." : "Create User"}
-              </button>
-            </div>
-          </form>
-        </DetailModal>
-      )}
+          </div>
+        </form>
+        <DialogFooter>
+          <button type="button" className="btn-secondary" onClick={() => setShowCreateUserModal(false)}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="btn-primary"
+            disabled={createUserMutation.isPending}
+            onClick={() => {
+              const form = document.querySelector('.form-modal') as HTMLFormElement;
+              if (form?.checkValidity()) {
+                const formData = new FormData(form);
+                const data: CreateUserRequest = {
+                  email: formData.get("email") as string,
+                  password: formData.get("password") as string,
+                  role: createUserRole as "user" | "admin",
+                };
+                createUserMutation.mutate(data);
+              } else {
+                form?.reportValidity();
+              }
+            }}
+          >
+            {createUserMutation.isPending ? "Creating..." : "Create User"}
+          </button>
+        </DialogFooter>
+      </Dialog>
 
       {/* Edit User Modal */}
       {showEditUserModal && editingUser && (
