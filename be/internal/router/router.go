@@ -44,6 +44,7 @@ func New(container *bootstrap.Container) *gin.Engine {
 	categoryHandler := handler.NewCategoryHandler(container.CategoryService)
 	transactionHandler := handler.NewTransactionHandler(container.TransactionService)
 	adminHandler := handler.NewAdminHandler(container.AdminService)
+	bankAccountHandler := handler.NewBankAccountHandler(container.BankAccountService)
 
 	// Rate limiters
 	inMemoryRL := middleware.NewInMemoryRateLimit()
@@ -91,6 +92,13 @@ func New(container *bootstrap.Container) *gin.Engine {
 
 			// Category routes
 			protected.GET("/categories", categoryHandler.List)
+
+			// Bank account routes
+			protected.GET("/bank-accounts/total", bankAccountHandler.GetTotalBalance)
+			protected.GET("/bank-accounts", bankAccountHandler.List)
+			protected.POST("/bank-accounts", bankAccountHandler.Create)
+			protected.PATCH("/bank-accounts/:id", bankAccountHandler.Update)
+			protected.DELETE("/bank-accounts/:id", bankAccountHandler.Delete)
 
 			// Admin routes
 			handler.RegisterAdminRoutes(api, adminHandler, container.AuthService, 7*24*time.Hour)

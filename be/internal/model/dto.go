@@ -77,6 +77,29 @@ type InsightsResponse struct {
 	TopIncome    []CategoryTotal `json:"top_income"`
 }
 
+// Bank Account DTOs
+type CreateBankAccountRequest struct {
+	Name   string          `json:"name" binding:"required,max=100"`
+	Balance decimal.Decimal `json:"balance"`
+	Icon    *string         `json:"icon,omitempty" binding:"omitempty,max=50"`
+	Color   *string         `json:"color,omitempty" binding:"omitempty,max=20"`
+}
+
+type UpdateBankAccountRequest struct {
+	Name    *string         `json:"name,omitempty" binding:"omitempty,max=100"`
+	Balance *decimal.Decimal `json:"balance,omitempty"`
+	Icon    *string         `json:"icon,omitempty" binding:"omitempty,max=50"`
+	Color   *string         `json:"color,omitempty" binding:"omitempty,max=20"`
+}
+
+type BankAccountResponse struct {
+	ID      string          `json:"id"`
+	Name    string          `json:"name"`
+	Balance decimal.Decimal `json:"balance"`
+	Icon    *string         `json:"icon,omitempty"`
+	Color   *string         `json:"color,omitempty"`
+}
+
 // Invite DTOs
 type CreateInviteResponse struct {
 	Token     string    `json:"token"`

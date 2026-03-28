@@ -19,20 +19,22 @@ type Container struct {
 	Redis  *redis.Client
 
 	// Repositories
-	UserRepo        repository.UserRepository
-	FamilyRepo      repository.FamilyRepository
-	InviteRepo      repository.InviteRepository
-	CategoryRepo    repository.CategoryRepository
-	TransactionRepo repository.TransactionRepository
-	SessionRepo     repository.SessionRepository
+	UserRepo         repository.UserRepository
+	FamilyRepo       repository.FamilyRepository
+	InviteRepo       repository.InviteRepository
+	CategoryRepo     repository.CategoryRepository
+	TransactionRepo  repository.TransactionRepository
+	SessionRepo      repository.SessionRepository
+	BankAccountRepo  repository.BankAccountRepository
 
 	// Services
-	AuthService     service.AuthService
-	FamilyService   service.FamilyService
-	InviteService   service.InviteService
-	CategoryService service.CategoryService
+	AuthService      service.AuthService
+	FamilyService    service.FamilyService
+	InviteService    service.InviteService
+	CategoryService  service.CategoryService
 	TransactionService service.TransactionService
-	AdminService    service.AdminService
+	AdminService     service.AdminService
+	BankAccountService service.BankAccountService
 }
 
 func NewContainer(cfg *config.Config) (*Container, error) {
@@ -69,6 +71,7 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	categoryRepo := repository.NewCategoryRepository(dbPool)
 	transactionRepo := repository.NewTransactionRepository(dbPool)
 	sessionRepo := repository.NewSessionRepository(rdb)
+	bankAccountRepo := repository.NewBankAccountRepository(dbPool)
 
 	// Initialize services
 	authService := service.NewAuthService(userRepo, familyRepo, sessionRepo, cfg)
@@ -77,6 +80,7 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	categoryService := service.NewCategoryService(categoryRepo)
 	transactionService := service.NewTransactionService(transactionRepo)
 	adminService := service.NewAdminService(transactionRepo, familyRepo, userRepo)
+	bankAccountService := service.NewBankAccountService(bankAccountRepo)
 
 	return &Container{
 		Config: cfg,
@@ -89,13 +93,15 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 		CategoryRepo:    categoryRepo,
 		TransactionRepo: transactionRepo,
 		SessionRepo:     sessionRepo,
+		BankAccountRepo: bankAccountRepo,
 
-		AuthService:     authService,
-		FamilyService:   familyService,
-		InviteService:   inviteService,
-		CategoryService: categoryService,
+		AuthService:      authService,
+		FamilyService:    familyService,
+		InviteService:    inviteService,
+		CategoryService:  categoryService,
 		TransactionService: transactionService,
-		AdminService:    adminService,
+		AdminService:     adminService,
+		BankAccountService: bankAccountService,
 	}, nil
 }
 

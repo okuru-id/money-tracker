@@ -315,6 +315,90 @@ export async function getFamilyMonthlySummary(familyId: string): Promise<FamilyM
   }
 }
 
+// Bank Account types and API
+export type BankAccount = {
+  id: string
+  name: string
+  balance: number
+  icon?: string
+  color?: string
+}
+
+export async function getBankAccounts(): Promise<BankAccount[]> {
+  const payload = await request<unknown>('/bank-accounts')
+  const data = (payload ?? {}) as Record<string, unknown>
+  const accounts = Array.isArray(data.bank_accounts) ? data.bank_accounts : []
+
+  return accounts.map((item: unknown) => {
+    const row = (item ?? {}) as Record<string, unknown>
+    return {
+      id: typeof row.id === 'string' ? row.id : '',
+      name: typeof row.name === 'string' ? row.name : '',
+      balance: toNumber(row.balance),
+      icon: typeof row.icon === 'string' ? row.icon : undefined,
+      color: typeof row.color === 'string' ? row.color : undefined,
+    }
+  })
+}
+
+export async function createBankAccount(data: {
+  name: string
+  balance?: number
+  icon?: string
+  color?: string
+}): Promise<BankAccount> {
+  const payload = await request<unknown>('/bank-accounts', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: data.name,
+      balance: data.balance ?? 0,
+      icon: data.icon,
+      color: data.color,
+    }),
+  })
+  const row = (payload ?? {}) as Record<string, unknown>
+  return {
+    id: typeof row.id === 'string' ? row.id : '',
+    name: typeof row.name === 'string' ? row.name : '',
+    balance: toNumber(row.balance),
+    icon: typeof row.icon === 'string' ? row.icon : undefined,
+    color: typeof row.color === 'string' ? row.color : undefined,
+  }
+}
+
+export async function updateBankAccount(
+  id: string,
+  data: {
+    name?: string
+    balance?: number
+    icon?: string
+    color?: string
+  },
+): Promise<BankAccount> {
+  const payload = await request<unknown>(`/bank-accounts/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })
+  const row = (payload ?? {}) as Record<string, unknown>
+  return {
+    id: typeof row.id === 'string' ? row.id : '',
+    name: typeof row.name === 'string' ? row.name : '',
+    balance: toNumber(row.balance),
+    icon: typeof row.icon === 'string' ? row.icon : undefined,
+    color: typeof row.color === 'string' ? row.color : undefined,
+  }
+}
+
+export async function deleteBankAccount(id: string): Promise<void> {
+  await request(`/bank-accounts/${encodeURIComponent(id)}`, { method: 'DELETE' })
+}
+
+export async function getBankAccountsTotal(): Promise<number> {
+  const payload = await request<unknown>('/bank-accounts/total')
+  const data = (payload ?? {}) as Record<string, unknown>
+  return toNumber(data.total_balance)
+}
+
 export function isNetworkFailure(error: unknown): boolean {
   if (error instanceof ApiError) {
     return false

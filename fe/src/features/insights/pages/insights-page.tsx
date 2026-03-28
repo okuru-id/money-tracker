@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
-import { IconTrendingDown, IconTrendingUp, IconWallet, IconReceipt } from '@tabler/icons-react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { IconTrendingDown, IconTrendingUp, IconWallet, IconReceipt, IconPlus, IconPencil, IconTrash, IconBuildingBank } from '@tabler/icons-react'
 
-import { getInsights } from '../../transactions/api'
-import { EmptyState } from '../../../components/empty-state'
+import { getInsights, getBankAccounts, createBankAccount, updateBankAccount, deleteBankAccount, type BankAccount } from '../../transactions/api'
 
 const idrFormatter = new Intl.NumberFormat('id-ID', {
   style: 'currency',
@@ -19,15 +19,122 @@ function formatPercent(value: number): string {
   return `${Math.round(value)}%`
 }
 
+const BANK_COLORS = [
+  { name: 'BCA', color: '#0066AE' },
+  { name: 'Mandiri', color: '#003D79' },
+  { name: 'BRI', color: '#00529C' },
+  { name: 'BNI', color: '#F15A22' },
+  { name: 'Jago', color: '#FF6B00' },
+  { name: 'SeaBank', color: '#00AA5B' },
+  { name: 'GoPay', color: '#00AED6' },
+  { name: 'OVO', color: '#4C3494' },
+  { name: 'Dana', color: '#108EE9' },
+]
+
+function getBankColor(name: string): string {
+  const found = BANK_COLORS.find((b) => name.toLowerCase().includes(b.name.toLowerCase()))
+  return found?.color ?? '#4a4a6a'
+}
+
+type BankAccountFormProps = {
+  account?: BankAccount
+  onSave: (data: { name: string; balance: number }) => void
+  onCancel: () => void
+  isLoading: boolean
+}
+
+function BankAccountForm({ account, onSave, onCancel, isLoading }: BankAccountFormProps) {
+  const [name, setName] = useState(account?.name ?? '')
+  const [balance, setBalance] = useState(String(account?.balance ?? ''))
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!name.trim()) return
+    onSave({ name: name.trim(), balance: Number(balance) || 0 })
+  }
+
+  return (
+    <form className="bank-form" onSubmit={handleSubmit}>
+      <label className="bank-form__field">
+        <span>Nama Bank</span>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Contoh: BCA, Mandiri, Jago"
+          disabled={isLoading}
+        />
+      </label>
+      <label className="bank-form__field">
+        <span>Saldo</span>
+        <input
+          type="number"
+          value={balance}
+          onChange={(e) => setBalance(e.target.value)}
+          placeholder="0"
+          disabled={isLoading}
+        />
+      </label>
+      <div className="bank-form__actions">
+        <button type="button" onClick={onCancel} disabled={isLoading}>
+          Batal
+        </button>
+        <button type="submit" disabled={isLoading || !name.trim()}>
+          {isLoading ? 'Menyimpan...' : 'Simpan'}
+        </button>
+      </div>
+    </form>
+  )
+}
+
 export function InsightsPage() {
+  const queryClient = useQueryClient()
+
   const insightsQuery = useQuery({
     queryKey: ['transactions', 'insights'],
     queryFn: getInsights,
   })
 
+  const bankAccountsQuery = useQuery({
+    queryKey: ['bank-accounts'],
+    queryFn: getBankAccounts,
+  })
+
+  const createMutation = useMutation({
+    mutationFn: createBankAccount,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bank-accounts'] })
+      setEditingId(null)
+      setIsAdding(false)
+    },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: { name: string; balance: number } }) =>
+      updateBankAccount(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bank-accounts'] })
+      setEditingId(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteBankAccount,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bank-accounts'] })
+      setDeletingId(null)
+    },
+  })
+
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [isAdding, setIsAdding] = useState(false)
+
   const insights = insightsQuery.data
-  const isLoading = insightsQuery.isLoading
-  const hasNoData = !isLoading && insights && insights.totalTx === 0
+  const bankAccounts = bankAccountsQuery.data ?? []
+  const isLoading = insightsQuery.isLoading || bankAccountsQuery.isLoading
+
+  const totalBankBalance = bankAccounts.reduce((sum, acc) => sum + acc.balance, 0)
 
   if (isLoading) {
     return (
@@ -37,16 +144,118 @@ export function InsightsPage() {
     )
   }
 
-  if (hasNoData) {
-    return (
-      <section className="insights-page" aria-label="Insights">
-        <EmptyState message="Belum ada data transaksi untuk menampilkan insights." />
-      </section>
-    )
-  }
-
   return (
     <section className="insights-page" aria-label="Insights">
+      {/* Bank Accounts Section */}
+      <div className="bank-accounts-section">
+        <div className="bank-accounts-header">
+          <h3 className="bank-accounts-title">
+            <IconBuildingBank size={20} />
+            Bank Accounts
+          </h3>
+          {!isAdding && (
+            <button type="button" className="bank-add-btn" onClick={() => setIsAdding(true)}>
+              <IconPlus size={18} />
+              Tambah
+            </button>
+          )}
+        </div>
+
+        {isAdding && (
+          <div className="bank-account-form-wrapper">
+            <BankAccountForm
+              onSave={(data) => createMutation.mutate(data)}
+              onCancel={() => setIsAdding(false)}
+              isLoading={createMutation.isPending}
+            />
+          </div>
+        )}
+
+        <div className="bank-cards-grid">
+          {bankAccounts.map((account) => {
+            const isEditing = editingId === account.id
+            const isDeleting = deletingId === account.id
+            const color = account.color ?? getBankColor(account.name)
+
+            if (isEditing) {
+              return (
+                <div key={account.id} className="bank-account-form-wrapper">
+                  <BankAccountForm
+                    account={account}
+                    onSave={(data) => updateMutation.mutate({ id: account.id, data })}
+                    onCancel={() => setEditingId(null)}
+                    isLoading={updateMutation.isPending}
+                  />
+                </div>
+              )
+            }
+
+            return (
+              <article
+                key={account.id}
+                className="bank-card bank-card--custom"
+                style={{ '--bank-color': color } as React.CSSProperties}
+              >
+                <div className="bank-card__header">
+                  <div className="bank-card__icon">
+                    <IconBuildingBank size={22} />
+                  </div>
+                  <span className="bank-card__label">{account.name}</span>
+                </div>
+                <h2 className="bank-card__amount">{formatAmount(account.balance)}</h2>
+                <div className="bank-card__actions">
+                  <button
+                    type="button"
+                    onClick={() => setEditingId(account.id)}
+                    disabled={isDeleting}
+                    className="bank-card__action-btn"
+                  >
+                    <IconPencil size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeletingId(account.id)}
+                    disabled={isDeleting}
+                    className="bank-card__action-btn bank-card__action-btn--danger"
+                  >
+                    <IconTrash size={16} />
+                  </button>
+                </div>
+                {isDeleting && (
+                  <div className="bank-card__delete-confirm">
+                    <p>Hapus {account.name}?</p>
+                    <div className="bank-card__delete-actions">
+                      <button type="button" onClick={() => setDeletingId(null)}>
+                        Batal
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteMutation.mutate(account.id)}
+                        className="bank-card__delete-confirm-btn"
+                      >
+                        Hapus
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </article>
+            )
+          })}
+        </div>
+
+        {bankAccounts.length > 0 && (
+          <div className="bank-total">
+            <span>Total Aset</span>
+            <strong>{formatAmount(totalBankBalance)}</strong>
+          </div>
+        )}
+
+        {bankAccounts.length === 0 && !isAdding && (
+          <p className="bank-accounts-empty">Belum ada bank account. Tambahkan untuk melacak aset.</p>
+        )}
+      </div>
+
+      {/* Transaction Insights Cards */}
       <div className="insights-cards">
         <article className="bank-card bank-card--expense">
           <div className="bank-card__header">
@@ -103,6 +312,7 @@ export function InsightsPage() {
         </article>
       </div>
 
+      {/* Top Categories */}
       <div className="insights-categories">
         <article className="category-card">
           <h3 className="category-card__title">Top Expense</h3>

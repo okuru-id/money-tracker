@@ -543,6 +543,222 @@ p {
   gap: 0.25rem;
 }
 
+.bank-card--custom {
+  background: linear-gradient(145deg, var(--bank-color), color-mix(in srgb, var(--bank-color), #000 30%));
+}
+
+.bank-card__actions {
+  display: flex;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.bank-card__action-btn {
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: var(--radius-sm);
+  background: rgb(255 255 255 / 0.1);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.bank-card__action-btn:hover {
+  background: rgb(255 255 255 / 0.2);
+}
+
+.bank-card__action-btn--danger:hover {
+  background: rgb(200 50 50 / 0.6);
+  border-color: rgb(200 50 50 / 0.8);
+}
+
+.bank-card__delete-confirm {
+  position: absolute;
+  inset: 0;
+  background: rgba(0 0 0 / 0.85);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+
+.bank-card__delete-confirm p {
+  margin: 0;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.bank-card__delete-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.bank-card__delete-actions button {
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.bank-card__delete-actions button:first-child {
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  color: #fff;
+}
+
+.bank-card__delete-confirm-btn {
+  background: #c83232;
+  border: 1px solid #c83232;
+  color: #fff;
+}
+
+.bank-accounts-section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.bank-accounts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.bank-accounts-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.bank-add-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0.4rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--color-brand), #fff 40%);
+  border-radius: var(--radius-md);
+  background: var(--color-brand-soft);
+  color: var(--color-brand-strong);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bank-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.bank-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+  color: #fff;
+}
+
+.bank-total span {
+  font-size: 0.88rem;
+  opacity: 0.9;
+}
+
+.bank-total strong {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+}
+
+.bank-accounts-empty {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+  text-align: center;
+  padding: var(--space-4);
+}
+
+.bank-account-form-wrapper {
+  border: 1px solid color-mix(in srgb, var(--color-brand), #fff 40%);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-elevated);
+}
+
+.bank-form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.bank-form__field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.bank-form__field span {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.bank-form__field input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--color-border), #fff 20%);
+  border-radius: var(--radius-md);
+  background: #fff;
+  font-size: 0.92rem;
+}
+
+.bank-form__field input:focus {
+  outline: none;
+  border-color: var(--color-brand);
+}
+
+.bank-form__actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.bank-form__actions button {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bank-form__actions button:first-child {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--color-border), #fff 20%);
+  color: var(--color-text-muted);
+}
+
+.bank-form__actions button:last-child {
+  background: linear-gradient(140deg, var(--color-brand) 0%, #0a5a54 100%);
+  border: none;
+  color: #fff;
+}
+
+.bank-form__actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .insights-categories {
   display: grid;
   gap: var(--space-3);
