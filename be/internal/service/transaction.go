@@ -19,6 +19,7 @@ type TransactionService interface {
 	Update(ctx context.Context, userID string, transactionID string, req *model.UpdateTransactionRequest) (*model.Transaction, error)
 	Delete(ctx context.Context, userID string, transactionID string) error
 	GetPersonalSummary(ctx context.Context, familyID string) (*model.PersonalSummaryResponse, error)
+	GetInsights(ctx context.Context, familyID string) (*model.InsightsResponse, error)
 }
 
 type transactionService struct {
@@ -146,6 +147,10 @@ func (s *transactionService) Delete(ctx context.Context, userID string, transact
 
 func (s *transactionService) GetPersonalSummary(ctx context.Context, familyID string) (*model.PersonalSummaryResponse, error) {
 	return s.transactionRepo.GetPersonalSummary(ctx, familyID)
+}
+
+func (s *transactionService) GetInsights(ctx context.Context, familyID string) (*model.InsightsResponse, error) {
+	return s.transactionRepo.GetInsights(ctx, familyID)
 }
 
 // Helper for decimal

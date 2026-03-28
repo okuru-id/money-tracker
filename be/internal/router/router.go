@@ -82,6 +82,7 @@ func New(container *bootstrap.Container) *gin.Engine {
 			}
 
 			// Transaction routes
+			protected.GET("/transactions/insights", transactionHandler.GetInsights)
 			protected.GET("/transactions/summary", transactionHandler.GetPersonalSummary)
 			protected.GET("/transactions", transactionHandler.List)
 			protected.POST("/transactions", transactionHandler.Create)

@@ -80,6 +80,18 @@ func (h *TransactionHandler) List(c *gin.Context) {
 		}
 	}
 
+	// Parse explicit date range (startDate, endDate in YYYY-MM-DD)
+	if startStr := c.Query("startDate"); startStr != "" {
+		if t, err := time.Parse("2006-01-02", startStr); err == nil {
+			filter.StartDate = &t
+		}
+	}
+	if endStr := c.Query("endDate"); endStr != "" {
+		if t, err := time.Parse("2006-01-02", endStr); err == nil {
+			filter.EndDate = &t
+		}
+	}
+
 	result, err := h.transactionSvc.List(c.Request.Context(), filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, middleware.ErrorResponse(
@@ -298,4 +310,40 @@ func (h *TransactionHandler) GetPersonalSummary(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, summary)
+}
+
+// GetInsights godoc
+// @Summary Get insights data
+// @Description Get insights data for dashboard (totals, counts, top categories)
+// @Tags transaction
+// @Produce json
+// @Security session
+// @Success 200 {object} model.InsightsResponse "Insights data"
+// @Failure 400 {object} model.ErrorResponse "No family"
+// @Failure 401 {object} model.ErrorResponse "Unauthorized"
+// @Failure 500 {object} model.ErrorResponse "Internal server error"
+// @Router /transactions/insights [get]
+func (h *TransactionHandler) GetInsights(c *gin.Context) {
+	familyID := middleware.GetFamilyID(c)
+
+	if familyID == "" {
+		c.JSON(http.StatusBadRequest, middleware.ErrorResponse(
+			middleware.CodeValidationError,
+			"No family associated with your account.",
+			nil,
+		))
+		return
+	}
+
+	insights, err := h.transactionSvc.GetInsights(c.Request.Context(), familyID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, middleware.ErrorResponse(
+			middleware.CodeInternalError,
+			"Failed to get insights",
+			nil,
+		))
+		return
+	}
+
+	c.JSON(http.StatusOK, insights)
 }

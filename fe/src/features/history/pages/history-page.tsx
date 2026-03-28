@@ -7,10 +7,10 @@ import {
   getCategories,
   getTransactions,
   updateTransaction,
-  type TransactionPeriod,
 } from '../../transactions/api'
-import { PeriodFilter } from '../components/period-filter'
+import { MonthNavigator } from '../components/period-filter'
 import { TransactionItem } from '../components/transaction-item'
+import { EmptyState } from '../../../components/empty-state'
 
 function toErrorMessage(error: unknown): string {
   if (error instanceof ApiError) {
@@ -20,12 +20,25 @@ function toErrorMessage(error: unknown): string {
   return 'Gagal memuat riwayat transaksi.'
 }
 
+function toMonthKey(year: number, month: number): string {
+  return `${year}-${String(month + 1).padStart(2, '0')}`
+}
+
+function getMonthRange(year: number, month: number) {
+  const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`
+  const lastDay = new Date(year, month + 1, 0).getDate()
+  const endDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`
+  return { startDate, endDate }
+}
+
 export function HistoryPage() {
   const queryClient = useQueryClient()
   const session = useSessionState()
   const currentUserId = session.user?.id ?? null
 
-  const [period, setPeriod] = useState<TransactionPeriod>('today')
+  const now = new Date()
+  const [year, setYear] = useState(now.getFullYear())
+  const [month, setMonth] = useState(now.getMonth())
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const systemUserIds = [
@@ -33,9 +46,12 @@ export function HistoryPage() {
     '3d271d3a-1f59-4071-abd0-66b37ceca2ae',
   ]
 
+  const { startDate, endDate } = getMonthRange(year, month)
+  const monthKey = toMonthKey(year, month)
+
   const transactionsQuery = useQuery({
-    queryKey: ['transactions', 'history', period, currentUserId],
-    queryFn: () => getTransactions({ period, page: 1, limit: 50 }),
+    queryKey: ['transactions', 'history', monthKey, currentUserId],
+    queryFn: () => getTransactions({ startDate, endDate, page: 1, limit: 50 }),
     enabled: Boolean(currentUserId),
   })
 
@@ -73,16 +89,21 @@ export function HistoryPage() {
 
   const transactions = transactionsQuery.data ?? []
 
+  function handleMonthChange(nextYear: number, nextMonth: number) {
+    setYear(nextYear)
+    setMonth(nextMonth)
+  }
+
   return (
     <section className="history-page" aria-labelledby="history-page-title">
-      <PeriodFilter value={period} onChange={setPeriod} disabled={transactionsQuery.isLoading} />
+      <MonthNavigator year={year} month={month} disabled={transactionsQuery.isLoading} onChange={handleMonthChange} />
 
       {errorMessage ? <p className="history-page__error">{errorMessage}</p> : null}
 
       {transactionsQuery.isLoading ? <p className="history-page__hint">Memuat riwayat transaksi...</p> : null}
 
       {!transactionsQuery.isLoading && transactions.length === 0 ? (
-        <p className="history-page__hint">Belum ada transaksi pada periode ini.</p>
+        <EmptyState message="Belum ada transaksi pada bulan ini." />
       ) : null}
 
         <div className="history-page__list">

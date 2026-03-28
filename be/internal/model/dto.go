@@ -60,6 +60,23 @@ type PersonalSummaryResponse struct {
 	NetBalance   decimal.Decimal `json:"net_balance"`
 }
 
+type CategoryTotal struct {
+	Category string          `json:"category"`
+	Amount   decimal.Decimal `json:"amount"`
+}
+
+type InsightsResponse struct {
+	TotalIncome  decimal.Decimal `json:"total_income"`
+	TotalExpense decimal.Decimal `json:"total_expense"`
+	NetBalance   decimal.Decimal `json:"net_balance"`
+	TotalTx      int64           `json:"total_tx"`
+	ExpenseTx    int64           `json:"expense_tx"`
+	IncomeTx     int64           `json:"income_tx"`
+	ExpenseRatio decimal.Decimal `json:"expense_ratio"`
+	TopExpense   []CategoryTotal `json:"top_expense"`
+	TopIncome    []CategoryTotal `json:"top_income"`
+}
+
 // Invite DTOs
 type CreateInviteResponse struct {
 	Token     string    `json:"token"`

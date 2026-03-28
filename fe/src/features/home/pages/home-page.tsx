@@ -3,6 +3,7 @@ import { IconCircleMinus, IconCirclePlus } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
 
 import { getPersonalSummary, getTransactions, type TransactionItem, type TransactionType } from '../../transactions/api'
+import { EmptyState } from '../../../components/empty-state'
 
 const idrFormatter = new Intl.NumberFormat('id-ID', {
   style: 'currency',
@@ -92,7 +93,7 @@ export function HomePage() {
         ) : null}
 
         {!transactionsQuery.isLoading && recentTransactions.length === 0 ? (
-          <p className="home-recent__hint">Belum ada transaksi.</p>
+          <EmptyState message="Belum ada transaksi." />
         ) : null}
 
         <div className="home-recent__list">

@@ -19,6 +19,7 @@ type TransactionRepository interface {
 	Delete(ctx context.Context, id string) error
 	GetSummary(ctx context.Context, familyID string, period string) (*model.FamilySummaryResponse, error)
 	GetPersonalSummary(ctx context.Context, familyID string) (*model.PersonalSummaryResponse, error)
+	GetInsights(ctx context.Context, familyID string) (*model.InsightsResponse, error)
 	ListAll(ctx context.Context, filter TransactionFilter) (*model.TransactionListResponse, error)
 	Count(ctx context.Context) (int64, error)
 	CountByUserID(ctx context.Context, userID string) (int64, error)
@@ -296,6 +297,97 @@ func (r *transactionRepository) GetPersonalSummary(ctx context.Context, familyID
 		TotalIncome:  totalIncome,
 		TotalExpense: totalExpense,
 		NetBalance:   totalIncome.Sub(totalExpense),
+	}, nil
+}
+
+func (r *transactionRepository) GetInsights(ctx context.Context, familyID string) (*model.InsightsResponse, error) {
+	// Get totals and counts in one query
+	totalsQuery := `
+		SELECT
+			COALESCE(SUM(CASE WHEN type IN ('income', 'credit') THEN amount ELSE 0 END), 0),
+			COALESCE(SUM(CASE WHEN type IN ('expense', 'debit') THEN amount ELSE 0 END), 0),
+			COUNT(*),
+			COUNT(*) FILTER (WHERE type IN ('expense', 'debit')),
+			COUNT(*) FILTER (WHERE type IN ('income', 'credit'))
+		FROM transactions
+		WHERE family_id = $1
+	`
+
+	var totalIncome, totalExpense decimal.Decimal
+	var totalTx, expenseTx, incomeTx int64
+	err := r.db.QueryRow(ctx, totalsQuery, familyID).Scan(&totalIncome, &totalExpense, &totalTx, &expenseTx, &incomeTx)
+	if err != nil && err != pgx.ErrNoRows {
+		return nil, err
+	}
+
+	// Calculate expense ratio
+	var expenseRatio decimal.Decimal
+	if totalIncome.IsPositive() {
+		expenseRatio = totalExpense.Div(totalIncome).Mul(decimal.NewFromInt(100))
+	}
+
+	// Get top 5 expense categories
+	topExpenseQuery := `
+		SELECT COALESCE(c.name, 'Tanpa kategori'), SUM(t.amount)
+		FROM transactions t
+		LEFT JOIN categories c ON t.category_id = c.id
+		WHERE t.family_id = $1 AND t.type IN ('expense', 'debit')
+		GROUP BY c.name
+		ORDER BY SUM(t.amount) DESC
+		LIMIT 5
+	`
+
+	topExpenseRows, err := r.db.Query(ctx, topExpenseQuery, familyID)
+	if err != nil {
+		return nil, err
+	}
+	defer topExpenseRows.Close()
+
+	var topExpense []model.CategoryTotal
+	for topExpenseRows.Next() {
+		var ct model.CategoryTotal
+		if err := topExpenseRows.Scan(&ct.Category, &ct.Amount); err != nil {
+			return nil, err
+		}
+		topExpense = append(topExpense, ct)
+	}
+
+	// Get top 5 income categories
+	topIncomeQuery := `
+		SELECT COALESCE(c.name, 'Tanpa kategori'), SUM(t.amount)
+		FROM transactions t
+		LEFT JOIN categories c ON t.category_id = c.id
+		WHERE t.family_id = $1 AND t.type IN ('income', 'credit')
+		GROUP BY c.name
+		ORDER BY SUM(t.amount) DESC
+		LIMIT 5
+	`
+
+	topIncomeRows, err := r.db.Query(ctx, topIncomeQuery, familyID)
+	if err != nil {
+		return nil, err
+	}
+	defer topIncomeRows.Close()
+
+	var topIncome []model.CategoryTotal
+	for topIncomeRows.Next() {
+		var ct model.CategoryTotal
+		if err := topIncomeRows.Scan(&ct.Category, &ct.Amount); err != nil {
+			return nil, err
+		}
+		topIncome = append(topIncome, ct)
+	}
+
+	return &model.InsightsResponse{
+		TotalIncome:  totalIncome,
+		TotalExpense: totalExpense,
+		NetBalance:   totalIncome.Sub(totalExpense),
+		TotalTx:      totalTx,
+		ExpenseTx:    expenseTx,
+		IncomeTx:     incomeTx,
+		ExpenseRatio: expenseRatio,
+		TopExpense:   topExpense,
+		TopIncome:    topIncome,
 	}, nil
 }
 

@@ -154,6 +154,8 @@ function normalizeCategory(item: unknown): CategoryItem {
 
 export async function getTransactions(params?: {
   period?: TransactionPeriod
+  startDate?: string
+  endDate?: string
   page?: number
   limit?: number
   ownerId?: string
@@ -166,6 +168,14 @@ export async function getTransactions(params?: {
 
   if (params?.period) {
     search.set('period', params.period)
+  }
+
+  if (params?.startDate) {
+    search.set('startDate', params.startDate)
+  }
+
+  if (params?.endDate) {
+    search.set('endDate', params.endDate)
   }
 
   if (typeof params?.page === 'number') {
@@ -237,6 +247,60 @@ export async function getPersonalSummary(): Promise<FamilyMonthlySummary> {
     totalIncome: toNumber(summary.total_income),
     totalExpense: toNumber(summary.total_expense),
     netBalance: toNumber(summary.net_balance),
+  }
+}
+
+export type CategoryTotal = {
+  category: string
+  amount: number
+}
+
+export type InsightsData = {
+  totalIncome: number
+  totalExpense: number
+  netBalance: number
+  totalTx: number
+  expenseTx: number
+  incomeTx: number
+  expenseRatio: number
+  topExpense: CategoryTotal[]
+  topIncome: CategoryTotal[]
+}
+
+export async function getInsights(): Promise<InsightsData> {
+  const payload = await request<unknown>('/transactions/insights')
+  const data = (payload ?? {}) as Record<string, unknown>
+
+  const topExpense = Array.isArray(data.top_expense)
+    ? data.top_expense.map((item: unknown) => {
+        const row = (item ?? {}) as Record<string, unknown>
+        return {
+          category: typeof row.category === 'string' ? row.category : 'Tanpa kategori',
+          amount: toNumber(row.amount),
+        }
+      })
+    : []
+
+  const topIncome = Array.isArray(data.top_income)
+    ? data.top_income.map((item: unknown) => {
+        const row = (item ?? {}) as Record<string, unknown>
+        return {
+          category: typeof row.category === 'string' ? row.category : 'Tanpa kategori',
+          amount: toNumber(row.amount),
+        }
+      })
+    : []
+
+  return {
+    totalIncome: toNumber(data.total_income),
+    totalExpense: toNumber(data.total_expense),
+    netBalance: toNumber(data.net_balance),
+    totalTx: typeof data.total_tx === 'number' ? data.total_tx : 0,
+    expenseTx: typeof data.expense_tx === 'number' ? data.expense_tx : 0,
+    incomeTx: typeof data.income_tx === 'number' ? data.income_tx : 0,
+    expenseRatio: toNumber(data.expense_ratio),
+    topExpense,
+    topIncome,
   }
 }
 
