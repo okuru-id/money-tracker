@@ -18,6 +18,7 @@ type TransactionRepository interface {
 	Update(ctx context.Context, tx *model.Transaction) error
 	Delete(ctx context.Context, id string) error
 	GetSummary(ctx context.Context, familyID string, period string) (*model.FamilySummaryResponse, error)
+	GetPersonalSummary(ctx context.Context, familyID string) (*model.PersonalSummaryResponse, error)
 	ListAll(ctx context.Context, filter TransactionFilter) (*model.TransactionListResponse, error)
 	Count(ctx context.Context) (int64, error)
 	CountByUserID(ctx context.Context, userID string) (int64, error)
@@ -273,6 +274,28 @@ func (r *transactionRepository) GetSummary(ctx context.Context, familyID string,
 		TotalExpense: totalExpense,
 		NetBalance:   totalIncome.Sub(totalExpense),
 		Period:       period,
+	}, nil
+}
+
+func (r *transactionRepository) GetPersonalSummary(ctx context.Context, familyID string) (*model.PersonalSummaryResponse, error) {
+	query := `
+		SELECT
+			COALESCE(SUM(CASE WHEN type IN ('income', 'credit') THEN amount ELSE 0 END), 0),
+			COALESCE(SUM(CASE WHEN type IN ('expense', 'debit') THEN amount ELSE 0 END), 0)
+		FROM transactions
+		WHERE family_id = $1
+	`
+
+	var totalIncome, totalExpense decimal.Decimal
+	err := r.db.QueryRow(ctx, query, familyID).Scan(&totalIncome, &totalExpense)
+	if err != nil && err != pgx.ErrNoRows {
+		return nil, err
+	}
+
+	return &model.PersonalSummaryResponse{
+		TotalIncome:  totalIncome,
+		TotalExpense: totalExpense,
+		NetBalance:   totalIncome.Sub(totalExpense),
 	}, nil
 }
 

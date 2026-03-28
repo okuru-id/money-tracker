@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { IconLogout, IconX } from '@tabler/icons-react'
+import { IconPower, IconX } from '@tabler/icons-react'
 import { useState, type ReactNode } from 'react'
 
 import { useSessionState, setSessionUnauthenticated } from '../features/auth/session-store'
@@ -52,7 +52,7 @@ export function TopBar({ title }: TopBarProps) {
             onClick={() => setShowLogoutConfirm(true)}
             aria-label="Logout"
           >
-            <IconLogout size={18} />
+            <IconPower size={18} />
           </button>
         </div>
       </div>

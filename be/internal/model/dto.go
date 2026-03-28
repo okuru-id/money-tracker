@@ -54,6 +54,12 @@ type FamilySummaryResponse struct {
 	Period       string          `json:"period"`
 }
 
+type PersonalSummaryResponse struct {
+	TotalIncome  decimal.Decimal `json:"total_income"`
+	TotalExpense decimal.Decimal `json:"total_expense"`
+	NetBalance   decimal.Decimal `json:"net_balance"`
+}
+
 // Invite DTOs
 type CreateInviteResponse struct {
 	Token     string    `json:"token"`

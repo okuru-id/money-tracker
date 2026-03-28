@@ -204,9 +204,9 @@ export async function createTransaction(payload: {
     body: JSON.stringify({
       amount: payload.amount,
       type: payload.type,
-      categoryId: payload.categoryId,
-      notes: payload.notes,
-      transactionDate: payload.transactionDate,
+      category_id: payload.categoryId,
+      note: payload.notes,
+      transaction_date: payload.transactionDate,
     }),
   })
 }
@@ -229,14 +229,25 @@ export async function updateTransaction(
   })
 }
 
+export async function getPersonalSummary(): Promise<FamilyMonthlySummary> {
+  const payload = await request<unknown>('/transactions/summary')
+  const summary = (payload ?? {}) as Record<string, unknown>
+
+  return {
+    totalIncome: toNumber(summary.total_income),
+    totalExpense: toNumber(summary.total_expense),
+    netBalance: toNumber(summary.net_balance),
+  }
+}
+
 export async function getFamilyMonthlySummary(familyId: string): Promise<FamilyMonthlySummary> {
   const payload = await request<unknown>(`/families/${encodeURIComponent(familyId)}/summary?period=month`)
   const summary = (payload ?? {}) as Record<string, unknown>
 
   return {
-    totalIncome: toNumber(summary.totalIncome),
-    totalExpense: toNumber(summary.totalExpense),
-    netBalance: toNumber(summary.netBalance),
+    totalIncome: toNumber(summary.total_income),
+    totalExpense: toNumber(summary.total_expense),
+    netBalance: toNumber(summary.net_balance),
   }
 }
 

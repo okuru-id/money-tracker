@@ -263,3 +263,39 @@ func (h *TransactionHandler) Delete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Transaction deleted successfully"})
 }
+
+// GetPersonalSummary godoc
+// @Summary Get personal summary
+// @Description Get personal income/expense summary for the authenticated user
+// @Tags transaction
+// @Produce json
+// @Security session
+// @Success 200 {object} model.PersonalSummaryResponse "Personal summary"
+// @Failure 400 {object} model.ErrorResponse "No family"
+// @Failure 401 {object} model.ErrorResponse "Unauthorized"
+// @Failure 500 {object} model.ErrorResponse "Internal server error"
+// @Router /transactions/summary [get]
+func (h *TransactionHandler) GetPersonalSummary(c *gin.Context) {
+	familyID := middleware.GetFamilyID(c)
+
+	if familyID == "" {
+		c.JSON(http.StatusBadRequest, middleware.ErrorResponse(
+			middleware.CodeValidationError,
+			"No family associated with your account.",
+			nil,
+		))
+		return
+	}
+
+	summary, err := h.transactionSvc.GetPersonalSummary(c.Request.Context(), familyID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, middleware.ErrorResponse(
+			middleware.CodeInternalError,
+			"Failed to get personal summary",
+			nil,
+		))
+		return
+	}
+
+	c.JSON(http.StatusOK, summary)
+}

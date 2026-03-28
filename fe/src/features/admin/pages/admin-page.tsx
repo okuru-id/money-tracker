@@ -14,7 +14,7 @@ import {
   IconEdit,
   IconTrash,
   IconSettings,
-  IconLogout,
+  IconPower,
   IconFilter,
 } from "@tabler/icons-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -287,7 +287,7 @@ export function AdminPage() {
             onClick={() => setShowLogoutConfirm(true)}
             aria-label="Logout"
           >
-            <IconLogout size={18} />
+            <IconPower size={18} />
           </button>
         </div>
       </div>

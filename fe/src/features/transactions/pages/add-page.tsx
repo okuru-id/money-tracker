@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { pickFavoriteCategories } from '../../categories/favorites'
 import { ApiError } from '../../auth/api'
@@ -65,6 +65,7 @@ function toErrorMessage(error: unknown): string {
 
 export function AddPage() {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const typeFromQuery = parseTypeParam(searchParams.get('type'))
   const storedLastUsedType = useMemo(() => readStoredLastUsedType(), [])
@@ -135,16 +136,9 @@ export function AddPage() {
 
       showToast({
         title: 'Transaksi berhasil disimpan',
-        description: 'Kamu bisa lanjut input berikutnya tanpa keluar dari layar Add.',
-        action: {
-          label: 'Add Another',
-          onClick: () => {
-            setAmountInput('')
-            setCategoryId('')
-            setNotes('')
-          },
-        },
       })
+
+      navigate('/')
     },
     onError: (error) => {
       const networkFailure = isNetworkFailure(error)
