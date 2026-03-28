@@ -112,21 +112,23 @@ type JoinInviteRequest struct {
 
 // Transaction DTOs
 type CreateTransactionRequest struct {
-	WalletOwnerID  *string         `json:"wallet_owner_id,omitempty"`
-	Type           string          `json:"type" binding:"required,oneof=income expense debit credit"`
-	Amount         decimal.Decimal `json:"amount" binding:"required"`
-	CategoryID     *string         `json:"category_id,omitempty"`
-	Note           *string         `json:"note,omitempty"`
-	TransactionDate string         `json:"transaction_date" binding:"required"`
+	WalletOwnerID   *string         `json:"wallet_owner_id,omitempty"`
+	BankAccountID   *string         `json:"bank_account_id,omitempty"`
+	Type            string          `json:"type" binding:"required,oneof=income expense debit credit"`
+	Amount          decimal.Decimal `json:"amount" binding:"required"`
+	CategoryID      *string         `json:"category_id,omitempty"`
+	Note            *string         `json:"note,omitempty"`
+	TransactionDate string          `json:"transaction_date" binding:"required"`
 }
 
 type UpdateTransactionRequest struct {
-	WalletOwnerID  *string         `json:"wallet_owner_id,omitempty"`
-	Type           *string         `json:"type,omitempty" binding:"omitempty,oneof=income expense debit credit"`
-	Amount         *decimal.Decimal `json:"amount,omitempty"`
-	CategoryID     *string         `json:"category_id,omitempty"`
-	Note           *string         `json:"note,omitempty"`
-	TransactionDate *string        `json:"transaction_date,omitempty"`
+	WalletOwnerID   *string         `json:"wallet_owner_id,omitempty"`
+	BankAccountID   *string         `json:"bank_account_id,omitempty"`
+	Type            *string         `json:"type,omitempty" binding:"omitempty,oneof=income expense debit credit"`
+	Amount          *decimal.Decimal `json:"amount,omitempty"`
+	CategoryID      *string         `json:"category_id,omitempty"`
+	Note            *string         `json:"note,omitempty"`
+	TransactionDate *string         `json:"transaction_date,omitempty"`
 }
 
 type TransactionResponse struct {
@@ -134,6 +136,8 @@ type TransactionResponse struct {
 	FamilyID          string          `json:"family_id"`
 	WalletOwnerID     string          `json:"wallet_owner_id"`
 	WalletOwnerName   string          `json:"wallet_owner_name,omitempty"`
+	BankAccountID     *string         `json:"bank_account_id,omitempty"`
+	BankAccountName   string          `json:"bank_account_name,omitempty"`
 	Type              string          `json:"type"`
 	Amount            decimal.Decimal `json:"amount"`
 	CategoryID        *string         `json:"category_id,omitempty"`

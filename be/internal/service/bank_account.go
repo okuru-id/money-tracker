@@ -19,6 +19,7 @@ type BankAccountService interface {
 	Update(ctx context.Context, id string, req *model.UpdateBankAccountRequest) (*model.BankAccount, error)
 	Delete(ctx context.Context, id string) error
 	GetTotalBalance(ctx context.Context, familyID string) (decimal.Decimal, error)
+	UpdateBalance(ctx context.Context, id string, delta decimal.Decimal) error
 }
 
 type bankAccountService struct {
@@ -103,4 +104,8 @@ func (s *bankAccountService) Delete(ctx context.Context, id string) error {
 
 func (s *bankAccountService) GetTotalBalance(ctx context.Context, familyID string) (decimal.Decimal, error) {
 	return s.bankAccountRepo.GetTotalBalance(ctx, familyID)
+}
+
+func (s *bankAccountService) UpdateBalance(ctx context.Context, id string, delta decimal.Decimal) error {
+	return s.bankAccountRepo.UpdateBalance(ctx, id, delta)
 }

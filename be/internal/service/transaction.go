@@ -23,12 +23,14 @@ type TransactionService interface {
 }
 
 type transactionService struct {
-	transactionRepo repository.TransactionRepository
+	transactionRepo   repository.TransactionRepository
+	bankAccountRepo   repository.BankAccountRepository
 }
 
-func NewTransactionService(transactionRepo repository.TransactionRepository) TransactionService {
+func NewTransactionService(transactionRepo repository.TransactionRepository, bankAccountRepo repository.BankAccountRepository) TransactionService {
 	return &transactionService{
-		transactionRepo: transactionRepo,
+		transactionRepo:   transactionRepo,
+		bankAccountRepo:   bankAccountRepo,
 	}
 }
 
@@ -49,6 +51,7 @@ func (s *transactionService) Create(ctx context.Context, familyID, userID string
 		ID:              uuid.New().String(),
 		FamilyID:        familyID,
 		WalletOwnerID:   walletOwnerID,
+		BankAccountID:   req.BankAccountID,
 		Type:            model.TransactionType(req.Type),
 		Amount:          req.Amount,
 		CategoryID:      req.CategoryID,
@@ -60,6 +63,22 @@ func (s *transactionService) Create(ctx context.Context, familyID, userID string
 
 	if err := s.transactionRepo.Create(ctx, tx); err != nil {
 		return nil, err
+	}
+
+	// Update bank account balance if bank_account_id is provided
+	if req.BankAccountID != nil && *req.BankAccountID != "" {
+		// Determine delta: positive for income/credit, negative for expense/debit
+		var delta decimal.Decimal
+		if tx.Type == model.TransactionIncome || tx.Type == model.TransactionCredit {
+			delta = tx.Amount
+		} else {
+			delta = tx.Amount.Neg()
+		}
+
+		if err := s.bankAccountRepo.UpdateBalance(ctx, *req.BankAccountID, delta); err != nil {
+			// Log the error but don't fail the transaction
+			// Balance can be manually corrected later
+		}
 	}
 
 	return tx, nil

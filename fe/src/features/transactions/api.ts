@@ -208,6 +208,7 @@ export async function createTransaction(payload: {
   categoryId: string
   notes?: string
   transactionDate?: string
+  bankAccountId?: string
 }): Promise<void> {
   await request('/transactions', {
     method: 'POST',
@@ -217,6 +218,7 @@ export async function createTransaction(payload: {
       category_id: payload.categoryId,
       note: payload.notes,
       transaction_date: payload.transactionDate,
+      bank_account_id: payload.bankAccountId,
     }),
   })
 }

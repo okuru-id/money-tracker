@@ -10,8 +10,10 @@ import {
   createTransaction,
   getCategories,
   getTransactions,
+  getBankAccounts,
   isNetworkFailure,
   type TransactionType,
+  type BankAccount,
 } from '../api'
 import { trackKpiEvent } from '../../../lib/analytics'
 import { showToast } from '../../../lib/toast'
@@ -80,6 +82,11 @@ export function AddPage() {
     queryFn: getCategories,
   })
 
+  const bankAccountsQuery = useQuery({
+    queryKey: ['bank-accounts'],
+    queryFn: getBankAccounts,
+  })
+
   const recentDefaultType = useMemo(() => {
     const latestType = transactionsQuery.data?.[0]?.type
     return latestType === 'income' || latestType === 'expense' ? latestType : null
@@ -88,6 +95,7 @@ export function AddPage() {
   const [manualType, setManualType] = useState<TransactionType | null>(() => storedLastUsedType)
   const [amountInput, setAmountInput] = useState('')
   const [categoryId, setCategoryId] = useState('')
+  const [bankAccountId, setBankAccountId] = useState('')
   const [notes, setNotes] = useState('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [retryMode, setRetryMode] = useState(false)
@@ -125,6 +133,7 @@ export function AddPage() {
       setErrorMessage(null)
       void queryClient.invalidateQueries({ queryKey: ['transactions'] })
       void queryClient.invalidateQueries({ queryKey: ['family-summary'] })
+      void queryClient.invalidateQueries({ queryKey: ['bank-accounts'] })
 
       trackKpiEvent('submit_success', {
         amount: amountValue,
@@ -181,6 +190,7 @@ export function AddPage() {
       categoryId,
       notes: notes.trim() || undefined,
       transactionDate: formatToday(),
+      bankAccountId: bankAccountId || undefined,
     })
   }
 
@@ -249,6 +259,24 @@ export function AddPage() {
           onSelect={setCategoryId}
           isLoading={categoriesQuery.isLoading}
         />
+
+        {bankAccountsQuery.data && bankAccountsQuery.data.length > 0 ? (
+          <label className="transaction-form__field" htmlFor="bank-account-select">
+            <span>Rekening Bank (opsional)</span>
+            <select
+              id="bank-account-select"
+              value={bankAccountId}
+              onChange={(event) => setBankAccountId(event.target.value)}
+            >
+              <option value="">-- Pilih rekening --</option>
+              {bankAccountsQuery.data.map((account: BankAccount) => (
+                <option key={account.id} value={account.id}>
+                  {account.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
 
         <label className="transaction-form__field" htmlFor="notes-input">
           <span>Catatan (opsional)</span>

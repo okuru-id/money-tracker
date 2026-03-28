@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -17,6 +18,7 @@ type BankAccountRepository interface {
 	Update(ctx context.Context, account *model.BankAccount) error
 	Delete(ctx context.Context, id string) error
 	GetTotalBalance(ctx context.Context, familyID string) (decimal.Decimal, error)
+	UpdateBalance(ctx context.Context, id string, delta decimal.Decimal) error
 }
 
 type bankAccountRepository struct {
@@ -136,4 +138,10 @@ func (r *bankAccountRepository) GetTotalBalance(ctx context.Context, familyID st
 		return decimal.Zero, err
 	}
 	return total, nil
+}
+
+func (r *bankAccountRepository) UpdateBalance(ctx context.Context, id string, delta decimal.Decimal) error {
+	query := `UPDATE bank_accounts SET balance = balance + $1, updated_at = $2 WHERE id = $3`
+	_, err := r.db.Exec(ctx, query, delta, time.Now(), id)
+	return err
 }

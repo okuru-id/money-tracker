@@ -78,7 +78,7 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	familyService := service.NewFamilyService(familyRepo, transactionRepo)
 	inviteService := service.NewInviteService(inviteRepo, familyRepo, familyService)
 	categoryService := service.NewCategoryService(categoryRepo)
-	transactionService := service.NewTransactionService(transactionRepo)
+	transactionService := service.NewTransactionService(transactionRepo, bankAccountRepo)
 	adminService := service.NewAdminService(transactionRepo, familyRepo, userRepo)
 	bankAccountService := service.NewBankAccountService(bankAccountRepo)
 
