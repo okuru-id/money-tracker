@@ -348,6 +348,7 @@ export function AdminPage() {
           <TransactionsTab
             data={transactionsQuery.data}
             isLoading={transactionsQuery.isLoading}
+            isFetching={transactionsQuery.isFetching}
             page={page}
             onPageChange={setPage}
             onRefresh={() => transactionsQuery.refetch()}
@@ -365,6 +366,7 @@ export function AdminPage() {
           <FamiliesTab
             data={familiesQuery.data}
             isLoading={familiesQuery.isLoading}
+            isFetching={familiesQuery.isFetching}
             page={page}
             onPageChange={setPage}
             onRefresh={() => familiesQuery.refetch()}
@@ -392,6 +394,7 @@ export function AdminPage() {
           <UsersTab
             data={usersQuery.data}
             isLoading={usersQuery.isLoading}
+            isFetching={usersQuery.isFetching}
             page={page}
             onPageChange={setPage}
             onRefresh={() => usersQuery.refetch()}
@@ -901,6 +904,7 @@ function DetailModal({ children, onClose }: { children: React.ReactNode; onClose
 function TransactionsTab({
   data,
   isLoading,
+  isFetching,
   page,
   onPageChange,
   onRefresh,
@@ -914,6 +918,7 @@ function TransactionsTab({
 }: {
   data?: { data: TransactionItem[]; total: number; total_pages: number };
   isLoading: boolean;
+  isFetching: boolean;
   page: number;
   onPageChange: (p: number) => void;
   onRefresh: () => void;
@@ -1002,7 +1007,7 @@ function TransactionsTab({
                 <span className="filter-btn__badge">{activeFilterCount}</span>
               )}
             </button>
-            <button onClick={onRefresh} className="refresh-btn">
+            <button onClick={onRefresh} className={`refresh-btn${isFetching ? ' isRefreshing' : ''}`}>
               <IconRefresh size={18} />
             </button>
           </>
@@ -1073,6 +1078,7 @@ function TransactionsTab({
 function FamiliesTab({
   data,
   isLoading,
+  isFetching,
   page,
   onPageChange,
   onRefresh,
@@ -1084,6 +1090,7 @@ function FamiliesTab({
 }: {
   data?: { data: FamilyItem[]; total: number; total_pages: number };
   isLoading: boolean;
+  isFetching: boolean;
   page: number;
   onPageChange: (p: number) => void;
   onRefresh: () => void;
@@ -1130,7 +1137,7 @@ function FamiliesTab({
             <IconPlus size={18} />
             <span>Add Family</span>
           </button>
-          <button onClick={onRefresh} className="refresh-btn">
+          <button onClick={onRefresh} className={`refresh-btn${isFetching ? ' isRefreshing' : ''}`}>
             <IconRefresh size={18} />
           </button>
         </>
@@ -1178,6 +1185,7 @@ function FamiliesTab({
 function UsersTab({
   data,
   isLoading,
+  isFetching,
   page,
   onPageChange,
   onRefresh,
@@ -1188,6 +1196,7 @@ function UsersTab({
 }: {
   data?: { data: UserItem[]; total: number; total_pages: number };
   isLoading: boolean;
+  isFetching: boolean;
   page: number;
   onPageChange: (p: number) => void;
   onRefresh: () => void;
@@ -1239,7 +1248,7 @@ function UsersTab({
             <IconPlus size={18} />
             <span>Add User</span>
           </button>
-          <button onClick={onRefresh} className="refresh-btn">
+          <button onClick={onRefresh} className={`refresh-btn${isFetching ? ' isRefreshing' : ''}`}>
             <IconRefresh size={18} />
           </button>
         </>

@@ -107,6 +107,13 @@ function getCollection(payload: unknown, keys: string[]): unknown[] {
   return []
 }
 
+function normalizeTransactionType(raw: string): string {
+  const lower = raw.toLowerCase()
+  if (lower === 'debit') return 'expense'
+  if (lower === 'credit') return 'income'
+  return lower
+}
+
 function normalizeTransaction(item: unknown): TransactionItem {
   const row = (item ?? {}) as Record<string, unknown>
 
@@ -125,7 +132,7 @@ function normalizeTransaction(item: unknown): TransactionItem {
   return {
     id: typeof row.id === 'string' ? row.id : '',
     amount: toNumber(row.amount),
-    type: typeof row.type === 'string' ? row.type.toLowerCase() : '',
+    type: normalizeTransactionType(typeof row.type === 'string' ? row.type : ''),
     categoryId: typeof row.category_id === 'string' ? row.category_id : typeof row.categoryId === 'string' ? row.categoryId : null,
     categoryName: typeof row.category_name === 'string' ? row.category_name : typeof row.categoryName === 'string' ? row.categoryName : '',
     notes: typeof row.note === 'string' ? row.note : typeof row.notes === 'string' ? row.notes : '',

@@ -95,6 +95,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	sessionID, user, err := h.authSvc.Login(c.Request.Context(), &req)
 	if err != nil {
+		log.Printf("Login error: %v", err)
 		if err.Error() == "invalid credentials" {
 			c.JSON(http.StatusUnauthorized, middleware.ErrorResponse(
 				middleware.CodeUnauthorized,

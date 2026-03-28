@@ -138,7 +138,7 @@ export function DataTable<T extends { id: string }>({
 
   const tableData = useMemo(() => {
     if (isPaginated) {
-      return (data as PaginatedData<T>).data;
+      return (data as PaginatedData<T>).data ?? [];
     }
     return data as T[];
   }, [data, isPaginated]);
@@ -204,12 +204,10 @@ export function DataTable<T extends { id: string }>({
       {/* Header */}
       {(title || renderHeaderActions) && (
         <div className="data-table__header-section">
-          <div className="data-table__header-info">
             {title && <h2 className="data-table__title">{title}</h2>}
             {description && (
               <p className="data-table__description">{description}</p>
             )}
-          </div>
           {renderHeaderActions && (
             <div className="data-table__header-actions">
               {renderHeaderActions()}

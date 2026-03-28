@@ -73,10 +73,11 @@ func NewAdminService(
 
 func (s *adminService) ListAllTransactions(ctx context.Context, filter TransactionFilter) (*model.TransactionListResponse, error) {
 	repoFilter := repository.TransactionFilter{
-		FamilyID: filter.FamilyID,
-		OwnerID:  filter.OwnerID,
-		Page:     filter.Page,
-		Limit:    filter.Limit,
+		FamilyID:  filter.FamilyID,
+		OwnerID:   filter.OwnerID,
+		CreatedBy: filter.CreatedBy,
+		Page:      filter.Page,
+		Limit:     filter.Limit,
 	}
 
 	return s.txRepo.ListAll(ctx, repoFilter)

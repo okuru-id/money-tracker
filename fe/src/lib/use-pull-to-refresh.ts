@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 
 const PULL_THRESHOLD = 80
@@ -29,28 +29,26 @@ export function usePullToRefresh(options: UsePullToRefreshOptions = {}) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   const handleTouchStart = useCallback(
-    (e: React.TouchEvent) => {
-      if (disabled || state.isRefreshing) return
+    (e: TouchEvent) => {
+      if (disabled) return
 
       const container = containerRef.current
       if (!container) return
 
-      // Only trigger if scrolled to top
       if (container.scrollTop > 0) return
 
       startY.current = e.touches[0].clientY
     },
-    [disabled, state.isRefreshing],
+    [disabled],
   )
 
   const handleTouchMove = useCallback(
-    (e: React.TouchEvent) => {
-      if (disabled || state.isRefreshing || startY.current === 0) return
+    (e: TouchEvent) => {
+      if (disabled || startY.current === 0) return
 
       const container = containerRef.current
       if (!container) return
 
-      // Check if still at top
       if (container.scrollTop > 0) {
         startY.current = 0
         return
@@ -60,7 +58,6 @@ export function usePullToRefresh(options: UsePullToRefreshOptions = {}) {
       const diff = currentY - startY.current
 
       if (diff > 0) {
-        // Prevent default scroll while pulling
         if (diff > 10) {
           e.preventDefault()
         }
@@ -69,42 +66,67 @@ export function usePullToRefresh(options: UsePullToRefreshOptions = {}) {
         setState((prev) => ({ ...prev, isPulling: true, pullDistance }))
       }
     },
-    [disabled, state.isRefreshing],
+    [disabled],
   )
 
   const handleTouchEnd = useCallback(async () => {
-    if (!state.isPulling || state.isRefreshing) {
-      startY.current = 0
-      setState((prev) => ({ ...prev, isPulling: false, pullDistance: 0 }))
-      return
-    }
-
-    startY.current = 0
-
-    if (state.pullDistance >= PULL_THRESHOLD) {
-      setState((prev) => ({ ...prev, isRefreshing: true, pullDistance: PULL_THRESHOLD }))
-
-      try {
-        if (onRefresh) {
-          await onRefresh()
-        } else {
-          // Default: refetch all queries
-          await queryClient.invalidateQueries()
-        }
-      } finally {
-        setState((prev) => ({ ...prev, isRefreshing: false, pullDistance: 0, isPulling: false }))
+    setState((prev) => {
+      if (!prev.isPulling || prev.isRefreshing) {
+        startY.current = 0
+        return { ...prev, isPulling: false, pullDistance: 0 }
       }
-    } else {
-      setState((prev) => ({ ...prev, isPulling: false, pullDistance: 0 }))
+
+      startY.current = 0
+
+      if (prev.pullDistance >= PULL_THRESHOLD) {
+        return { ...prev, isRefreshing: true, pullDistance: PULL_THRESHOLD }
+      }
+
+      return { ...prev, isPulling: false, pullDistance: 0 }
+    })
+
+    // Read state after update using a ref-like approach via setTimeout
+    setTimeout(async () => {
+      setState((prev) => {
+        if (!prev.isRefreshing) return prev
+
+        const doRefresh = async () => {
+          try {
+            if (onRefresh) {
+              await onRefresh()
+            } else {
+              await queryClient.invalidateQueries()
+            }
+          } finally {
+            setState((s) => ({ ...s, isRefreshing: false, pullDistance: 0, isPulling: false }))
+          }
+        }
+
+        doRefresh()
+        return prev
+      })
+    }, 0)
+  }, [onRefresh, queryClient])
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    container.addEventListener('touchstart', handleTouchStart, { passive: true })
+    container.addEventListener('touchmove', handleTouchMove, { passive: false })
+    container.addEventListener('touchend', handleTouchEnd)
+    container.addEventListener('touchcancel', handleTouchEnd)
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart)
+      container.removeEventListener('touchmove', handleTouchMove)
+      container.removeEventListener('touchend', handleTouchEnd)
+      container.removeEventListener('touchcancel', handleTouchEnd)
     }
-  }, [state.isPulling, state.isRefreshing, state.pullDistance, onRefresh, queryClient])
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd])
 
   const bind = {
     ref: containerRef,
-    onTouchStart: handleTouchStart,
-    onTouchMove: handleTouchMove,
-    onTouchEnd: handleTouchEnd,
-    onTouchCancel: handleTouchEnd,
   }
 
   return {

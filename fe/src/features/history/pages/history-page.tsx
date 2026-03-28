@@ -71,15 +71,7 @@ export function HistoryPage() {
     },
   })
 
-  const transactions = (transactionsQuery.data ?? []).filter((transaction) => {
-    const isLegacy = transaction.createdByUserId && systemUserIds.includes(transaction.createdByUserId)
-
-    if (isLegacy) {
-      return true
-    }
-
-    return !currentUserId || !transaction.createdByUserId || transaction.createdByUserId === currentUserId
-  })
+  const transactions = transactionsQuery.data ?? []
 
   return (
     <section className="history-page" aria-labelledby="history-page-title">

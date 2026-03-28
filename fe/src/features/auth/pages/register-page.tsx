@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { IconEye, IconEyeOff } from '@tabler/icons-react'
 
 import { ApiError, register } from '../api'
 
@@ -8,6 +9,7 @@ export function RegisterPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -67,14 +69,25 @@ export function RegisterPage() {
 
           <label className="auth-form__field">
             <span>Password</span>
-            <input
-              autoComplete="new-password"
-              type="password"
-              minLength={8}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-            />
+            <div className="auth-form__password">
+              <input
+                autoComplete="new-password"
+                type={showPassword ? 'text' : 'password'}
+                minLength={8}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="auth-form__password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+                aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+              >
+                {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+              </button>
+            </div>
           </label>
 
           <button className="auth-form__submit" type="submit" disabled={isSubmitting}>

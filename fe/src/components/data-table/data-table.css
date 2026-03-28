@@ -48,11 +48,6 @@
   }
 }
 
-.data-table__header-info {
-  flex: 1;
-  min-width: 0;
-}
-
 .data-table__title {
   font-size: 1.25rem;
   font-weight: 700;
@@ -70,6 +65,7 @@
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
+  margin-left: auto;
 }
 
 /* Toolbar */

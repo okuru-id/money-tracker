@@ -320,15 +320,9 @@ func (r *transactionRepository) ListAll(ctx context.Context, filter TransactionF
 	}
 
 	// Count total
-	countQuery := "SELECT COUNT(*) FROM transactions t WHERE 1=1"
-	if filter.FamilyID != "" {
-		countQuery += " AND t.family_id = $1"
-	}
-	if filter.OwnerID != nil {
-		countQuery += " AND t.wallet_owner_id = $" + string(rune('0'+argIdx-2))
-	}
+	countQuery := "SELECT COUNT(*) " + baseQuery
 	var total int64
-	err := r.db.QueryRow(ctx, countQuery, args[:argIdx-1]...).Scan(&total)
+	err := r.db.QueryRow(ctx, countQuery, args...).Scan(&total)
 	if err != nil {
 		return nil, err
 	}

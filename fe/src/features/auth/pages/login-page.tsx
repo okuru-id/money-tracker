@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { IconEye, IconEyeOff } from '@tabler/icons-react'
 
 import { ApiError, login } from '../api'
 import { consumeIntendedPath, setSessionAuthenticated } from '../session-store'
@@ -35,6 +36,7 @@ export function LoginPage() {
   const locationState = (location.state as LoginLocationState | undefined) ?? {}
   const [email, setEmail] = useState(locationState.prefillEmail ?? '')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -86,13 +88,24 @@ export function LoginPage() {
 
           <label className="auth-form__field">
             <span>Password</span>
-            <input
-              autoComplete="current-password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-            />
+            <div className="auth-form__password">
+              <input
+                autoComplete="current-password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="auth-form__password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+                aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+              >
+                {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+              </button>
+            </div>
           </label>
 
           <button className="auth-form__submit" type="submit" disabled={isSubmitting}>
