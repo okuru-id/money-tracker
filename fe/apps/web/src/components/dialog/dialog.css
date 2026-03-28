@@ -1,0 +1,138 @@
+/* Dialog Overlay */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgb(0 0 0 / 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: dialog-overlay-fade-in 0.15s ease-out;
+}
+
+@keyframes dialog-overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Dialog Container */
+.dialog {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-border), #fff 20%);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, #fffefb 0%, #f5f0e5 100%);
+  box-shadow:
+    0 14px 26px -16px rgb(12 34 34 / 0.35),
+    0 2px 8px -2px rgb(12 34 34 / 0.18);
+  max-height: calc(100vh - var(--space-8));
+  overflow: auto;
+  animation: dialog-slide-in 0.2s ease-out;
+}
+
+@keyframes dialog-slide-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Dialog Sizes */
+.dialog--sm {
+  width: 100%;
+  max-width: 24rem;
+}
+
+.dialog--md {
+  width: 100%;
+  max-width: 32rem;
+}
+
+.dialog--lg {
+  width: 100%;
+  max-width: 48rem;
+}
+
+/* Dialog Header */
+.dialog__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
+  background: #fff;
+}
+
+.dialog__header > *:first-child:not(.dialog__close) {
+  flex: 1;
+  min-width: 0;
+}
+
+.dialog__header:has(.dialog__close) {
+  justify-content: flex-start;
+}
+
+.dialog__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* Dialog Close Button */
+.dialog__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--color-border), #fff 20%);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 150ms ease;
+  flex-shrink: 0;
+}
+
+.dialog__close:hover {
+  background: var(--color-brand-soft);
+  color: var(--color-brand-strong);
+  border-color: var(--color-brand);
+}
+
+/* Dialog Description */
+.dialog__description {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background: color-mix(in srgb, var(--color-surface-soft), #fff 50%);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
+}
+
+/* Dialog Content */
+.dialog__content {
+  padding: var(--space-4);
+}
+
+/* Dialog Footer */
+.dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-top: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
+  background: #fff;
+}

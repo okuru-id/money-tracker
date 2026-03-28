@@ -249,6 +249,8 @@ export function AdminPage() {
     { id: "users" as Tab, label: "Users", icon: IconUsers },
   ];
 
+  const activeTabLabel = tabs.find(t => t.id === activeTab)?.label ?? "Admin";
+
   async function handleLogout() {
     setIsLoggingOut(true);
     try {
@@ -274,6 +276,7 @@ export function AdminPage() {
           <button className="admin-topbar__back" onClick={() => navigate("/settings")}>
             <IconArrowLeft size={16} />
           </button>
+          <h1 className="admin-topbar__title">{activeTabLabel}</h1>
         </div>
         <div className="topbar__right">
           <span className="admin-topbar__email">{session.user?.email}</span>
@@ -969,7 +972,6 @@ function TransactionsTab({
 
   return (
     <DataTable
-      title="All Transactions"
       columns={columns}
       data={data ? { ...data, current_page: page, last_page: data.total_pages, per_page: 20 } : []}
       loading={isLoading}
@@ -1077,7 +1079,6 @@ function FamiliesTab({
 
   return (
     <DataTable
-      title="All Families"
       columns={columns}
       data={data ? { ...data, current_page: page, last_page: data.total_pages, per_page: 20 } : []}
       loading={isLoading}
@@ -1187,7 +1188,6 @@ function UsersTab({
 
   return (
     <DataTable
-      title="All Users"
       columns={columns}
       data={data ? { ...data, current_page: page, last_page: data.total_pages, per_page: 20 } : []}
       loading={isLoading}

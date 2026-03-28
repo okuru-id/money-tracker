@@ -1750,6 +1750,13 @@ p {
   color: var(--color-brand-strong);
 }
 
+.admin-topbar__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
 .admin-topbar__email {
   font-size: 0.75rem;
   font-weight: 500;
