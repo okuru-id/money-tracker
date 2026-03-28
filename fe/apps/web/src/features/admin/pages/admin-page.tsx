@@ -995,21 +995,21 @@ function TransactionsTab({
         onPageChange={onPageChange}
         onRowClick={onSelect}
         renderHeaderActions={() => (
-          <button onClick={onRefresh} className="refresh-btn">
-            <IconRefresh size={18} />
-          </button>
-        )}
-        renderToolbarFilters={() => (
-          <button
-            className={`filter-btn ${activeFilterCount > 0 ? "filter-btn--active" : ""}`}
-            onClick={() => setShowFilterModal(true)}
-          >
-            <IconFilter size={16} />
-            <span>Filter</span>
-            {activeFilterCount > 0 && (
-              <span className="filter-btn__badge">{activeFilterCount}</span>
-            )}
-          </button>
+          <>
+            <button
+              className={`filter-btn ${activeFilterCount > 0 ? "filter-btn--active" : ""}`}
+              onClick={() => setShowFilterModal(true)}
+            >
+              <IconFilter size={16} />
+              <span>Filter</span>
+              {activeFilterCount > 0 && (
+                <span className="filter-btn__badge">{activeFilterCount}</span>
+              )}
+            </button>
+            <button onClick={onRefresh} className="refresh-btn">
+              <IconRefresh size={18} />
+            </button>
+          </>
         )}
         renderMobileCard={(tx) => (
           <div key={tx.id} className="data-card clickable" onClick={() => onSelect(tx)}>
