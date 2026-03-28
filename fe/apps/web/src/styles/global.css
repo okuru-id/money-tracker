@@ -1901,6 +1901,91 @@ p {
   color: var(--color-brand-strong);
 }
 
+/* Filter Button */
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--color-text);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filter-btn:hover {
+  background: var(--color-surface-soft);
+  border-color: var(--color-brand);
+  color: var(--color-brand-strong);
+}
+
+.filter-btn--active {
+  background: var(--color-brand-soft);
+  border-color: var(--color-brand);
+  color: var(--color-brand-strong);
+}
+
+.filter-btn__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.3rem;
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 999px;
+}
+
+/* Filter Modal Content */
+.filter-modal__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Button Styles */
+.btn-primary {
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-brand);
+  color: #fff;
+  border: 1px solid var(--color-brand);
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: var(--color-brand-strong);
+  border-color: var(--color-brand-strong);
+}
+
+.btn-secondary {
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--color-brand-soft);
+  color: var(--color-brand-strong);
+  border-color: var(--color-brand);
+}
+
 /* Filters Row */
 .filters-row {
   display: flex;

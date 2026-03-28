@@ -15,6 +15,7 @@ import {
   IconTrash,
   IconSettings,
   IconLogout,
+  IconFilter,
 } from "@tabler/icons-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -47,6 +48,10 @@ import { logout, ApiError } from "../../auth/api";
 import { showToast } from "../../../lib/toast";
 import { Dropdown } from "../../../components/dropdown";
 import { DataTable, type Column } from "../../../components/data-table";
+import {
+  Dialog,
+  DialogFooter,
+} from "../../../components/dialog";
 
 type Tab = "transactions" | "families" | "users";
 
@@ -924,6 +929,15 @@ function TransactionsTab({
   families: FamilyItem[];
   users: UserItem[];
 }) {
+  const [showFilterModal, setShowFilterModal] = useState(false);
+
+  const activeFilterCount = [filterFamilyId, filterUserId].filter(Boolean).length;
+
+  const handleResetFilters = () => {
+    onFilterFamilyChange("");
+    onFilterUserChange("");
+  };
+
   const columns: Column<TransactionItem>[] = [
     {
       id: "type",
@@ -971,21 +985,66 @@ function TransactionsTab({
   ];
 
   return (
-    <DataTable
-      columns={columns}
-      data={data ? { ...data, current_page: page, last_page: data.total_pages, per_page: 20 } : []}
-      loading={isLoading}
-      emptyText="No transactions found"
-      pageSize={20}
-      onPageChange={onPageChange}
-      onRowClick={onSelect}
-      renderHeaderActions={() => (
-        <button onClick={onRefresh} className="refresh-btn">
-          <IconRefresh size={18} />
-        </button>
-      )}
-      renderToolbarFilters={() => (
-        <div className="filters-row">
+    <>
+      <DataTable
+        columns={columns}
+        data={data ? { ...data, current_page: page, last_page: data.total_pages, per_page: 20 } : []}
+        loading={isLoading}
+        emptyText="No transactions found"
+        pageSize={20}
+        onPageChange={onPageChange}
+        onRowClick={onSelect}
+        renderHeaderActions={() => (
+          <button onClick={onRefresh} className="refresh-btn">
+            <IconRefresh size={18} />
+          </button>
+        )}
+        renderToolbarFilters={() => (
+          <button
+            className={`filter-btn ${activeFilterCount > 0 ? "filter-btn--active" : ""}`}
+            onClick={() => setShowFilterModal(true)}
+          >
+            <IconFilter size={16} />
+            <span>Filter</span>
+            {activeFilterCount > 0 && (
+              <span className="filter-btn__badge">{activeFilterCount}</span>
+            )}
+          </button>
+        )}
+        renderMobileCard={(tx) => (
+          <div key={tx.id} className="data-card clickable" onClick={() => onSelect(tx)}>
+            <div className="data-card__header">
+              <span className={`data-card__type type-${tx.type}`}>
+                {tx.type === "income" || tx.type === "credit" ? (
+                  <IconArrowUp size={16} />
+                ) : (
+                  <IconArrowDown size={16} />
+                )}
+                {tx.type}
+              </span>
+              <span className={`data-card__amount type-${tx.type}`}>
+                {formatCurrency(tx.amount)}
+              </span>
+            </div>
+            <div className="data-card__body">
+              <p className="data-card__note">{tx.note || "No description"}</p>
+              <div className="data-card__meta">
+                <span>{new Date(tx.transaction_date).toLocaleDateString("en-US")}</span>
+                <span className="truncate-id">Family: {tx.family_id.slice(0, 8)}...</span>
+              </div>
+            </div>
+          </div>
+        )}
+      />
+
+      {/* Filter Modal */}
+      <Dialog
+        open={showFilterModal}
+        onOpenChange={setShowFilterModal}
+        title="Filter Transactions"
+        size="sm"
+      >
+        <div className="filter-modal__content">
           <Dropdown
             label="Family"
             placeholder="All Families"
@@ -1001,32 +1060,18 @@ function TransactionsTab({
             options={(users ?? []).map((u) => ({ value: u.id, label: u.email }))}
           />
         </div>
-      )}
-      renderMobileCard={(tx) => (
-        <div key={tx.id} className="data-card clickable" onClick={() => onSelect(tx)}>
-          <div className="data-card__header">
-            <span className={`data-card__type type-${tx.type}`}>
-              {tx.type === "income" || tx.type === "credit" ? (
-                <IconArrowUp size={16} />
-              ) : (
-                <IconArrowDown size={16} />
-              )}
-              {tx.type}
-            </span>
-            <span className={`data-card__amount type-${tx.type}`}>
-              {formatCurrency(tx.amount)}
-            </span>
-          </div>
-          <div className="data-card__body">
-            <p className="data-card__note">{tx.note || "No description"}</p>
-            <div className="data-card__meta">
-              <span>{new Date(tx.transaction_date).toLocaleDateString("en-US")}</span>
-              <span className="truncate-id">Family: {tx.family_id.slice(0, 8)}...</span>
-            </div>
-          </div>
-        </div>
-      )}
-    />
+        <DialogFooter>
+          {activeFilterCount > 0 && (
+            <button className="btn-secondary" onClick={handleResetFilters}>
+              Reset
+            </button>
+          )}
+          <button className="btn-primary" onClick={() => setShowFilterModal(false)}>
+            Apply
+          </button>
+        </DialogFooter>
+      </Dialog>
+    </>
   );
 }
 
