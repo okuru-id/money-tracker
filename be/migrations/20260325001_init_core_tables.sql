@@ -44,6 +44,28 @@ CREATE TABLE IF NOT EXISTS categories (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create transactions table for clean local setups.
+-- Legacy environments may already have this table with older columns,
+-- so later migrations keep using IF NOT EXISTS for compatibility.
+CREATE TABLE IF NOT EXISTS transactions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    message_id VARCHAR(255) UNIQUE,
+    bank_name VARCHAR(255),
+    account_number VARCHAR(255),
+    family_id UUID,
+    wallet_owner_id UUID,
+    type VARCHAR(20) NOT NULL CHECK (type IN ('income', 'expense', 'debit', 'credit')),
+    amount DECIMAL(20,2) NOT NULL,
+    category_id UUID,
+    note TEXT,
+    transaction_date DATE NOT NULL,
+    created_by UUID,
+    balance DECIMAL(20,2),
+    raw_email TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE
+);
+
 -- Create indexes
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_families_created_by ON families(created_by);
@@ -52,3 +74,4 @@ CREATE INDEX idx_family_members_user_id ON family_members(user_id);
 CREATE INDEX idx_invite_tokens_token ON invite_tokens(token);
 CREATE INDEX idx_invite_tokens_family_id ON invite_tokens(family_id);
 CREATE INDEX idx_categories_type ON categories(type);
+CREATE INDEX idx_transactions_message_id ON transactions(message_id);

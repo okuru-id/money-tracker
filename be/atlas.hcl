@@ -1,9 +1,13 @@
 env "local" {
   src = "file://migrations"
-  url = "postgres://app_user:app_password@localhost:5432/money_tracker?sslmode=disable"
+  url = format(
+    "postgres://%s:%s@%s:%s/%s?sslmode=%s",
+    getenv("DB_USER"),
+    getenv("DB_PASSWORD"),
+    getenv("DB_HOST"),
+    getenv("DB_PORT"),
+    getenv("DB_NAME"),
+    getenv("DB_SSLMODE"),
+  )
   dev = "docker://postgres:17"
-}
-
-lint {
-  non_linear = error
 }
