@@ -235,9 +235,15 @@ export async function updateTransaction(
     method: 'PATCH',
     body: JSON.stringify({
       amount: payload.amount,
-      categoryId: payload.categoryId,
-      notes: payload.notes,
+      category_id: payload.categoryId,
+      note: payload.notes,
     }),
+  })
+}
+
+export async function deleteTransaction(id: string): Promise<void> {
+  await request(`/transactions/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
   })
 }
 
