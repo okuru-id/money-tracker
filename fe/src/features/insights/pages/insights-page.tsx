@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { IconTrendingDown, IconTrendingUp, IconWallet, IconReceipt, IconPlus, IconPencil, IconTrash, IconBuildingBank } from '@tabler/icons-react'
 
 import { getInsights, getBankAccounts, createBankAccount, updateBankAccount, deleteBankAccount, type BankAccount } from '../../transactions/api'
@@ -140,6 +140,17 @@ export function InsightsPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [isAdding, setIsAdding] = useState(false)
+  const [activeCardIndex, setActiveCardIndex] = useState(0)
+  const sliderRef = useRef<HTMLDivElement | null>(null)
+
+  function handleSliderScroll() {
+    const slider = sliderRef.current
+    if (!slider) return
+    const scrollLeft = slider.scrollLeft
+    const cardWidth = slider.offsetWidth
+    const index = Math.round(scrollLeft / cardWidth)
+    setActiveCardIndex(index)
+  }
 
   const insights = insightsQuery.data
   const bankAccounts = bankAccountsQuery.data ?? []
@@ -182,76 +193,90 @@ export function InsightsPage() {
           </div>
         )}
 
-        <div className="bank-cards-grid">
-          {bankAccounts.map((account) => {
-            const isEditing = editingId === account.id
-            const isDeleting = deletingId === account.id
-            const color = account.color ?? getBankColor(account.name)
+        <div className="bank-cards-wrapper">
+          <div
+            ref={sliderRef}
+            className={`bank-cards-grid${bankAccounts.length > 1 ? ' bank-cards-grid--slider' : ''}`}
+            onScroll={bankAccounts.length > 1 ? handleSliderScroll : undefined}
+          >
+            {bankAccounts.map((account) => {
+              const isEditing = editingId === account.id
+              const isDeleting = deletingId === account.id
+              const color = account.color ?? getBankColor(account.name)
 
-            if (isEditing) {
+              if (isEditing) {
+                return (
+                  <div key={account.id} className="bank-account-form-wrapper">
+                    <BankAccountForm
+                      account={account}
+                      onSave={(data) => updateMutation.mutate({ id: account.id, data })}
+                      onCancel={() => setEditingId(null)}
+                      isLoading={updateMutation.isPending}
+                    />
+                  </div>
+                )
+              }
+
               return (
-                <div key={account.id} className="bank-account-form-wrapper">
-                  <BankAccountForm
-                    account={account}
-                    onSave={(data) => updateMutation.mutate({ id: account.id, data })}
-                    onCancel={() => setEditingId(null)}
-                    isLoading={updateMutation.isPending}
-                  />
-                </div>
-              )
-            }
-
-            return (
-              <article
-                key={account.id}
-                className="bank-card bank-card--custom"
-                style={{ '--bank-color': color } as React.CSSProperties}
-              >
-                <div className="bank-card__header">
-                  <div className="bank-card__icon">
-                    <IconBuildingBank size={22} />
-                  </div>
-                  <span className="bank-card__label">{account.name}</span>
-                </div>
-                <h2 className="bank-card__amount">{formatAmount(account.balance)}</h2>
-                <div className="bank-card__actions">
-                  <button
-                    type="button"
-                    onClick={() => setEditingId(account.id)}
-                    disabled={isDeleting}
-                    className="bank-card__action-btn"
-                  >
-                    <IconPencil size={16} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDeletingId(account.id)}
-                    disabled={isDeleting}
-                    className="bank-card__action-btn bank-card__action-btn--danger"
-                  >
-                    <IconTrash size={16} />
-                  </button>
-                </div>
-                {isDeleting && (
-                  <div className="bank-card__delete-confirm">
-                    <p>Hapus {account.name}?</p>
-                    <div className="bank-card__delete-actions">
-                      <button type="button" onClick={() => setDeletingId(null)}>
-                        Batal
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => deleteMutation.mutate(account.id)}
-                        className="bank-card__delete-confirm-btn"
-                      >
-                        Hapus
-                      </button>
+                <article
+                  key={account.id}
+                  className="bank-card bank-card--custom"
+                  style={{ '--bank-color': color } as React.CSSProperties}
+                >
+                  <div className="bank-card__header">
+                    <div className="bank-card__icon">
+                      <IconBuildingBank size={22} />
                     </div>
+                    <span className="bank-card__label">{account.name}</span>
                   </div>
-                )}
-              </article>
-            )
-          })}
+                  <h2 className="bank-card__amount">{formatAmount(account.balance)}</h2>
+                  <div className="bank-card__actions">
+                    <button
+                      type="button"
+                      onClick={() => setEditingId(account.id)}
+                      disabled={isDeleting}
+                      className="bank-card__action-btn"
+                    >
+                      <IconPencil size={16} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeletingId(account.id)}
+                      disabled={isDeleting}
+                      className="bank-card__action-btn bank-card__action-btn--danger"
+                    >
+                      <IconTrash size={16} />
+                    </button>
+                  </div>
+                  {isDeleting && (
+                    <div className="bank-card__delete-confirm">
+                      <p>Hapus {account.name}?</p>
+                      <div className="bank-card__delete-actions">
+                        <button type="button" onClick={() => setDeletingId(null)}>
+                          Batal
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteMutation.mutate(account.id)}
+                          className="bank-card__delete-confirm-btn"
+                        >
+                          Hapus
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </article>
+              )
+            })}
+          </div>
+
+          {bankAccounts.length > 1 && (
+            <div className="slider-indicator">
+              {bankAccounts.map((_, index) => (
+                <span key={index} className={`slider-dot${index === activeCardIndex ? ' slider-dot--active' : ''}`} />
+              ))}
+            </div>
+          )}
         </div>
 
         {bankAccounts.length > 0 && (
