@@ -268,15 +268,15 @@ export function InsightsPage() {
                 </article>
               )
             })}
-
-            {bankAccounts.length > 1 && (
-              <div className="slider-indicator">
-                {bankAccounts.map((_, index) => (
-                  <span key={index} className={`slider-dot${index === activeCardIndex ? ' slider-dot--active' : ''}`} />
-                ))}
-              </div>
-            )}
           </div>
+
+          {bankAccounts.length > 1 && (
+            <div className="slider-indicator">
+              {bankAccounts.map((_, index) => (
+                <span key={index} className={`slider-dot${index === activeCardIndex ? ' slider-dot--active' : ''}`} />
+              ))}
+            </div>
+          )}
         </div>
 
         {bankAccounts.length > 0 && (
