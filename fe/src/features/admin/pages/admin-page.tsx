@@ -1193,6 +1193,22 @@ function TransactionsTab({
                 <span>{new Date(tx.transaction_date).toLocaleDateString("en-US")}</span>
                 <span className="truncate-id">Family: {tx.family_id.slice(0, 8)}...</span>
               </div>
+              <div className="data-card__actions" onClick={(e) => e.stopPropagation()}>
+                <button
+                  className="action-btn"
+                  onClick={() => onEditTransaction(tx)}
+                  title="Edit"
+                >
+                  <IconEdit size={14} />
+                </button>
+                <button
+                  className="action-btn action-btn--danger"
+                  onClick={() => onDeleteTransaction(tx)}
+                  title="Delete"
+                >
+                  <IconTrash size={14} />
+                </button>
+              </div>
             </div>
           </div>
         )}
