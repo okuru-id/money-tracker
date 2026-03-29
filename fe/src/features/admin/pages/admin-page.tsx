@@ -41,6 +41,8 @@ import {
   type UpdateUserRequest,
   type CreateFamilyRequest,
   type UpdateFamilyRequest,
+  updateTransactionAdmin,
+  deleteTransactionAdmin,
 } from "../api";
 import { useSessionState } from "../../auth/session-store";
 import { setSessionUnauthenticated } from "../../auth/session-store";
@@ -64,6 +66,12 @@ export function AdminPage() {
   const [selectedTransaction, setSelectedTransaction] = useState<TransactionItem | null>(null);
   const [selectedFamily, setSelectedFamily] = useState<FamilyItem | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserItem | null>(null);
+
+  // Transaction modals
+  const [showEditTransactionModal, setShowEditTransactionModal] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<TransactionItem | null>(null);
+  const [showDeleteTransactionConfirm, setShowDeleteTransactionConfirm] = useState(false);
+  const [deletingTransaction, setDeletingTransaction] = useState<TransactionItem | null>(null);
 
   // User modals
   const [showCreateUserModal, setShowCreateUserModal] = useState(false);
@@ -96,6 +104,22 @@ export function AdminPage() {
   const [createFamilyOwner, setCreateFamilyOwner] = useState<string>("");
   const [addMemberUserId, setAddMemberUserId] = useState<string>("");
   const [addMemberRole, setAddMemberRole] = useState<string>("member");
+
+  // Refresh data based on active tab
+  const refreshTabData = () => {
+    if (activeTab === "transactions") {
+      queryClient.invalidateQueries({ queryKey: ["admin", "transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "all-families"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "all-users"] });
+    } else if (activeTab === "families") {
+      queryClient.invalidateQueries({ queryKey: ["admin", "families"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "users-without-family"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "all-users"] });
+    } else if (activeTab === "users") {
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "all-families"] });
+    }
+  };
 
   // Queries
   const transactionsQuery = useQuery({
@@ -177,6 +201,34 @@ export function AdminPage() {
     },
   });
 
+  // Transaction mutations
+  const updateTransactionMutation = useMutation({
+    mutationFn: ({ txId, data }: { txId: string; data: { amount?: number; category_id?: string | null; note?: string } }) =>
+      updateTransactionAdmin(txId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "transactions"] });
+      setShowEditTransactionModal(false);
+      setEditingTransaction(null);
+      showToast({ title: "Transaction updated successfully", type: "success" });
+    },
+    onError: (error: Error) => {
+      showToast({ title: "Failed to update transaction", description: error.message, type: "error" });
+    },
+  });
+
+  const deleteTransactionMutation = useMutation({
+    mutationFn: deleteTransactionAdmin,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "transactions"] });
+      setShowDeleteTransactionConfirm(false);
+      setDeletingTransaction(null);
+      showToast({ title: "Transaction deleted successfully", type: "success" });
+    },
+    onError: (error: Error) => {
+      showToast({ title: "Failed to delete transaction", description: error.message, type: "error" });
+    },
+  });
+
   // Family mutations
   const createFamilyMutation = useMutation({
     mutationFn: createFamily,
@@ -222,6 +274,7 @@ export function AdminPage() {
     mutationFn: addMemberToFamily,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "family-members"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "users-without-family"] });
       setShowAddMemberModal(false);
       showToast({ title: "Member added successfully", type: "success" });
     },
@@ -235,6 +288,7 @@ export function AdminPage() {
       removeMemberFromFamily(familyId, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "family-members"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "users-without-family"] });
       setShowRemoveMemberConfirm(false);
       setRemovingMember(null);
       showToast({ title: "Member removed successfully", type: "success" });
@@ -351,7 +405,7 @@ export function AdminPage() {
             isFetching={transactionsQuery.isFetching}
             page={page}
             onPageChange={setPage}
-            onRefresh={() => transactionsQuery.refetch()}
+            onRefresh={refreshTabData}
             onSelect={setSelectedTransaction}
             filterFamilyId={filterFamilyId}
             filterUserId={filterUserId}
@@ -359,6 +413,8 @@ export function AdminPage() {
             onFilterUserChange={(id) => { setFilterUserId(id); setPage(1); }}
             families={allFamiliesQuery.data?.data ?? []}
             users={allUsersQuery.data?.data ?? []}
+            onEditTransaction={(tx) => { setEditingTransaction(tx); setShowEditTransactionModal(true); }}
+            onDeleteTransaction={(tx) => { setDeletingTransaction(tx); setShowDeleteTransactionConfirm(true); }}
           />
         )}
 
@@ -369,7 +425,7 @@ export function AdminPage() {
             isFetching={familiesQuery.isFetching}
             page={page}
             onPageChange={setPage}
-            onRefresh={() => familiesQuery.refetch()}
+            onRefresh={refreshTabData}
             onSelect={setSelectedFamily}
             onCreateFamily={() => {
               setCreateFamilyOwner("");
@@ -397,7 +453,7 @@ export function AdminPage() {
             isFetching={usersQuery.isFetching}
             page={page}
             onPageChange={setPage}
-            onRefresh={() => usersQuery.refetch()}
+            onRefresh={refreshTabData}
             onSelect={setSelectedUser}
             onCreateUser={() => {
               setCreateUserRole("user");
@@ -473,6 +529,83 @@ export function AdminPage() {
               <span className="detail-value">
                 {new Date(selectedTransaction.created_at).toLocaleString("en-US")}
               </span>
+            </div>
+          </div>
+        </DetailModal>
+      )}
+
+      {/* Edit Transaction Modal */}
+      {showEditTransactionModal && editingTransaction && (
+        <DetailModal onClose={() => { setShowEditTransactionModal(false); setEditingTransaction(null); }}>
+          <h3>Edit Transaction</h3>
+          <form
+            className="edit-transaction-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const amount = parseFloat(formData.get("amount") as string);
+              updateTransactionMutation.mutate({
+                txId: editingTransaction.id,
+                data: {
+                  amount: isNaN(amount) ? undefined : amount,
+                  note: formData.get("note") as string || undefined,
+                },
+              });
+            }}
+          >
+            <div className="form-field">
+              <label>Amount</label>
+              <input
+                type="number"
+                name="amount"
+                step="0.01"
+                required
+                defaultValue={editingTransaction.amount}
+              />
+            </div>
+            <div className="form-field">
+              <label>Note</label>
+              <input
+                type="text"
+                name="note"
+                defaultValue={editingTransaction.note || ""}
+              />
+            </div>
+            <div className="form-actions">
+              <button type="button" className="btn-secondary" onClick={() => { setShowEditTransactionModal(false); setEditingTransaction(null); }}>
+                Cancel
+              </button>
+              <button type="submit" className="btn-primary" disabled={updateTransactionMutation.isPending}>
+                {updateTransactionMutation.isPending ? "Updating..." : "Update"}
+              </button>
+            </div>
+          </form>
+        </DetailModal>
+      )}
+
+      {/* Delete Transaction Confirm */}
+      {showDeleteTransactionConfirm && deletingTransaction && (
+        <DetailModal onClose={() => { setShowDeleteTransactionConfirm(false); setDeletingTransaction(null); }}>
+          <h3>Delete Transaction</h3>
+          <div className="delete-confirm">
+            <p>Are you sure you want to delete this transaction?</p>
+            <div className="delete-info">
+              <p><strong>Type:</strong> {deletingTransaction.type}</p>
+              <p><strong>Amount:</strong> {formatCurrency(deletingTransaction.amount)}</p>
+              <p><strong>Note:</strong> {deletingTransaction.note || "-"}</p>
+            </div>
+            <div className="form-actions">
+              <button type="button" className="btn-secondary" onClick={() => { setShowDeleteTransactionConfirm(false); setDeletingTransaction(null); }}>
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-danger"
+                disabled={deleteTransactionMutation.isPending}
+                onClick={() => deleteTransactionMutation.mutate(deletingTransaction.id)}
+              >
+                {deleteTransactionMutation.isPending ? "Deleting..." : "Delete"}
+              </button>
             </div>
           </div>
         </DetailModal>
@@ -915,6 +1048,8 @@ function TransactionsTab({
   onFilterUserChange,
   families,
   users,
+  onEditTransaction,
+  onDeleteTransaction,
 }: {
   data?: { data: TransactionItem[]; total: number; total_pages: number };
   isLoading: boolean;
@@ -929,6 +1064,8 @@ function TransactionsTab({
   onFilterUserChange: (id: string) => void;
   families: FamilyItem[];
   users: UserItem[];
+  onEditTransaction: (tx: TransactionItem) => void;
+  onDeleteTransaction: (tx: TransactionItem) => void;
 }) {
   const [showFilterModal, setShowFilterModal] = useState(false);
 
@@ -982,6 +1119,29 @@ function TransactionsTab({
       label: "Date",
       width: "120px",
       cell: (tx) => new Date(tx.transaction_date).toLocaleDateString("en-US"),
+    },
+    {
+      id: "actions",
+      label: "",
+      width: "80px",
+      cell: (tx) => (
+        <div className="row-actions" onClick={(e) => e.stopPropagation()}>
+          <button
+            className="action-btn"
+            onClick={() => onEditTransaction(tx)}
+            title="Edit"
+          >
+            <IconEdit size={14} />
+          </button>
+          <button
+            className="action-btn action-btn--danger"
+            onClick={() => onDeleteTransaction(tx)}
+            title="Delete"
+          >
+            <IconTrash size={14} />
+          </button>
+        </div>
+      ),
     },
   ];
 

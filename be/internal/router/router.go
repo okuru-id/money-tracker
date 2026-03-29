@@ -101,7 +101,7 @@ func New(container *bootstrap.Container) *gin.Engine {
 			protected.DELETE("/bank-accounts/:id", bankAccountHandler.Delete)
 
 			// Admin routes
-			handler.RegisterAdminRoutes(api, adminHandler, container.AuthService, 7*24*time.Hour)
+			handler.RegisterAdminRoutes(api, adminHandler, container.AuthService, 7*24*time.Hour, transactionHandler)
 		}
 	}
 

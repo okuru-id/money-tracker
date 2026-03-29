@@ -250,3 +250,26 @@ export async function getFamilyMembers(familyId: string): Promise<FamilyMember[]
 export async function getUsersWithoutFamily(): Promise<UserItem[]> {
   return request<UserItem[]>("/admin/families/users-without-family")
 }
+
+export interface UpdateTransactionRequest {
+  amount?: number
+  category_id?: string | null
+  note?: string
+  transaction_date?: string
+}
+
+export async function updateTransactionAdmin(
+  transactionId: string,
+  data: UpdateTransactionRequest
+): Promise<void> {
+  await request(`/admin/transactions/${transactionId}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  })
+}
+
+export async function deleteTransactionAdmin(transactionId: string): Promise<void> {
+  await request(`/admin/transactions/${transactionId}`, {
+    method: "DELETE",
+  })
+}

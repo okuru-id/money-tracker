@@ -451,7 +451,7 @@ func (h *AdminHandler) GetUsersWithoutFamily(c *gin.Context) {
 }
 
 // RegisterAdminRoutes registers admin routes
-func RegisterAdminRoutes(r *gin.RouterGroup, h *AdminHandler, authSvc service.AuthService, sessionDuration interface{}) {
+func RegisterAdminRoutes(r *gin.RouterGroup, h *AdminHandler, authSvc service.AuthService, sessionDuration interface{}, txHandler *TransactionHandler) {
 	admin := r.Group("/admin")
 	admin.Use(
 		gin.HandlerFunc(func(c *gin.Context) {
@@ -461,6 +461,8 @@ func RegisterAdminRoutes(r *gin.RouterGroup, h *AdminHandler, authSvc service.Au
 	)
 	{
 		admin.GET("/transactions", h.ListTransactions)
+		admin.PUT("/transactions/:id", txHandler.Update)
+		admin.DELETE("/transactions/:id", txHandler.Delete)
 		admin.GET("/families", h.ListFamilies)
 		admin.POST("/families", h.CreateFamily)
 		admin.GET("/families/users-without-family", h.GetUsersWithoutFamily)
