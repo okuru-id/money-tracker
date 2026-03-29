@@ -716,6 +716,8 @@ p {
 
 .bank-cards-wrapper {
   position: relative;
+  overflow-x: hidden;
+  padding-bottom: var(--space-4);
 }
 
 .bank-cards-grid {
@@ -736,7 +738,6 @@ p {
   -webkit-overflow-scrolling: touch;
   margin: 0 calc(-1 * var(--space-4));
   padding: 0 var(--space-4);
-  padding-bottom: var(--space-5);
 }
 
 .bank-cards-grid--slider::-webkit-scrollbar {
