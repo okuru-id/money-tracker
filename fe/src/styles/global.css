@@ -736,6 +736,7 @@ p {
   -webkit-overflow-scrolling: touch;
   margin: 0 calc(-1 * var(--space-4));
   padding: 0 var(--space-4);
+  padding-bottom: var(--space-5);
 }
 
 .bank-cards-grid--slider::-webkit-scrollbar {
@@ -768,10 +769,10 @@ p {
 }
 
 .slider-dot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--color-border);
+  background: rgb(100 100 120 / 0.5);
   transition: background 0.2s, transform 0.2s;
 }
 
