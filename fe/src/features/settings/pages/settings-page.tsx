@@ -27,7 +27,7 @@ export function SettingsPage() {
       if (error instanceof ApiError) {
         setErrorMessage(error.message)
       } else {
-        setErrorMessage('Gagal logout. Coba lagi beberapa saat lagi.')
+        setErrorMessage('Failed to log out. Please try again later.')
       }
     } finally {
       setIsLoggingOut(false)
@@ -53,23 +53,23 @@ export function SettingsPage() {
       {showFamilySetupPrompt && (
         <div className="settings-page__family-prompt">
           <div className="settings-page__family-prompt-content">
-            <p className="settings-page__family-prompt-title">Setup Keluarga</p>
+            <p className="settings-page__family-prompt-title">Family Setup</p>
             <p className="settings-page__family-prompt-description">
-              Buat atau gabung keluarga untuk mulai mencatat transaksi dan melihat ringkasan keuangan.
+              Create or join a family to start tracking transactions and view financial summaries.
             </p>
           </div>
           <div className="settings-page__family-prompt-actions">
             <Link to="/family/setup" className="settings-page__family-prompt-button">
-              Buat Keluarga
+              Create Family
             </Link>
             <Link to="/family/join" className="settings-page__family-prompt-link">
-              Gabung dengan Token
+              Join with Token
             </Link>
           </div>
         </div>
       )}
 
-      <div className="settings-page__menu" role="list" aria-label="Menu pengaturan">
+      <div className="settings-page__menu" role="list" aria-label="Settings menu">
         {session.isAdmin && (
           <Link className="settings-menu-item" to="/admin" role="listitem">
             <div>
@@ -86,7 +86,7 @@ export function SettingsPage() {
           <Link className="settings-menu-item" to="/settings/family" role="listitem">
             <div>
               <p className="settings-menu-item__title">Family Management</p>
-              <p className="settings-menu-item__description">Akses fitur keluarga yang sebelumnya ada di tab Family.</p>
+              <p className="settings-menu-item__description">Access family features that were previously in the Family tab.</p>
             </div>
             <span className="settings-menu-item__arrow" aria-hidden="true">
               ›
@@ -97,7 +97,7 @@ export function SettingsPage() {
         <div className="settings-menu-item settings-menu-item--muted" role="listitem" aria-disabled="true">
           <div>
             <p className="settings-menu-item__title">Account</p>
-            <p className="settings-menu-item__description">Profil, keamanan, dan pengaturan akun personal.</p>
+            <p className="settings-menu-item__description">Profile, security, and personal account settings.</p>
           </div>
           <span className="settings-soon-badge">Soon</span>
         </div>
@@ -105,7 +105,7 @@ export function SettingsPage() {
         <div className="settings-menu-item settings-menu-item--muted" role="listitem" aria-disabled="true">
           <div>
             <p className="settings-menu-item__title">App Preferences</p>
-            <p className="settings-menu-item__description">Bahasa, format angka, dan preferensi tampilan aplikasi.</p>
+            <p className="settings-menu-item__description">Language, number format, and display preferences.</p>
           </div>
           <span className="settings-soon-badge">Soon</span>
         </div>
@@ -114,15 +114,15 @@ export function SettingsPage() {
       <div className="settings-page__install-card">
         <div className="settings-page__install-copy">
           <div className="settings-page__install-heading-row">
-            <p className="settings-page__install-title">Install aplikasi</p>
+            <p className="settings-page__install-title">Install App</p>
             {isPwaInstalled ? <span className="settings-installed-badge">Installed</span> : null}
           </div>
           <p className="settings-page__install-description">
-            Simpan Money Tracker ke home screen supaya akses lebih cepat dan terasa seperti aplikasi native.
+            Save Money Tracker to your home screen for faster access and a native app experience.
           </p>
           {!isPwaInstalled && !isPwaInstallAvailable ? (
             <p className="settings-page__install-hint">
-              Jika tombol install belum tersedia, buka menu browser lalu pilih <strong>Install app</strong> atau{' '}
+              If the install button is not available, open your browser menu and select <strong>Install app</strong> or{' '}
               <strong>Add to Home Screen</strong>.
             </p>
           ) : null}
@@ -138,14 +138,14 @@ export function SettingsPage() {
             disabled={!isPwaInstallAvailable || isInstallingPwa}
             aria-busy={isInstallingPwa}
           >
-            {isInstallingPwa ? 'Memproses install...' : isPwaInstallAvailable ? 'Install sekarang' : 'Tunggu prompt browser'}
+            {isInstallingPwa ? 'Installing...' : isPwaInstallAvailable ? 'Install now' : 'Waiting for browser prompt'}
           </button>
         ) : null}
       </div>
 
       <div className="settings-page__logout-card">
-        <p className="settings-page__logout-title">Sesi akun</p>
-        <p className="settings-page__logout-description">Keluar dari akun ini untuk menghentikan akses pada perangkat sekarang.</p>
+        <p className="settings-page__logout-title">Account Session</p>
+        <p className="settings-page__logout-description">Log out from this account to stop access on this device.</p>
 
         {errorMessage ? <p className="settings-page__error">{errorMessage}</p> : null}
 
@@ -156,7 +156,7 @@ export function SettingsPage() {
           disabled={isLoggingOut}
           aria-busy={isLoggingOut}
         >
-          {isLoggingOut ? 'Memproses logout...' : 'Logout'}
+          {isLoggingOut ? 'Logging out...' : 'Logout'}
         </button>
       </div>
     </section>

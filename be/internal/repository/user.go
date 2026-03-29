@@ -30,12 +30,13 @@ func NewUserRepository(db *pgxpool.Pool) UserRepository {
 
 func (r *userRepository) Create(ctx context.Context, user *model.User) error {
 	query := `
-		INSERT INTO users (id, email, password_hash, role, created_at)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO users (id, email, name, password_hash, role, created_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
 	`
 	_, err := r.db.Exec(ctx, query,
 		user.ID,
 		user.Email,
+		user.Name,
 		user.PasswordHash,
 		user.Role,
 		user.CreatedAt,
@@ -45,7 +46,7 @@ func (r *userRepository) Create(ctx context.Context, user *model.User) error {
 
 func (r *userRepository) FindByEmail(ctx context.Context, email string) (*model.User, error) {
 	query := `
-		SELECT id, email, password_hash, role, created_at
+		SELECT id, email, name, password_hash, role, created_at
 		FROM users
 		WHERE email = $1
 	`
@@ -53,6 +54,7 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (*model.
 	err := r.db.QueryRow(ctx, query, email).Scan(
 		&user.ID,
 		&user.Email,
+		&user.Name,
 		&user.PasswordHash,
 		&user.Role,
 		&user.CreatedAt,
@@ -68,7 +70,7 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (*model.
 
 func (r *userRepository) FindByID(ctx context.Context, id string) (*model.User, error) {
 	query := `
-		SELECT id, email, password_hash, role, created_at
+		SELECT id, email, name, password_hash, role, created_at
 		FROM users
 		WHERE id = $1
 	`
@@ -76,6 +78,7 @@ func (r *userRepository) FindByID(ctx context.Context, id string) (*model.User, 
 	err := r.db.QueryRow(ctx, query, id).Scan(
 		&user.ID,
 		&user.Email,
+		&user.Name,
 		&user.PasswordHash,
 		&user.Role,
 		&user.CreatedAt,
@@ -97,7 +100,7 @@ func (r *userRepository) UpdateRole(ctx context.Context, userID string, role str
 
 func (r *userRepository) ListAll(ctx context.Context, limit, offset int) ([]*model.User, error) {
 	query := `
-		SELECT id, email, password_hash, role, created_at
+		SELECT id, email, name, password_hash, role, created_at
 		FROM users
 		ORDER BY created_at DESC
 		LIMIT $1 OFFSET $2
@@ -114,6 +117,7 @@ func (r *userRepository) ListAll(ctx context.Context, limit, offset int) ([]*mod
 		if err := rows.Scan(
 			&user.ID,
 			&user.Email,
+			&user.Name,
 			&user.PasswordHash,
 			&user.Role,
 			&user.CreatedAt,
@@ -140,7 +144,7 @@ func (r *userRepository) Delete(ctx context.Context, userID string) error {
 
 func (r *userRepository) FindUsersWithoutFamily(ctx context.Context) ([]*model.User, error) {
 	query := `
-		SELECT u.id, u.email, u.password_hash, u.role, u.created_at
+		SELECT u.id, u.email, u.name, u.password_hash, u.role, u.created_at
 		FROM users u
 		WHERE NOT EXISTS (
 			SELECT 1 FROM family_members fm WHERE fm.user_id = u.id
@@ -159,6 +163,7 @@ func (r *userRepository) FindUsersWithoutFamily(ctx context.Context) ([]*model.U
 		if err := rows.Scan(
 			&user.ID,
 			&user.Email,
+			&user.Name,
 			&user.PasswordHash,
 			&user.Role,
 			&user.CreatedAt,

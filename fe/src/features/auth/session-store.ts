@@ -91,15 +91,25 @@ function persistFamilySkipped(skipped: boolean): void {
 }
 
 export function setSessionAuthenticated(user: AuthUser | null, context: SessionContext): void {
-  persistUser(user)
+  // Merge role from context and user, prioritizing context
+  const mergedUser = user ? {
+    ...user,
+    role: context.role ?? user.role,
+  } : null
+
+  persistUser(mergedUser)
+
+  // Use role from context if available, otherwise use role from user object
+  const role = context.role ?? user?.role
+  const isAdmin = role === 'admin'
 
   setState({
     status: 'authenticated',
-    user,
+    user: mergedUser,
     hasFamily: context.hasFamily,
     familyId: context.familyId,
     familySkipped: readFamilySkipped(),
-    isAdmin: user?.role === 'admin',
+    isAdmin,
   })
 }
 

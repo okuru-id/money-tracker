@@ -65,6 +65,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		"user": gin.H{
 			"id":         user.ID,
 			"email":      user.Email,
+			"name":       user.Name,
 			"created_at": user.CreatedAt,
 		},
 	})
@@ -119,6 +120,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		"user": gin.H{
 			"id":         user.ID,
 			"email":      user.Email,
+			"name":       user.Name,
 			"role":       user.Role,
 			"created_at": user.CreatedAt,
 		},

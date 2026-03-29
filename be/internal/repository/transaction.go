@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -119,6 +120,7 @@ func (r *transactionRepository) List(ctx context.Context, filter TransactionFilt
 	baseQuery := `
 		FROM transactions t
 		LEFT JOIN categories c ON t.category_id = c.id
+		LEFT JOIN bank_accounts ba ON t.family_id = ba.family_id AND t.account_number = ba.account_number AND t.account_number != ''
 		WHERE t.family_id = $1
 	`
 	args := []interface{}{filter.FamilyID}
@@ -153,10 +155,10 @@ func (r *transactionRepository) List(ctx context.Context, filter TransactionFilt
 	// Get paginated results
 	offset := (filter.Page - 1) * filter.Limit
 	dataQuery := `
-		SELECT t.id, t.family_id, t.wallet_owner_id, t.account_number,
-			   t.type, t.amount, t.category_id,
+		SELECT t.id, t.family_id, t.wallet_owner_id, t.account_number, t.bank_name, t.type, t.amount, t.category_id,
 			   COALESCE(c.name, '') as category_name,
-			   t.note, t.transaction_date, t.created_by, t.created_at, t.updated_at
+			   t.note, t.transaction_date, t.created_by, t.created_at, t.updated_at,
+			   COALESCE(ba.name, '') as bank_account_name
 		` + baseQuery + `
 		ORDER BY t.transaction_date DESC, t.created_at DESC
 		LIMIT $` + string(rune('0'+argIdx)) + ` OFFSET $` + string(rune('0'+argIdx+1))
@@ -171,12 +173,14 @@ func (r *transactionRepository) List(ctx context.Context, filter TransactionFilt
 	var transactions []model.TransactionResponse
 	for rows.Next() {
 		var tx model.TransactionResponse
-		var categoryName string
+		var categoryName, bankAccountName string
+		var accountNumber, bankName sql.NullString
 		err := rows.Scan(
 			&tx.ID,
 			&tx.FamilyID,
 			&tx.WalletOwnerID,
-			&tx.AccountNumber,
+			&accountNumber,
+			&bankName,
 			&tx.Type,
 			&tx.Amount,
 			&tx.CategoryID,
@@ -186,11 +190,15 @@ func (r *transactionRepository) List(ctx context.Context, filter TransactionFilt
 			&tx.CreatedBy,
 			&tx.CreatedAt,
 			&tx.UpdatedAt,
+			&bankAccountName,
 		)
 		if err != nil {
 			return nil, err
 		}
 		tx.CategoryName = categoryName
+		tx.AccountNumber = accountNumber.String
+		tx.BankName = bankName.String
+		tx.BankAccountName = bankAccountName
 		transactions = append(transactions, tx)
 	}
 
@@ -261,8 +269,8 @@ func (r *transactionRepository) GetSummary(ctx context.Context, familyID string,
 
 	query := `
 		SELECT
-			COALESCE(SUM(CASE WHEN type IN ('income', 'credit') THEN amount ELSE 0 END), 0) as total_income,
-			COALESCE(SUM(CASE WHEN type IN ('expense', 'debit') THEN amount ELSE 0 END), 0) as total_expense
+			COALESCE(SUM(CASE WHEN type IN ('credit') THEN amount ELSE 0 END), 0) as total_income,
+			COALESCE(SUM(CASE WHEN type IN ('debit') THEN amount ELSE 0 END), 0) as total_expense
 		FROM transactions
 		WHERE family_id = $1 AND transaction_date >= $2 AND transaction_date < $3
 	`
@@ -284,8 +292,8 @@ func (r *transactionRepository) GetSummary(ctx context.Context, familyID string,
 func (r *transactionRepository) GetPersonalSummary(ctx context.Context, familyID string) (*model.PersonalSummaryResponse, error) {
 	query := `
 		SELECT
-			COALESCE(SUM(CASE WHEN type IN ('income', 'credit') THEN amount ELSE 0 END), 0),
-			COALESCE(SUM(CASE WHEN type IN ('expense', 'debit') THEN amount ELSE 0 END), 0)
+			COALESCE(SUM(CASE WHEN type IN ('credit') THEN amount ELSE 0 END), 0),
+			COALESCE(SUM(CASE WHEN type IN ('debit') THEN amount ELSE 0 END), 0)
 		FROM transactions
 		WHERE family_id = $1
 	`
@@ -307,11 +315,11 @@ func (r *transactionRepository) GetInsights(ctx context.Context, familyID string
 	// Get totals and counts in one query
 	totalsQuery := `
 		SELECT
-			COALESCE(SUM(CASE WHEN type IN ('income', 'credit') THEN amount ELSE 0 END), 0),
-			COALESCE(SUM(CASE WHEN type IN ('expense', 'debit') THEN amount ELSE 0 END), 0),
+			COALESCE(SUM(CASE WHEN type IN ('credit') THEN amount ELSE 0 END), 0),
+			COALESCE(SUM(CASE WHEN type IN ('debit') THEN amount ELSE 0 END), 0),
 			COUNT(*),
-			COUNT(*) FILTER (WHERE type IN ('expense', 'debit')),
-			COUNT(*) FILTER (WHERE type IN ('income', 'credit'))
+			COUNT(*) FILTER (WHERE type IN ('debit')),
+			COUNT(*) FILTER (WHERE type IN ('credit'))
 		FROM transactions
 		WHERE family_id = $1
 	`
@@ -334,7 +342,7 @@ func (r *transactionRepository) GetInsights(ctx context.Context, familyID string
 		SELECT COALESCE(c.name, 'Tanpa kategori'), SUM(t.amount)
 		FROM transactions t
 		LEFT JOIN categories c ON t.category_id = c.id
-		WHERE t.family_id = $1 AND t.type IN ('expense', 'debit')
+		WHERE t.family_id = $1 AND t.type IN ('debit')
 		GROUP BY c.name
 		ORDER BY SUM(t.amount) DESC
 		LIMIT 5
@@ -360,7 +368,7 @@ func (r *transactionRepository) GetInsights(ctx context.Context, familyID string
 		SELECT COALESCE(c.name, 'Tanpa kategori'), SUM(t.amount)
 		FROM transactions t
 		LEFT JOIN categories c ON t.category_id = c.id
-		WHERE t.family_id = $1 AND t.type IN ('income', 'credit')
+		WHERE t.family_id = $1 AND t.type IN ('credit')
 		GROUP BY c.name
 		ORDER BY SUM(t.amount) DESC
 		LIMIT 5
@@ -397,11 +405,13 @@ func (r *transactionRepository) GetInsights(ctx context.Context, familyID string
 // ListAll returns all transactions across families (for admin)
 func (r *transactionRepository) ListAll(ctx context.Context, filter TransactionFilter) (*model.TransactionListResponse, error) {
 	// Build query with optional family_id filter
+	// Join with bank_accounts to get bank name if account_number matches
 	baseQuery := `
 		FROM transactions t
 		LEFT JOIN categories c ON t.category_id = c.id
 		LEFT JOIN users u1 ON t.created_by = u1.id
 		LEFT JOIN users u2 ON t.wallet_owner_id = u2.id
+		LEFT JOIN bank_accounts ba ON t.family_id = ba.family_id AND t.account_number = ba.account_number AND t.account_number != ''
 		WHERE 1=1
 	`
 	args := []interface{}{}
@@ -419,11 +429,11 @@ func (r *transactionRepository) ListAll(ctx context.Context, filter TransactionF
 		argIdx++
 	}
 
-		if filter.CreatedBy != nil {
-			baseQuery += " AND t.created_by = $" + string(rune('0'+argIdx))
-			args = append(args, *filter.CreatedBy)
-			argIdx++
-		}
+	if filter.CreatedBy != nil {
+		baseQuery += " AND t.created_by = $" + string(rune('0'+argIdx))
+		args = append(args, *filter.CreatedBy)
+		argIdx++
+	}
 
 	if filter.StartDate != nil {
 		baseQuery += " AND t.transaction_date >= $" + string(rune('0'+argIdx))
@@ -448,11 +458,12 @@ func (r *transactionRepository) ListAll(ctx context.Context, filter TransactionF
 	// Get paginated results
 	offset := (filter.Page - 1) * filter.Limit
 	dataQuery := `
-		SELECT t.id, t.family_id, t.wallet_owner_id, t.type, t.amount, t.category_id,
+		SELECT t.id, t.family_id, t.wallet_owner_id, t.account_number, t.bank_name, t.type, t.amount, t.category_id,
 			   COALESCE(c.name, '') as category_name,
 			   t.note, t.transaction_date, t.created_by, t.created_at, t.updated_at,
 			   COALESCE(u1.email, '') as created_by_name,
-			   COALESCE(u2.email, '') as wallet_owner_name
+			   COALESCE(u2.email, '') as wallet_owner_name,
+			   COALESCE(ba.name, '') as bank_account_name
 		` + baseQuery + `
 		ORDER BY t.transaction_date DESC, t.created_at DESC
 		LIMIT $` + string(rune('0'+argIdx)) + ` OFFSET $` + string(rune('0'+argIdx+1))
@@ -467,11 +478,14 @@ func (r *transactionRepository) ListAll(ctx context.Context, filter TransactionF
 	var transactions []model.TransactionResponse
 	for rows.Next() {
 		var tx model.TransactionResponse
-		var categoryName, createdByName, walletOwnerName string
+		var categoryName, createdByName, walletOwnerName, bankAccountName string
+		var accountNumber, bankName sql.NullString
 		err := rows.Scan(
 			&tx.ID,
 			&tx.FamilyID,
 			&tx.WalletOwnerID,
+			&accountNumber,
+			&bankName,
 			&tx.Type,
 			&tx.Amount,
 			&tx.CategoryID,
@@ -483,6 +497,7 @@ func (r *transactionRepository) ListAll(ctx context.Context, filter TransactionF
 			&tx.UpdatedAt,
 			&createdByName,
 			&walletOwnerName,
+			&bankAccountName,
 		)
 		if err != nil {
 			return nil, err
@@ -490,6 +505,9 @@ func (r *transactionRepository) ListAll(ctx context.Context, filter TransactionF
 		tx.CategoryName = categoryName
 		tx.CreatedByName = createdByName
 		tx.WalletOwnerName = walletOwnerName
+		tx.AccountNumber = accountNumber.String
+		tx.BankName = bankName.String
+		tx.BankAccountName = bankAccountName
 		transactions = append(transactions, tx)
 	}
 

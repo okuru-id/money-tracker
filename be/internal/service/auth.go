@@ -57,7 +57,9 @@ func (s *authService) Register(ctx context.Context, req *model.RegisterRequest) 
 	user := &model.User{
 		ID:           uuid.New().String(),
 		Email:        req.Email,
+		Name:         req.Name,
 		PasswordHash: string(hashedPassword),
+		Role:         model.RoleUser,
 		CreatedAt:    time.Now(),
 	}
 
@@ -138,6 +140,16 @@ func (s *authService) ValidateSession(ctx context.Context, sessionID string) (*m
 	if time.Now().After(session.ExpiresAt) {
 		_ = s.sessionRepo.Delete(ctx, sessionID)
 		return nil, errors.New("session expired")
+	}
+
+	// If user_role is missing in session (legacy sessions), look it up from database
+	if session.UserRole == "" {
+		user, err := s.userRepo.FindByID(ctx, session.UserID)
+		if err == nil && user != nil {
+			session.UserRole = string(user.Role)
+			// Update session with role
+			_ = s.sessionRepo.Create(ctx, sessionID, session, 7*24*time.Hour)
+		}
 	}
 
 	return session, nil

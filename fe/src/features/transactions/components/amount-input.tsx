@@ -25,13 +25,13 @@ export function AmountInput({ value, onChange, autoFocus = false }: AmountInputP
 
   return (
     <label className="transaction-form__field" htmlFor="amount-input">
-      <span>Jumlah</span>
+      <span>Amount</span>
       <input
         id="amount-input"
         autoFocus={autoFocus}
         inputMode="numeric"
         autoComplete="off"
-        placeholder="Contoh: 75000"
+        placeholder="Example: 75000"
         value={value}
         onChange={(event) => onChange(normalizeAmountInput(event.target.value))}
         required

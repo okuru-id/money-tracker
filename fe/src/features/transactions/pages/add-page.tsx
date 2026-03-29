@@ -20,13 +20,18 @@ import { showToast } from '../../../lib/toast'
 
 const LAST_USED_TYPE_STORAGE_KEY = 'money-tracker.last-transaction-type'
 
+/** Map transaction type (debit/credit) to category type (expense/income) */
+function toCategoryType(txType: TransactionType): 'income' | 'expense' {
+  return txType === 'credit' ? 'income' : 'expense'
+}
+
 function readStoredLastUsedType(): TransactionType | null {
   if (typeof window === 'undefined') {
     return null
   }
 
   const stored = window.localStorage.getItem(LAST_USED_TYPE_STORAGE_KEY)
-  if (stored === 'income' || stored === 'expense') {
+  if (stored === 'debit' || stored === 'credit') {
     return stored
   }
 
@@ -42,7 +47,7 @@ function persistLastUsedType(type: TransactionType): void {
 }
 
 function parseTypeParam(value: string | null): TransactionType | null {
-  if (value === 'income' || value === 'expense') {
+  if (value === 'debit' || value === 'credit') {
     return value
   }
 
@@ -62,7 +67,7 @@ function toErrorMessage(error: unknown): string {
     return error.message
   }
 
-  return 'Gagal menyimpan transaksi. Coba lagi beberapa saat lagi.'
+  return 'Failed to save transaction. Please try again later.'
 }
 
 export function AddPage() {
@@ -89,7 +94,7 @@ export function AddPage() {
 
   const recentDefaultType = useMemo(() => {
     const latestType = transactionsQuery.data?.[0]?.type
-    return latestType === 'income' || latestType === 'expense' ? latestType : null
+    return latestType === 'debit' || latestType === 'credit' ? latestType : null
   }, [transactionsQuery.data])
 
   const [manualType, setManualType] = useState<TransactionType | null>(() => storedLastUsedType)
@@ -101,7 +106,7 @@ export function AddPage() {
   const [retryMode, setRetryMode] = useState(false)
   const [hasSwitchedTypeBeforeSubmit, setHasSwitchedTypeBeforeSubmit] = useState(false)
   const submitStartedAtRef = useRef<number | null>(null)
-  const type = typeFromQuery ?? manualType ?? recentDefaultType ?? 'expense'
+  const type = typeFromQuery ?? manualType ?? recentDefaultType ?? 'debit'
 
   function finishSubmitTimer(): number {
     const startedAt = submitStartedAtRef.current
@@ -118,9 +123,10 @@ export function AddPage() {
     trackKpiEvent('open_add')
   }, [])
 
+  const categoryType = toCategoryType(type)
   const favorites = useMemo(
-    () => pickFavoriteCategories(transactionsQuery.data ?? [], categoriesQuery.data ?? [], type),
-    [transactionsQuery.data, categoriesQuery.data, type],
+    () => pickFavoriteCategories(transactionsQuery.data ?? [], categoriesQuery.data ?? [], categoryType),
+    [transactionsQuery.data, categoriesQuery.data, categoryType],
   )
 
   const submitMutation = useMutation({
@@ -144,7 +150,7 @@ export function AddPage() {
       })
 
       showToast({
-        title: 'Transaksi berhasil disimpan',
+        title: 'Transaction saved successfully',
       })
 
       navigate('/')
@@ -169,7 +175,7 @@ export function AddPage() {
       })
 
       showToast({
-        title: 'Transaksi belum tersimpan',
+        title: 'Transaction not saved',
         description: message,
       })
     },
@@ -211,50 +217,50 @@ export function AddPage() {
         <div className="transaction-form__type-toggle" role="group" aria-label="Transaction type">
           <button
             type="button"
-            className={type === 'expense' ? 'transaction-form__type-button transaction-form__type-button--active' : 'transaction-form__type-button'}
+            className={type === 'debit' ? 'transaction-form__type-button transaction-form__type-button--active' : 'transaction-form__type-button'}
             onClick={() => {
-              setManualType('expense')
+              setManualType('debit')
               if (typeFromQuery) {
                 const next = new URLSearchParams(searchParams)
                 next.delete('type')
                 setSearchParams(next, { replace: true })
               }
-              if (!submitMutation.isSuccess && !hasSwitchedTypeBeforeSubmit && type !== 'expense') {
+              if (!submitMutation.isSuccess && !hasSwitchedTypeBeforeSubmit && type !== 'debit') {
                 setHasSwitchedTypeBeforeSubmit(true)
                 trackKpiEvent('type_switch_before_submit', {
-                  switchedToType: 'expense',
+                  switchedToType: 'debit',
                 })
               }
             }}
           >
-            Expense
+            Pengeluaran
           </button>
           <button
             type="button"
-            className={type === 'income' ? 'transaction-form__type-button transaction-form__type-button--active' : 'transaction-form__type-button'}
+            className={type === 'credit' ? 'transaction-form__type-button transaction-form__type-button--active' : 'transaction-form__type-button'}
             onClick={() => {
-              setManualType('income')
+              setManualType('credit')
               if (typeFromQuery) {
                 const next = new URLSearchParams(searchParams)
                 next.delete('type')
                 setSearchParams(next, { replace: true })
               }
-              if (!submitMutation.isSuccess && !hasSwitchedTypeBeforeSubmit && type !== 'income') {
+              if (!submitMutation.isSuccess && !hasSwitchedTypeBeforeSubmit && type !== 'credit') {
                 setHasSwitchedTypeBeforeSubmit(true)
                 trackKpiEvent('type_switch_before_submit', {
-                  switchedToType: 'income',
+                  switchedToType: 'credit',
                 })
               }
             }}
           >
-            Income
+            Pemasukan
           </button>
         </div>
 
         <AmountInput value={amountInput} onChange={setAmountInput} autoFocus />
 
         <CategoryPicker
-          type={type}
+          type={categoryType}
           categories={categoriesQuery.data ?? []}
           favoriteCategories={favorites}
           selectedCategoryId={categoryId}
@@ -264,13 +270,13 @@ export function AddPage() {
 
         {bankAccountsQuery.data && bankAccountsQuery.data.length > 0 ? (
           <label className="transaction-form__field" htmlFor="bank-account-select">
-            <span>Rekening Bank (opsional)</span>
+            <span>Bank Account (optional)</span>
             <select
               id="bank-account-select"
               value={selectedBankAccountId}
               onChange={(event) => setSelectedBankAccountId(event.target.value)}
             >
-              <option value="">-- Pilih rekening --</option>
+              <option value="">-- Select account --</option>
               {bankAccountsQuery.data.map((account: BankAccount) => (
                 <option key={account.id} value={account.id}>
                   {account.name}
@@ -281,12 +287,12 @@ export function AddPage() {
         ) : null}
 
         <label className="transaction-form__field" htmlFor="notes-input">
-          <span>Catatan (opsional)</span>
+          <span>Notes (optional)</span>
           <input
             id="notes-input"
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
-            placeholder="Contoh: makan siang tim"
+            placeholder="Example: team lunch"
           />
         </label>
 
@@ -294,7 +300,7 @@ export function AddPage() {
 
         {retryMode ? (
           <div className="transaction-form__retry" role="alert">
-            <p>Jaringan sedang bermasalah. Form tetap disimpan di layar ini.</p>
+            <p>Network issue detected. Form data is preserved on this screen.</p>
             <button
               type="button"
               className="transaction-form__retry-button"
@@ -310,7 +316,7 @@ export function AddPage() {
         ) : null}
 
         <button className="transaction-form__submit" type="submit" disabled={!canSubmit}>
-          {submitMutation.isPending ? 'Menyimpan...' : 'Simpan transaksi'}
+          {submitMutation.isPending ? 'Saving...' : 'Save transaction'}
         </button>
       </form>
     </section>

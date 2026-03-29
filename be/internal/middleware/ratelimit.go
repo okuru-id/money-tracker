@@ -126,7 +126,7 @@ var (
 	}
 
 	RegisterRateLimit = RateLimitConfig{
-		Requests:  3,
+		Requests:  100,
 		Window:    time.Hour,
 		KeyPrefix: "rl:register",
 		Message:   "Too many registration attempts. Please try again later.",

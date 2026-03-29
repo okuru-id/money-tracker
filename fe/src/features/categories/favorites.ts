@@ -1,9 +1,9 @@
-import type { CategoryItem, TransactionItem, TransactionType } from '../transactions/api'
+import type { CategoryItem, TransactionItem } from '../transactions/api'
 
 export function pickFavoriteCategories(
   transactions: TransactionItem[],
   categories: CategoryItem[],
-  type: TransactionType,
+  type: 'income' | 'expense',
 ): CategoryItem[] {
   const categoriesById = new Map(categories.map((category) => [category.id, category]))
   const favoriteIds: string[] = []

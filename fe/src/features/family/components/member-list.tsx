@@ -24,7 +24,7 @@ export function MemberList({
   isDeleting = false,
 }: MemberListProps) {
   if (members.length === 0) {
-    return <p className="family-card__hint">Belum ada member aktif pada keluarga ini.</p>
+    return <p className="family-card__hint">No active members in this family yet.</p>
   }
 
   return (
@@ -48,7 +48,7 @@ export function MemberList({
                   className="family-member-list__delete-btn"
                   disabled={isDeleting}
                   onClick={() => onDeleteMember(member.userId ?? '')}
-                  title="Hapus member"
+                  title="Remove member"
                 >
                   ×
                 </button>

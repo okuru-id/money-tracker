@@ -9,10 +9,8 @@ import (
 type TransactionType string
 
 const (
-	TransactionIncome  TransactionType = "income"
-	TransactionExpense TransactionType = "expense"
-	TransactionDebit   TransactionType = "debit"
-	TransactionCredit  TransactionType = "credit"
+	TransactionDebit  TransactionType = "debit"
+	TransactionCredit TransactionType = "credit"
 )
 
 type Transaction struct {
@@ -34,13 +32,7 @@ type Transaction struct {
 	UpdatedAt       *time.Time      `json:"updated_at,omitempty" db:"updated_at"`
 }
 
-// IsLegacy returns true if this transaction was imported from legacy system
-func (t *Transaction) IsLegacy() bool {
-	// Check both possible system user IDs (migration uses different ID than originally created)
-	return t.CreatedBy == "00000000-0000-0000-0000-000000000001" || t.CreatedBy == "3d271d3a-1f59-4071-abd0-66b37ceca2ae"
-}
-
 // CanModify returns true if the given user can modify this transaction
 func (t *Transaction) CanModify(userID string) bool {
-	return t.CreatedBy == userID && !t.IsLegacy()
+	return t.CreatedBy == userID
 }

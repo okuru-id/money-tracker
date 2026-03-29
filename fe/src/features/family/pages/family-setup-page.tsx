@@ -45,7 +45,7 @@ export function FamilySetupPage() {
       if (error instanceof ApiError) {
         setErrorMessage(error.message)
       } else {
-        setErrorMessage('Gagal membuat keluarga. Coba ulang beberapa saat lagi.')
+        setErrorMessage('Failed to create family. Please try again later.')
       }
     } finally {
       setIsSubmitting(false)
@@ -58,33 +58,33 @@ export function FamilySetupPage() {
       <section className="auth-screen" aria-labelledby="family-setup-title">
         <div className="auth-screen__panel">
           <p className="auth-screen__description">
-            Keluarga dipakai sebagai konteks bersama untuk transaksi dan ringkasan bulanan.
+            Family is used as a shared context for transactions and monthly summaries.
           </p>
 
           {errorMessage ? <p className="auth-screen__error">{errorMessage}</p> : null}
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <label className="auth-form__field">
-              <span>Nama keluarga</span>
+              <span>Family name</span>
               <input
                 value={familyName}
                 onChange={(event) => setFamilyName(event.target.value)}
-                placeholder="Contoh: Keluarga Ardi"
+                placeholder="Example: Ardi Family"
                 required
               />
             </label>
 
             <button className="auth-form__submit" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Menyimpan...' : 'Buat keluarga'}
+              {isSubmitting ? 'Saving...' : 'Create family'}
             </button>
           </form>
 
           <p className="auth-screen__switch">
-            Sudah punya token invite? <Link to="/family/join">Gabung di sini</Link>
+            Have an invite token? <Link to="/family/join">Join here</Link>
           </p>
 
           <button className="auth-screen__skip" type="button" onClick={handleSkip}>
-            Lewati untuk sekarang
+            Skip for now
           </button>
         </div>
       </section>

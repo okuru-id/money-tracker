@@ -1,7 +1,7 @@
-import type { CategoryItem, TransactionType } from '../api'
+import type { CategoryItem } from '../api'
 
 type CategoryPickerProps = {
-  type: TransactionType
+  type: 'income' | 'expense'
   categories: CategoryItem[]
   favoriteCategories: CategoryItem[]
   selectedCategoryId: string
@@ -44,14 +44,14 @@ export function CategoryPicker({
   return (
     <section className="transaction-form__field" aria-labelledby="category-picker-title">
       <div className="transaction-form__field-header">
-        <span id="category-picker-title">Kategori</span>
+        <span id="category-picker-title">Category</span>
       </div>
 
-      {isLoading ? <p className="transaction-form__hint">Memuat kategori...</p> : null}
+      {isLoading ? <p className="transaction-form__hint">Loading categories...</p> : null}
 
       {!isLoading && favoriteCategories.length > 0 ? (
         <div className="category-picker__group">
-          <p className="category-picker__label">Favorit</p>
+          <p className="category-picker__label">Favorites</p>
           <div className="category-picker__list">
             {favoriteCategories.map((category) => (
               <CategoryButton
@@ -67,7 +67,7 @@ export function CategoryPicker({
 
       {!isLoading ? (
         <div className="category-picker__group">
-          <p className="category-picker__label">Semua kategori {type}</p>
+          <p className="category-picker__label">All {type} categories</p>
           <div className="category-picker__list">
             {remainingCategories.map((category) => (
               <CategoryButton
@@ -82,7 +82,7 @@ export function CategoryPicker({
       ) : null}
 
       {!isLoading && typeCategories.length === 0 ? (
-        <p className="transaction-form__hint">Belum ada kategori {type}. Tambahkan kategori dulu dari backend.</p>
+        <p className="transaction-form__hint">No {type} categories yet. Add categories from the backend.</p>
       ) : null}
     </section>
   )

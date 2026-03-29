@@ -525,6 +525,16 @@ export function AdminPage() {
               <span className="detail-value">{selectedTransaction.wallet_owner_name || selectedTransaction.wallet_owner_id.slice(0, 8)}...</span>
             </div>
             <div className="detail-item">
+              <span className="detail-label">Bank Account</span>
+              <span className="detail-value">
+                {selectedTransaction.bank_account_name || selectedTransaction.bank_name || "-"}
+              </span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Account Number</span>
+              <span className="detail-value mono">{selectedTransaction.account_number || "-"}</span>
+            </div>
+            <div className="detail-item">
               <span className="detail-label">Created At</span>
               <span className="detail-value">
                 {new Date(selectedTransaction.created_at).toLocaleString("en-US")}
@@ -1083,7 +1093,7 @@ function TransactionsTab({
       width: "100px",
       cell: (tx) => (
         <span className={`type-${tx.type}`}>
-          {tx.type === "income" || tx.type === "credit" ? (
+          {tx.type === "credit" ? (
             <IconArrowUp size={14} />
           ) : (
             <IconArrowDown size={14} />
@@ -1176,7 +1186,7 @@ function TransactionsTab({
           <div key={tx.id} className="data-card clickable" onClick={() => onSelect(tx)}>
             <div className="data-card__header">
               <span className={`data-card__type type-${tx.type}`}>
-                {tx.type === "income" || tx.type === "credit" ? (
+                {tx.type === "credit" ? (
                   <IconArrowUp size={16} />
                 ) : (
                   <IconArrowDown size={16} />

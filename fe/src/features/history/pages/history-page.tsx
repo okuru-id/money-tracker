@@ -3,10 +3,12 @@ import { useState } from 'react'
 
 import { ApiError } from '../../auth/api'
 import { useSessionState } from '../../auth/session-store'
+import { getFamilyMembers } from '../../family/api'
 import {
   getCategories,
   getTransactions,
   updateTransaction,
+  deleteTransaction,
 } from '../../transactions/api'
 import { MonthNavigator } from '../components/period-filter'
 import { TransactionItem } from '../components/transaction-item'
@@ -17,7 +19,7 @@ function toErrorMessage(error: unknown): string {
     return error.message
   }
 
-  return 'Gagal memuat riwayat transaksi.'
+  return 'Failed to load transaction history.'
 }
 
 function toMonthKey(year: number, month: number): string {
@@ -35,6 +37,8 @@ export function HistoryPage() {
   const queryClient = useQueryClient()
   const session = useSessionState()
   const currentUserId = session.user?.id ?? null
+  const familyId = session.familyId
+  const isAdmin = session.isAdmin
 
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
@@ -60,6 +64,17 @@ export function HistoryPage() {
     queryFn: getCategories,
   })
 
+  const familyMembersQuery = useQuery({
+    queryKey: ['family-members', familyId],
+    queryFn: () => getFamilyMembers(familyId!),
+    enabled: Boolean(familyId),
+  })
+
+  // Check if current user is family owner
+  const isFamilyOwner = familyMembersQuery.data?.members.some(
+    (member) => member.userId === currentUserId && member.role === 'owner'
+  ) ?? false
+
   const updateMutation = useMutation({
     mutationFn: ({
       id,
@@ -77,6 +92,18 @@ export function HistoryPage() {
         categoryId,
         notes,
       }),
+    onSuccess: () => {
+      setErrorMessage(null)
+      void queryClient.invalidateQueries({ queryKey: ['transactions'] })
+      void queryClient.invalidateQueries({ queryKey: ['family-summary'] })
+    },
+    onError: (error) => {
+      setErrorMessage(toErrorMessage(error))
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteTransaction(id),
     onSuccess: () => {
       setErrorMessage(null)
       void queryClient.invalidateQueries({ queryKey: ['transactions'] })
@@ -108,12 +135,21 @@ export function HistoryPage() {
 
         <div className="history-page__list">
         {transactions.map((transaction) => {
-          // Check if this is a legacy transaction
+          // Check if this is a legacy transaction (created by system user)
           const isLegacy = transaction.createdByUserId && systemUserIds.includes(transaction.createdByUserId)
 
-          // Allow edit for non-legacy transactions owned by the current user.
-          // If ownership is missing from older payloads, keep edit available as a compatibility fallback.
-          const canEdit = !isLegacy && Boolean(currentUserId) && (!transaction.createdByUserId || transaction.createdByUserId === currentUserId)
+          // Allow edit for:
+          // - Admin users can edit any transaction (including legacy)
+          // - Family owner can edit any transaction (including legacy)
+          // - Creator can edit their own non-legacy transaction
+          const canEdit = Boolean(currentUserId) && (
+            isAdmin ||
+            isFamilyOwner ||
+            (!isLegacy && (!transaction.createdByUserId || transaction.createdByUserId === currentUserId))
+          )
+
+          // Allow delete only for own transactions (non-legacy)
+          const canDelete = !isLegacy && Boolean(currentUserId) && transaction.createdByUserId === currentUserId
 
           return (
             <TransactionItem
@@ -121,9 +157,14 @@ export function HistoryPage() {
               transaction={transaction}
               categories={categoriesQuery.data ?? []}
               canEdit={canEdit}
+              canDelete={canDelete}
               isSaving={updateMutation.isPending && updateMutation.variables?.id === transaction.id}
+              isDeleting={deleteMutation.isPending && deleteMutation.variables === transaction.id}
               onSave={async (payload) => {
                 await updateMutation.mutateAsync(payload)
+              }}
+              onDelete={async () => {
+                await deleteMutation.mutateAsync(transaction.id)
               }}
             />
           )

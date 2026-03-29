@@ -71,21 +71,21 @@ export function TopBar({ title }: TopBarProps) {
               </button>
             </div>
             <div className="modal__body">
-              <p>Apakah Anda yakin ingin keluar?</p>
+              <p>Are you sure you want to log out?</p>
             </div>
             <div className="modal__footer">
               <button
                 className="modal__button modal__button--secondary"
                 onClick={() => setShowLogoutConfirm(false)}
               >
-                Batal
+                Cancel
               </button>
               <button
                 className="modal__button modal__button--danger"
                 onClick={handleLogout}
                 disabled={isLoggingOut}
               >
-                {isLoggingOut ? 'Keluar...' : 'Keluar'}
+                {isLoggingOut ? 'Logging out...' : 'Logout'}
               </button>
             </div>
           </div>

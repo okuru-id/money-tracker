@@ -46,9 +46,9 @@ export function PwaInstallPrompt() {
   return (
     <section className="pwa-install-prompt" aria-live="polite" aria-busy={isSubmitting}>
       <div className="pwa-install-prompt__copy">
-        <p className="pwa-install-prompt__title">Pasang aplikasi Money Tracker</p>
+        <p className="pwa-install-prompt__title">Install Money Tracker App</p>
         <p className="pwa-install-prompt__description">
-          Simpan di layar utama supaya buka lebih cepat dan terasa seperti aplikasi native.
+          Add to home screen for faster access and a native app experience.
         </p>
       </div>
 
@@ -59,7 +59,7 @@ export function PwaInstallPrompt() {
           onClick={handleDismiss}
           disabled={isSubmitting}
         >
-          Nanti
+          Later
         </button>
         <button
           type="button"
@@ -69,7 +69,7 @@ export function PwaInstallPrompt() {
           }}
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Memproses...' : 'Install'}
+          {isSubmitting ? 'Processing...' : 'Install'}
         </button>
       </div>
     </section>

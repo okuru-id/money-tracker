@@ -46,7 +46,7 @@ export function HomePage() {
 
   return (
     <div className="home-page">
-      <section className="home-balance" aria-label="Ringkasan">
+      <section className="home-balance" aria-label="Summary">
         <article className="balance-card">
           <p className="balance-card__eyebrow">Personal</p>
           <h2 className="balance-card__value">{summary ? formatAmount(summary.netBalance) : '-'}</h2>
@@ -68,13 +68,13 @@ export function HomePage() {
       </section>
 
       <div className="home-quick-actions" role="group" aria-label="Quick add transaction">
-        <button type="button" className="home-quick-actions__button" onClick={() => handleQuickAction('expense')}>
+        <button type="button" className="home-quick-actions__button" onClick={() => handleQuickAction('debit')}>
           <IconCircleMinus size={20} />
-          <span>Expense</span>
+          <span>Pengeluaran</span>
         </button>
-        <button type="button" className="home-quick-actions__button" onClick={() => handleQuickAction('income')}>
+        <button type="button" className="home-quick-actions__button" onClick={() => handleQuickAction('credit')}>
           <IconCirclePlus size={20} />
-          <span>Income</span>
+          <span>Pemasukan</span>
         </button>
       </div>
 
@@ -105,12 +105,12 @@ export function HomePage() {
               </div>
               <p
                 className={
-                  tx.type === 'income'
+                  tx.type === 'credit'
                     ? 'home-recent__item-amount home-recent__item-amount--income'
                     : 'home-recent__item-amount home-recent__item-amount--expense'
                 }
               >
-                {tx.type === 'income' ? '+' : '-'}
+                {tx.type === 'credit' ? '+' : '-'}
                 {formatAmount(tx.amount)}
               </p>
             </article>

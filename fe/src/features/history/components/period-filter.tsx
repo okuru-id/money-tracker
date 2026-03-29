@@ -8,8 +8,8 @@ type MonthNavigatorProps = {
 }
 
 const MONTH_NAMES = [
-  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
 ]
 
 export function MonthNavigator({ year, month, disabled = false, onChange }: MonthNavigatorProps) {
@@ -30,12 +30,12 @@ export function MonthNavigator({ year, month, disabled = false, onChange }: Mont
   }
 
   return (
-    <div className="month-navigator" role="group" aria-label="Navigasi bulan">
-      <button type="button" className="month-navigator__button" disabled={disabled} onClick={goBack} aria-label="Bulan sebelumnya">
+    <div className="month-navigator" role="group" aria-label="Month navigation">
+      <button type="button" className="month-navigator__button" disabled={disabled} onClick={goBack} aria-label="Previous month">
         <IconChevronLeft size={20} />
       </button>
       <span className="month-navigator__label">{MONTH_NAMES[month]} {year}</span>
-      <button type="button" className="month-navigator__button" disabled={disabled} onClick={goForward} aria-label="Bulan berikutnya">
+      <button type="button" className="month-navigator__button" disabled={disabled} onClick={goForward} aria-label="Next month">
         <IconChevronRight size={20} />
       </button>
     </div>

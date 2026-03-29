@@ -8,6 +8,7 @@ export type AuthUser = {
 export type SessionContext = {
   hasFamily: boolean
   familyId: string | null
+  role?: string
 }
 
 type ApiErrorPayload = {
@@ -109,11 +110,11 @@ async function getMe(): Promise<MeResponse> {
   return request<MeResponse>('/auth/me')
 }
 
-async function detectFamilyContext(): Promise<SessionContext> {
+async function detectFamilyContext(): Promise<SessionContext & { role?: string }> {
   try {
     const response = await getMe()
     const hasFamily = Boolean(response.user.family_id)
-    return { hasFamily, familyId: response.user.family_id }
+    return { hasFamily, familyId: response.user.family_id, role: response.user.role }
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
       throw error

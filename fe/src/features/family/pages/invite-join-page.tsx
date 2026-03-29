@@ -54,7 +54,7 @@ export function InviteJoinPage() {
       if (error instanceof ApiError) {
         setErrorMessage(error.message)
       } else {
-        setErrorMessage('Gagal bergabung ke family. Coba ulang beberapa saat lagi.')
+        setErrorMessage('Failed to join family. Please try again later.')
       }
     } finally {
       setIsSubmitting(false)
@@ -67,18 +67,18 @@ export function InviteJoinPage() {
       <section className="auth-screen" aria-labelledby="join-family-title">
         <div className="auth-screen__panel">
           <p className="auth-screen__description">
-            Masukkan token invite dari owner keluarga untuk langsung masuk ke dashboard bersama.
+            Enter the invite token from the family owner to join the shared dashboard.
           </p>
 
           {errorMessage ? <p className="auth-screen__error">{errorMessage}</p> : null}
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <label className="auth-form__field">
-              <span>Token invite</span>
+              <span>Invite token</span>
               <input
                 value={token}
                 onChange={(event) => setToken(event.target.value)}
-                placeholder="Tempel token invite di sini"
+                placeholder="Paste invite token here"
                 autoCapitalize="none"
                 autoCorrect="off"
                 required
@@ -86,16 +86,16 @@ export function InviteJoinPage() {
             </label>
 
             <button className="auth-form__submit" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Memproses...' : 'Gabung keluarga'}
+              {isSubmitting ? 'Processing...' : 'Join family'}
             </button>
           </form>
 
           <p className="auth-screen__switch">
-            Belum punya token? <Link to="/family/setup">Buat keluarga sendiri</Link>
+            Don't have a token? <Link to="/family/setup">Create your own family</Link>
           </p>
 
           <button className="auth-screen__skip" type="button" onClick={handleSkip}>
-            Lewati untuk sekarang
+            Skip for now
           </button>
         </div>
       </section>

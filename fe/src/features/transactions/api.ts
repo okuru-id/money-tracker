@@ -1,6 +1,6 @@
 import { ApiError } from '../auth/api'
 
-export type TransactionType = 'income' | 'expense'
+export type TransactionType = 'debit' | 'credit'
 
 export type TransactionPeriod = 'today' | 'week' | 'month'
 
@@ -14,6 +14,9 @@ export type TransactionItem = {
   transactionDate: string | null
   createdAt: string | null
   createdByUserId: string | null
+  accountNumber: string
+  bankName: string
+  bankAccountName: string
 }
 
 export type CategoryItem = {
@@ -108,10 +111,7 @@ function getCollection(payload: unknown, keys: string[]): unknown[] {
 }
 
 function normalizeTransactionType(raw: string): string {
-  const lower = raw.toLowerCase()
-  if (lower === 'debit') return 'expense'
-  if (lower === 'credit') return 'income'
-  return lower
+  return raw.toLowerCase()
 }
 
 function normalizeTransaction(item: unknown): TransactionItem {
@@ -139,6 +139,9 @@ function normalizeTransaction(item: unknown): TransactionItem {
     transactionDate: typeof row.transaction_date === 'string' ? row.transaction_date : typeof row.transactionDate === 'string' ? row.transactionDate : null,
     createdAt: typeof row.created_at === 'string' ? row.created_at : typeof row.createdAt === 'string' ? row.createdAt : null,
     createdByUserId,
+    accountNumber: typeof row.account_number === 'string' ? row.account_number : typeof row.accountNumber === 'string' ? row.accountNumber : '',
+    bankName: typeof row.bank_name === 'string' ? row.bank_name : typeof row.bankName === 'string' ? row.bankName : '',
+    bankAccountName: typeof row.bank_account_name === 'string' ? row.bank_account_name : typeof row.bankAccountName === 'string' ? row.bankAccountName : '',
   }
 }
 

@@ -159,7 +159,7 @@ func (h *TransactionHandler) Create(c *gin.Context) {
 
 // Update godoc
 // @Summary Update transaction
-// @Description Update an existing transaction. Only the creator can modify.
+// @Description Update an existing transaction. Only the creator, family owner, or admin can modify.
 // @Tags transaction
 // @Accept json
 // @Produce json
@@ -176,6 +176,7 @@ func (h *TransactionHandler) Create(c *gin.Context) {
 func (h *TransactionHandler) Update(c *gin.Context) {
 	transactionID := c.Param("id")
 	userID := middleware.GetUserID(c)
+	userRole := middleware.GetUserRole(c)
 
 	var req model.UpdateTransactionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -187,7 +188,7 @@ func (h *TransactionHandler) Update(c *gin.Context) {
 		return
 	}
 
-	tx, err := h.transactionSvc.Update(c.Request.Context(), userID, transactionID, &req)
+	tx, err := h.transactionSvc.Update(c.Request.Context(), userID, userRole, transactionID, &req)
 	if err != nil {
 		msg := err.Error()
 		switch msg {
@@ -231,7 +232,7 @@ func (h *TransactionHandler) Update(c *gin.Context) {
 
 // Delete godoc
 // @Summary Delete transaction
-// @Description Delete a transaction. Only the creator can delete.
+// @Description Delete a transaction. Only the creator, family owner, or admin can delete.
 // @Tags transaction
 // @Produce json
 // @Security session
@@ -245,8 +246,9 @@ func (h *TransactionHandler) Update(c *gin.Context) {
 func (h *TransactionHandler) Delete(c *gin.Context) {
 	transactionID := c.Param("id")
 	userID := middleware.GetUserID(c)
+	userRole := middleware.GetUserRole(c)
 
-	err := h.transactionSvc.Delete(c.Request.Context(), userID, transactionID)
+	err := h.transactionSvc.Delete(c.Request.Context(), userID, userRole, transactionID)
 	if err != nil {
 		msg := err.Error()
 		switch msg {

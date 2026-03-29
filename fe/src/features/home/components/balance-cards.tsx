@@ -53,32 +53,32 @@ export function BalanceCards({
   onQuickAction,
 }: BalanceCardsProps) {
   return (
-    <section className="home-balance" aria-label="Ringkasan bulanan">
+    <section className="home-balance" aria-label="Monthly summary">
       <article className="balance-card">
-        <p className="balance-card__eyebrow">Personal bulan ini</p>
+        <p className="balance-card__eyebrow">Personal this month</p>
         <h2 className="balance-card__value">{formatCurrency(personal.netBalance)}</h2>
-        {isPersonalLoading ? <p className="balance-card__hint">Memuat transaksi personal...</p> : <SummaryDetails data={personal} />}
+        {isPersonalLoading ? <p className="balance-card__hint">Loading personal transactions...</p> : <SummaryDetails data={personal} />}
       </article>
 
       <article className="balance-card">
-        <p className="balance-card__eyebrow">Family bulan ini</p>
-        <h2 className="balance-card__value">{family ? formatCurrency(family.netBalance) : 'Belum tersedia'}</h2>
-        {isFamilyLoading ? <p className="balance-card__hint">Memuat summary keluarga...</p> : null}
+        <p className="balance-card__eyebrow">Family this month</p>
+        <h2 className="balance-card__value">{family ? formatCurrency(family.netBalance) : 'Not available'}</h2>
+        {isFamilyLoading ? <p className="balance-card__hint">Loading family summary...</p> : null}
         {!isFamilyLoading && family ? <SummaryDetails data={family} /> : null}
         {!isFamilyLoading && !family && canLoadFamily ? (
-          <p className="balance-card__hint">Summary keluarga belum bisa ditampilkan sekarang.</p>
+          <p className="balance-card__hint">Family summary is not available at the moment.</p>
         ) : null}
         {!canLoadFamily ? (
-          <p className="balance-card__hint">Family ID belum tersedia dari sesi. Coba refresh setelah onboarding selesai.</p>
+          <p className="balance-card__hint">Family ID not available from session. Try refreshing after onboarding is complete.</p>
         ) : null}
       </article>
 
       <div className="home-quick-actions" role="group" aria-label="Quick add transaction">
-        <button type="button" className="home-quick-actions__button" onClick={() => onQuickAction('expense')}>
-          + Expense
+        <button type="button" className="home-quick-actions__button" onClick={() => onQuickAction('debit')}>
+          + Pengeluaran
         </button>
-        <button type="button" className="home-quick-actions__button" onClick={() => onQuickAction('income')}>
-          + Income
+        <button type="button" className="home-quick-actions__button" onClick={() => onQuickAction('credit')}>
+          + Pemasukan
         </button>
       </div>
     </section>

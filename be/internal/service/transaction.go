@@ -16,8 +16,8 @@ type TransactionService interface {
 	Create(ctx context.Context, familyID, userID string, req *model.CreateTransactionRequest) (*model.Transaction, error)
 	GetByID(ctx context.Context, id string) (*model.Transaction, error)
 	List(ctx context.Context, filter repository.TransactionFilter) (*model.TransactionListResponse, error)
-	Update(ctx context.Context, userID string, transactionID string, req *model.UpdateTransactionRequest) (*model.Transaction, error)
-	Delete(ctx context.Context, userID string, transactionID string) error
+	Update(ctx context.Context, userID string, userRole string, transactionID string, req *model.UpdateTransactionRequest) (*model.Transaction, error)
+	Delete(ctx context.Context, userID string, userRole string, transactionID string) error
 	GetPersonalSummary(ctx context.Context, familyID string) (*model.PersonalSummaryResponse, error)
 	GetInsights(ctx context.Context, familyID string) (*model.InsightsResponse, error)
 }
@@ -25,12 +25,14 @@ type TransactionService interface {
 type transactionService struct {
 	transactionRepo   repository.TransactionRepository
 	bankAccountRepo   repository.BankAccountRepository
+	familyRepo        repository.FamilyRepository
 }
 
-func NewTransactionService(transactionRepo repository.TransactionRepository, bankAccountRepo repository.BankAccountRepository) TransactionService {
+func NewTransactionService(transactionRepo repository.TransactionRepository, bankAccountRepo repository.BankAccountRepository, familyRepo repository.FamilyRepository) TransactionService {
 	return &transactionService{
 		transactionRepo:   transactionRepo,
 		bankAccountRepo:   bankAccountRepo,
+		familyRepo:        familyRepo,
 	}
 }
 
@@ -71,7 +73,7 @@ func (s *transactionService) Create(ctx context.Context, familyID, userID string
 		if err == nil && bankAccount != nil {
 			// Determine delta: positive for income/credit, negative for expense/debit
 			var delta decimal.Decimal
-			if tx.Type == model.TransactionIncome || tx.Type == model.TransactionCredit {
+			if tx.Type == model.TransactionCredit {
 				delta = tx.Amount
 			} else {
 				delta = tx.Amount.Neg()
@@ -105,7 +107,7 @@ func (s *transactionService) List(ctx context.Context, filter repository.Transac
 	return s.transactionRepo.List(ctx, filter)
 }
 
-func (s *transactionService) Update(ctx context.Context, userID string, transactionID string, req *model.UpdateTransactionRequest) (*model.Transaction, error) {
+func (s *transactionService) Update(ctx context.Context, userID string, userRole string, transactionID string, req *model.UpdateTransactionRequest) (*model.Transaction, error) {
 	tx, err := s.transactionRepo.FindByID(ctx, transactionID)
 	if err != nil {
 		return nil, err
@@ -115,7 +117,22 @@ func (s *transactionService) Update(ctx context.Context, userID string, transact
 	}
 
 	// Check if user can modify this transaction
-	if !tx.CanModify(userID) {
+	// User can modify if:
+	// 1. They are an admin (system role)
+	// 2. They are the creator (and not legacy)
+	// 3. They are the owner of the family
+	canModify := userRole == string(model.RoleAdmin)
+	if !canModify {
+		canModify = tx.CanModify(userID)
+		if !canModify {
+			// Check if user is owner of the family
+			member, err := s.familyRepo.FindMemberByUserID(ctx, tx.FamilyID, userID)
+			if err == nil && member != nil && member.Role == string(model.RoleOwner) {
+				canModify = true
+			}
+		}
+	}
+	if !canModify {
 		return nil, errors.New("not authorized to modify this transaction")
 	}
 
@@ -150,7 +167,7 @@ func (s *transactionService) Update(ctx context.Context, userID string, transact
 	return tx, nil
 }
 
-func (s *transactionService) Delete(ctx context.Context, userID string, transactionID string) error {
+func (s *transactionService) Delete(ctx context.Context, userID string, userRole string, transactionID string) error {
 	tx, err := s.transactionRepo.FindByID(ctx, transactionID)
 	if err != nil {
 		return err
@@ -160,7 +177,22 @@ func (s *transactionService) Delete(ctx context.Context, userID string, transact
 	}
 
 	// Check if user can modify this transaction
-	if !tx.CanModify(userID) {
+	// User can modify if:
+	// 1. They are an admin (system role)
+	// 2. They are the creator (and not legacy)
+	// 3. They are the owner of the family
+	canModify := userRole == string(model.RoleAdmin)
+	if !canModify {
+		canModify = tx.CanModify(userID)
+		if !canModify {
+			// Check if user is owner of the family
+			member, err := s.familyRepo.FindMemberByUserID(ctx, tx.FamilyID, userID)
+			if err == nil && member != nil && member.Role == string(model.RoleOwner) {
+				canModify = true
+			}
+		}
+	}
+	if !canModify {
 		return errors.New("not authorized to delete this transaction")
 	}
 

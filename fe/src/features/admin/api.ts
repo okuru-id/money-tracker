@@ -5,6 +5,9 @@ export interface TransactionItem {
   family_id: string
   wallet_owner_id: string
   wallet_owner_name: string
+  account_number: string
+  bank_name: string
+  bank_account_name: string
   type: string
   amount: string
   category_id: string | null

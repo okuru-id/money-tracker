@@ -12,7 +12,7 @@ type KpiEventPayload = {
   errorCode?: string
   errorMessage?: string
   retryMode?: boolean
-  switchedToType?: 'income' | 'expense'
+  switchedToType?: 'debit' | 'credit'
 }
 
 type AnalyticsEvent = {

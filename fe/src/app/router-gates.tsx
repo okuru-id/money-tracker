@@ -19,8 +19,8 @@ export function SessionGate() {
     return (
       <section className="page-card" aria-live="polite">
         <p className="page-card__eyebrow">Checking Session</p>
-        <h1>Menyiapkan aplikasi</h1>
-        <p>Memverifikasi sesi kamu sebelum membuka dashboard.</p>
+        <h1>Preparing App</h1>
+        <p>Verifying your session before opening the dashboard.</p>
       </section>
     )
   }
@@ -46,8 +46,8 @@ export function PublicOnlyGate() {
     return (
       <section className="page-card" aria-live="polite">
         <p className="page-card__eyebrow">Checking Session</p>
-        <h1>Menyiapkan aplikasi</h1>
-        <p>Memverifikasi sesi kamu sebelum membuka halaman auth.</p>
+        <h1>Preparing App</h1>
+        <p>Verifying your session before opening the auth page.</p>
       </section>
     )
   }

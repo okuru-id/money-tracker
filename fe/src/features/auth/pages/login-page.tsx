@@ -56,7 +56,7 @@ export function LoginPage() {
       if (error instanceof ApiError) {
         setErrorMessage(error.message)
       } else {
-        setErrorMessage('Terjadi kendala jaringan. Coba lagi sebentar.')
+        setErrorMessage('Network error. Please try again.')
       }
     } finally {
       setIsSubmitting(false)
@@ -67,8 +67,8 @@ export function LoginPage() {
     <section className="auth-screen" aria-labelledby="login-title">
       <div className="auth-screen__panel">
         <p className="page-card__eyebrow">Money Tracker</p>
-        <h1 id="login-title">Masuk ke akun kamu</h1>
-        <p className="auth-screen__description">Pantau saldo keluarga dan catat transaksi harian tanpa pindah aplikasi.</p>
+        <h1 id="login-title">Log in to your account</h1>
+        <p className="auth-screen__description">Track family balance and record daily transactions without switching apps.</p>
 
         {locationState.message ? <p className="auth-screen__notice">{locationState.message}</p> : null}
         {errorMessage ? <p className="auth-screen__error">{errorMessage}</p> : null}
@@ -101,7 +101,7 @@ export function LoginPage() {
                 className="auth-form__password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
                 tabIndex={-1}
-                aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
               </button>
@@ -109,12 +109,12 @@ export function LoginPage() {
           </label>
 
           <button className="auth-form__submit" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Memproses...' : 'Masuk'}
+            {isSubmitting ? 'Processing...' : 'Log in'}
           </button>
         </form>
 
         <p className="auth-screen__switch">
-          Belum punya akun? <Link to="/register">Daftar sekarang</Link>
+          Don't have an account? <Link to="/register">Sign up now</Link>
         </p>
       </div>
     </section>

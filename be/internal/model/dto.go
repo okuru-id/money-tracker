@@ -117,7 +117,7 @@ type JoinInviteRequest struct {
 type CreateTransactionRequest struct {
 	WalletOwnerID   *string         `json:"wallet_owner_id,omitempty"`
 	AccountNumber   *string         `json:"account_number,omitempty"`
-	Type            string          `json:"type" binding:"required,oneof=income expense debit credit"`
+	Type            string          `json:"type" binding:"required,oneof=debit credit"`
 	Amount          decimal.Decimal `json:"amount" binding:"required"`
 	CategoryID      *string         `json:"category_id,omitempty"`
 	Note            *string         `json:"note,omitempty"`
@@ -126,7 +126,7 @@ type CreateTransactionRequest struct {
 
 type UpdateTransactionRequest struct {
 	WalletOwnerID   *string         `json:"wallet_owner_id,omitempty"`
-	Type            *string         `json:"type,omitempty" binding:"omitempty,oneof=income expense debit credit"`
+	Type            *string         `json:"type,omitempty" binding:"omitempty,oneof=debit credit"`
 	Amount          *decimal.Decimal `json:"amount,omitempty"`
 	CategoryID      *string         `json:"category_id,omitempty"`
 	Note            *string         `json:"note,omitempty"`
@@ -134,21 +134,23 @@ type UpdateTransactionRequest struct {
 }
 
 type TransactionResponse struct {
-	ID                string          `json:"id"`
-	FamilyID          string          `json:"family_id"`
-	WalletOwnerID     string          `json:"wallet_owner_id"`
-	WalletOwnerName   string          `json:"wallet_owner_name,omitempty"`
-	AccountNumber     *string         `json:"account_number,omitempty"`
-	Type              string          `json:"type"`
-	Amount            decimal.Decimal `json:"amount"`
-	CategoryID        *string         `json:"category_id,omitempty"`
-	CategoryName      string          `json:"category_name,omitempty"`
-	Note              *string         `json:"note,omitempty"`
-	TransactionDate   time.Time       `json:"transaction_date"`
-	CreatedBy         string          `json:"created_by"`
-	CreatedByName     string          `json:"created_by_name,omitempty"`
-	CreatedAt         time.Time       `json:"created_at"`
-	UpdatedAt         *time.Time      `json:"updated_at,omitempty"`
+	ID              string          `json:"id"`
+	FamilyID        string          `json:"family_id"`
+	WalletOwnerID   string          `json:"wallet_owner_id"`
+	WalletOwnerName string          `json:"wallet_owner_name,omitempty"`
+	AccountNumber   string          `json:"account_number,omitempty"`
+	BankName        string          `json:"bank_name,omitempty"`
+	BankAccountName string          `json:"bank_account_name,omitempty"`
+	Type            string          `json:"type"`
+	Amount          decimal.Decimal `json:"amount"`
+	CategoryID      *string         `json:"category_id,omitempty"`
+	CategoryName    string          `json:"category_name,omitempty"`
+	Note            *string         `json:"note,omitempty"`
+	TransactionDate time.Time       `json:"transaction_date"`
+	CreatedBy       string          `json:"created_by"`
+	CreatedByName   string          `json:"created_by_name,omitempty"`
+	CreatedAt       time.Time       `json:"created_at"`
+	UpdatedAt       *time.Time      `json:"updated_at,omitempty"`
 }
 
 type TransactionListResponse struct {
@@ -225,6 +227,7 @@ type CreateUserRequest struct {
 type UserResponse struct {
 	ID        string    `json:"id"`
 	Email     string    `json:"email"`
+	Name      string    `json:"name"`
 	Role      string    `json:"role"`
 	CreatedAt time.Time `json:"created_at"`
 }

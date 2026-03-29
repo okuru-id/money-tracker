@@ -466,12 +466,6 @@ p {
   gap: var(--space-3);
 }
 
-@media (min-width: 48rem) {
-  .insights-cards {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
 .bank-card {
   position: relative;
   z-index: 10;
@@ -1477,6 +1471,17 @@ p {
   font-size: 0.88rem;
 }
 
+.history-transaction-item__account {
+  margin: var(--space-1) 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.history-transaction-item__account-label {
+  font-weight: 500;
+  margin-right: var(--space-1);
+}
+
 .history-transaction-item__amount-wrap {
   display: grid;
   justify-items: end;
@@ -1598,6 +1603,81 @@ p {
   margin: 0;
   font-size: 0.84rem;
   color: #8c2f1d;
+}
+
+.history-transaction-item__header {
+  cursor: pointer;
+}
+
+.history-transaction-item__account {
+  cursor: pointer;
+}
+
+/* History detail modal */
+.history-detail-modal__title {
+  margin: 0 0 var(--space-4);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.history-detail-modal__grid {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.history-detail-modal__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border), #fff 30%);
+}
+
+.history-detail-modal__row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.history-detail-modal__label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.history-detail-modal__value {
+  font-size: 0.92rem;
+  font-weight: 500;
+  text-align: right;
+  word-break: break-word;
+}
+
+.history-detail-modal__value--income {
+  color: #059669;
+}
+
+.history-detail-modal__value--expense {
+  color: #dc2626;
+}
+
+.history-detail-modal__value--mono {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+}
+
+.history-detail-modal__close-btn {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-5);
+  padding: var(--space-3);
+  border: none;
+  border-radius: var(--radius-md);
+  background: linear-gradient(140deg, var(--color-brand) 0%, #0a5a54 100%);
+  color: #f6fffd;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .family-card {

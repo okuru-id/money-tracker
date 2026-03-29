@@ -13,7 +13,7 @@ function toErrorMessage(error: unknown): string {
     return error.message
   }
 
-  return 'Gagal memproses permintaan. Coba lagi.'
+  return 'Failed to process request. Please try again.'
 }
 
 function formatDate(value: string | null): string {
@@ -26,7 +26,7 @@ function formatDate(value: string | null): string {
     return value
   }
 
-  return new Intl.DateTimeFormat('id-ID', {
+  return new Intl.DateTimeFormat('en-US', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
@@ -50,9 +50,9 @@ function resolveInviteLink(invite: FamilyInviteStatus): string {
 function FamilyMissingState() {
   return (
     <article className="family-card family-card--empty" aria-live="polite">
-      <h2>Konteks keluarga belum siap</h2>
+      <h2>Family context not ready</h2>
       <p className="family-card__hint">
-        Kami belum menemukan family aktif di sesi ini. Kamu bisa buat keluarga baru atau gabung memakai token invite.
+        We couldn't find an active family in this session. You can create a new family or join using an invite token.
       </p>
       <div className="family-card__cta-row">
         <Link className="family-card__link-action" to="/family/setup">
@@ -136,7 +136,7 @@ export function FamilyPageContent() {
     <>
       <article className="family-card">
         <div className="family-card__header-row">
-          <h2>Invite terbaru</h2>
+          <h2>Latest invite</h2>
           <button
             type="button"
             className="family-card__action"
@@ -148,7 +148,7 @@ export function FamilyPageContent() {
               }
             }}
           >
-            {inviteMutation.isPending ? 'Generating...' : 'Generate invite baru'}
+            {inviteMutation.isPending ? 'Generating...' : 'Generate new invite'}
           </button>
         </div>
 
@@ -170,14 +170,14 @@ export function FamilyPageContent() {
                 try {
                   const value = resolveInviteLink(latestInvite)
                   if (!navigator.clipboard) {
-                    setCopiedNotice('Clipboard tidak tersedia di browser ini.')
+                    setCopiedNotice('Clipboard not available in this browser.')
                     return
                   }
 
                   await navigator.clipboard.writeText(value)
-                  setCopiedNotice('Link invite berhasil disalin.')
+                  setCopiedNotice('Invite link copied successfully.')
                 } catch {
-                  setCopiedNotice('Gagal menyalin link invite.')
+                  setCopiedNotice('Failed to copy invite link.')
                 }
               }}
             >
@@ -186,13 +186,13 @@ export function FamilyPageContent() {
             {copiedNotice ? <p className="family-card__hint">{copiedNotice}</p> : null}
           </div>
         ) : (
-          <p className="family-card__hint">Belum ada invite aktif. Buat invite baru untuk menambahkan member.</p>
+          <p className="family-card__hint">No active invite. Create a new invite to add members.</p>
         )}
       </article>
 
       <article className="family-card">
-        <h2>Member keluarga</h2>
-        {membersQuery.isLoading ? <p className="family-card__hint">Memuat daftar member...</p> : null}
+        <h2>Family members</h2>
+        {membersQuery.isLoading ? <p className="family-card__hint">Loading members...</p> : null}
         <MemberList
           members={membersQuery.data?.members ?? []}
           currentUserId={currentUserId}
@@ -201,14 +201,14 @@ export function FamilyPageContent() {
         />
         {memberToDelete ? (
           <div className="family-delete-confirm">
-            <p>Yakin ingin menghapus member ini dari keluarga?</p>
+            <p>Are you sure you want to remove this member from the family?</p>
             <div className="family-delete-confirm__buttons">
               <button
                 type="button"
                 className="family-delete-confirm__cancel"
                 onClick={() => setMemberToDelete(null)}
               >
-                Batal
+                Cancel
               </button>
               <button
                 type="button"
@@ -220,7 +220,7 @@ export function FamilyPageContent() {
                   }
                 }}
               >
-                {removeMemberMutation.isPending ? 'Menghapus...' : 'Hapus'}
+                {removeMemberMutation.isPending ? 'Removing...' : 'Remove'}
               </button>
             </div>
           </div>
@@ -228,7 +228,7 @@ export function FamilyPageContent() {
       </article>
 
       <article className="family-card">
-        <h2>Kontribusi bulan ini</h2>
+        <h2>This month's contribution</h2>
         <ContributionSummary
           contributions={summaryQuery.data?.perMemberContributions ?? []}
           isLoading={summaryQuery.isLoading}
@@ -243,8 +243,8 @@ export function FamilyPage() {
     <section className="family-page" aria-labelledby="family-page-title">
       <header className="family-page__header">
         <p className="page-card__eyebrow">Family</p>
-        <h1 id="family-page-title">Member dan kontribusi keluarga</h1>
-        <p>Monitor siapa saja yang aktif dan kontribusi bulanannya dari satu layar.</p>
+        <h1 id="family-page-title">Family members and contributions</h1>
+        <p>Monitor who's active and their monthly contributions from one screen.</p>
       </header>
 
       <FamilyPageContent />
