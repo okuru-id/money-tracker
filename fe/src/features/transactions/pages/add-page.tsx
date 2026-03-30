@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { pickFavoriteCategories } from '../../categories/favorites'
 import { ApiError } from '../../auth/api'
+import { Dropdown } from '../../../components/dropdown'
 import { AmountInput } from '../components/amount-input'
 import { CategoryPicker } from '../components/category-picker'
 import {
@@ -269,21 +270,18 @@ export function AddPage() {
         />
 
         {bankAccountsQuery.data && bankAccountsQuery.data.length > 0 ? (
-          <label className="transaction-form__field" htmlFor="bank-account-select">
-            <span>Bank Account (optional)</span>
-            <select
-              id="bank-account-select"
+          <div className="transaction-form__field">
+            <Dropdown
+              label="Bank Account (optional)"
+              options={bankAccountsQuery.data.map((account: BankAccount) => ({
+                value: account.id,
+                label: account.name,
+              }))}
               value={selectedBankAccountId}
-              onChange={(event) => setSelectedBankAccountId(event.target.value)}
-            >
-              <option value="">-- Select account --</option>
-              {bankAccountsQuery.data.map((account: BankAccount) => (
-                <option key={account.id} value={account.id}>
-                  {account.name}
-                </option>
-              ))}
-            </select>
-          </label>
+              onChange={setSelectedBankAccountId}
+              placeholder="Select account"
+            />
+          </div>
         ) : null}
 
         <label className="transaction-form__field" htmlFor="notes-input">
