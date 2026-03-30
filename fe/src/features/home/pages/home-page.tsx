@@ -51,7 +51,7 @@ export function HomePage() {
           <p className="balance-card__eyebrow">Personal</p>
           <h2 className="balance-card__value">{summary ? formatAmount(summary.netBalance) : '-'}</h2>
           {summaryQuery.isLoading ? (
-            <p className="balance-card__hint">Memuat transaksi...</p>
+            <p className="balance-card__hint">Loading transactions...</p>
           ) : summary ? (
             <dl className="balance-card__stats">
               <div>
@@ -70,37 +70,37 @@ export function HomePage() {
       <div className="home-quick-actions" role="group" aria-label="Quick add transaction">
         <button type="button" className="home-quick-actions__button" onClick={() => handleQuickAction('debit')}>
           <IconCircleMinus size={20} />
-          <span>Pengeluaran</span>
+          <span>Expense</span>
         </button>
         <button type="button" className="home-quick-actions__button" onClick={() => handleQuickAction('credit')}>
           <IconCirclePlus size={20} />
-          <span>Pemasukan</span>
+          <span>Income</span>
         </button>
       </div>
 
-      <section className="home-recent" aria-label="Transaksi terakhir">
+      <section className="home-recent" aria-label="Recent transactions">
         <div className="home-recent__header">
-          <h3>Transaksi Terakhir</h3>
+          <h3>Recent Transactions</h3>
           {recentTransactions.length > 0 ? (
             <button type="button" className="home-recent__link" onClick={() => navigate('/history')}>
-              Lihat semua
+              View all
             </button>
           ) : null}
         </div>
 
         {transactionsQuery.isLoading ? (
-          <p className="home-recent__hint">Memuat transaksi...</p>
+          <p className="home-recent__hint">Loading transactions...</p>
         ) : null}
 
         {!transactionsQuery.isLoading && recentTransactions.length === 0 ? (
-          <EmptyState message="Belum ada transaksi." />
+          <EmptyState message="No transactions yet." />
         ) : null}
 
         <div className="home-recent__list">
           {recentTransactions.map((tx: TransactionItem) => (
             <article key={tx.id} className="home-recent__item">
               <div className="home-recent__item-info">
-                <p className="home-recent__item-category">{tx.categoryName || 'Tanpa kategori'}</p>
+                <p className="home-recent__item-category">{tx.categoryName || 'No category'}</p>
                 <p className="home-recent__item-date">{formatDate(tx.transactionDate ?? tx.createdAt)}</p>
               </div>
               <p

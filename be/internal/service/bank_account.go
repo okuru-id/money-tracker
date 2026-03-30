@@ -20,6 +20,7 @@ type BankAccountService interface {
 	Update(ctx context.Context, id string, req *model.UpdateBankAccountRequest) (*model.BankAccount, error)
 	Delete(ctx context.Context, id string) error
 	GetTotalBalance(ctx context.Context, familyID string) (decimal.Decimal, error)
+	GetBalanceByAccountNumber(ctx context.Context, familyID, accountNumber string) (decimal.Decimal, error)
 	UpdateBalance(ctx context.Context, id string, delta decimal.Decimal) error
 }
 
@@ -51,7 +52,16 @@ func (s *bankAccountService) Create(ctx context.Context, familyID string, req *m
 		return nil, err
 	}
 
-	return account, nil
+	// Fetch the account with calculated_balance
+	created, err := s.bankAccountRepo.FindByID(ctx, account.ID)
+	if err != nil {
+		return nil, err
+	}
+	if created == nil {
+		return account, nil // Fallback to original if FindByID fails
+	}
+
+	return created, nil
 }
 
 func (s *bankAccountService) GetByID(ctx context.Context, id string) (*model.BankAccount, error) {
@@ -96,7 +106,16 @@ func (s *bankAccountService) Update(ctx context.Context, id string, req *model.U
 		return nil, err
 	}
 
-	return account, nil
+	// Fetch the account with updated calculated_balance
+	updated, err := s.bankAccountRepo.FindByID(ctx, id)
+	if err != nil {
+		return account, nil // Fallback to original if FindByID fails
+	}
+	if updated == nil {
+		return account, nil
+	}
+
+	return updated, nil
 }
 
 func (s *bankAccountService) Delete(ctx context.Context, id string) error {
@@ -113,6 +132,10 @@ func (s *bankAccountService) Delete(ctx context.Context, id string) error {
 
 func (s *bankAccountService) GetTotalBalance(ctx context.Context, familyID string) (decimal.Decimal, error) {
 	return s.bankAccountRepo.GetTotalBalance(ctx, familyID)
+}
+
+func (s *bankAccountService) GetBalanceByAccountNumber(ctx context.Context, familyID, accountNumber string) (decimal.Decimal, error) {
+	return s.bankAccountRepo.GetBalanceByAccountNumber(ctx, familyID, accountNumber)
 }
 
 func (s *bankAccountService) UpdateBalance(ctx context.Context, id string, delta decimal.Decimal) error {

@@ -332,6 +332,7 @@ export type BankAccount = {
   name: string
   accountNumber: string
   balance: number
+  calculatedBalance: number // Balance from transactions (credit - debit)
   icon?: string
   color?: string
 }
@@ -348,6 +349,7 @@ export async function getBankAccounts(): Promise<BankAccount[]> {
       name: typeof row.name === 'string' ? row.name : '',
       accountNumber: typeof row.account_number === 'string' ? row.account_number : '',
       balance: toNumber(row.balance),
+      calculatedBalance: toNumber(row.calculated_balance),
       icon: typeof row.icon === 'string' ? row.icon : undefined,
       color: typeof row.color === 'string' ? row.color : undefined,
     }
@@ -377,6 +379,7 @@ export async function createBankAccount(data: {
     name: typeof row.name === 'string' ? row.name : '',
     accountNumber: typeof row.account_number === 'string' ? row.account_number : '',
     balance: toNumber(row.balance),
+    calculatedBalance: toNumber(row.calculated_balance),
     icon: typeof row.icon === 'string' ? row.icon : undefined,
     color: typeof row.color === 'string' ? row.color : undefined,
   }
@@ -408,6 +411,7 @@ export async function updateBankAccount(
     name: typeof row.name === 'string' ? row.name : '',
     accountNumber: typeof row.account_number === 'string' ? row.account_number : '',
     balance: toNumber(row.balance),
+    calculatedBalance: toNumber(row.calculated_balance),
     icon: typeof row.icon === 'string' ? row.icon : undefined,
     color: typeof row.color === 'string' ? row.color : undefined,
   }

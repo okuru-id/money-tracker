@@ -242,20 +242,20 @@ export function TransactionItem({ transaction, categories, canEdit, canDelete, i
             <button className="modal-close" onClick={() => setShowDetail(false)} aria-label="Close">
               &times;
             </button>
-            <h3 className="history-detail-modal__title">Detail Transaksi</h3>
+            <h3 className="history-detail-modal__title">Transaction Details</h3>
             <div className="history-detail-modal__grid">
               <div className="history-detail-modal__row">
-                <span className="history-detail-modal__label">Kategori</span>
+                <span className="history-detail-modal__label">Category</span>
                 <span className="history-detail-modal__value">{transaction.categoryName || '-'}</span>
               </div>
               <div className="history-detail-modal__row">
-                <span className="history-detail-modal__label">Tipe</span>
+                <span className="history-detail-modal__label">Type</span>
                 <span className={`history-detail-modal__value history-detail-modal__value--${transaction.type === 'credit' ? 'income' : 'expense'}`}>
-                  {transaction.type === 'credit' ? 'Pemasukan' : 'Pengeluaran'}
+                  {transaction.type === 'credit' ? 'Income' : 'Expense'}
                 </span>
               </div>
               <div className="history-detail-modal__row">
-                <span className="history-detail-modal__label">Jumlah</span>
+                <span className="history-detail-modal__label">Amount</span>
                 <span className={`history-detail-modal__value history-detail-modal__value--${transaction.type === 'credit' ? 'income' : 'expense'}`}>
                   {transaction.type === 'credit' ? '+' : '-'}{formatAmount(transaction.amount)}
                 </span>
@@ -268,17 +268,17 @@ export function TransactionItem({ transaction, categories, canEdit, canDelete, i
               ) : null}
               {transaction.accountNumber ? (
                 <div className="history-detail-modal__row">
-                  <span className="history-detail-modal__label">No. Rekening</span>
+                  <span className="history-detail-modal__label">Account No.</span>
                   <span className="history-detail-modal__value history-detail-modal__value--mono">{transaction.accountNumber}</span>
                 </div>
               ) : null}
               <div className="history-detail-modal__row">
-                <span className="history-detail-modal__label">Tanggal</span>
+                <span className="history-detail-modal__label">Date</span>
                 <span className="history-detail-modal__value">{formatFullDate(transaction.transactionDate ?? transaction.createdAt)}</span>
               </div>
               {transaction.notes ? (
                 <div className="history-detail-modal__row">
-                  <span className="history-detail-modal__label">Catatan</span>
+                  <span className="history-detail-modal__label">Notes</span>
                   <span className="history-detail-modal__value">{transaction.notes}</span>
                 </div>
               ) : null}

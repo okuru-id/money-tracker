@@ -15,11 +15,11 @@ function formatAmount(value: number): string {
 
 export function ContributionSummary({ contributions, isLoading }: ContributionSummaryProps) {
   if (isLoading) {
-    return <p className="family-card__hint">Memuat kontribusi member...</p>
+    return <p className="family-card__hint">Loading member contributions...</p>
   }
 
   if (contributions.length === 0) {
-    return <p className="family-card__hint">Belum ada data kontribusi untuk periode ini.</p>
+    return <p className="family-card__hint">No contribution data for this period.</p>
   }
 
   return (

@@ -65,11 +65,13 @@ func (h *BankAccountHandler) Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, model.BankAccountResponse{
-		ID:      account.ID,
-		Name:    account.Name,
-		Balance: account.Balance,
-		Icon:    account.Icon,
-		Color:   account.Color,
+		ID:                account.ID,
+		Name:              account.Name,
+		AccountNumber:     account.AccountNumber,
+		Balance:           account.Balance,
+		CalculatedBalance: account.CalculatedBalance, // Will be 0 for new account
+		Icon:              account.Icon,
+		Color:             account.Color,
 	})
 }
 
@@ -108,11 +110,13 @@ func (h *BankAccountHandler) List(c *gin.Context) {
 	var response []model.BankAccountResponse
 	for _, account := range accounts {
 		response = append(response, model.BankAccountResponse{
-			ID:      account.ID,
-			Name:    account.Name,
-			Balance: account.Balance,
-			Icon:    account.Icon,
-			Color:   account.Color,
+			ID:                account.ID,
+			Name:              account.Name,
+			AccountNumber:     account.AccountNumber,
+			Balance:           account.Balance,
+			CalculatedBalance: account.CalculatedBalance,
+			Icon:              account.Icon,
+			Color:             account.Color,
 		})
 	}
 
@@ -166,11 +170,13 @@ func (h *BankAccountHandler) Update(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, model.BankAccountResponse{
-		ID:      account.ID,
-		Name:    account.Name,
-		Balance: account.Balance,
-		Icon:    account.Icon,
-		Color:   account.Color,
+		ID:                account.ID,
+		Name:              account.Name,
+		AccountNumber:     account.AccountNumber,
+		Balance:           account.Balance,
+		CalculatedBalance: account.CalculatedBalance,
+		Icon:              account.Icon,
+		Color:             account.Color,
 	})
 }
 

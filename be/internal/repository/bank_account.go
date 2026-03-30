@@ -19,6 +19,7 @@ type BankAccountRepository interface {
 	Update(ctx context.Context, account *model.BankAccount) error
 	Delete(ctx context.Context, id string) error
 	GetTotalBalance(ctx context.Context, familyID string) (decimal.Decimal, error)
+	GetBalanceByAccountNumber(ctx context.Context, familyID, accountNumber string) (decimal.Decimal, error)
 	UpdateBalance(ctx context.Context, id string, delta decimal.Decimal) error
 }
 
@@ -51,9 +52,14 @@ func (r *bankAccountRepository) Create(ctx context.Context, account *model.BankA
 
 func (r *bankAccountRepository) FindByID(ctx context.Context, id string) (*model.BankAccount, error) {
 	query := `
-		SELECT id, family_id, name, account_number, balance, icon, color, created_at, updated_at
-		FROM bank_accounts
-		WHERE id = $1
+		SELECT
+			ba.id, ba.family_id, ba.name, ba.account_number, ba.balance, ba.icon, ba.color, ba.created_at, ba.updated_at,
+			COALESCE(SUM(CASE WHEN t.type = 'credit' THEN t.amount ELSE 0 END), 0) -
+			COALESCE(SUM(CASE WHEN t.type = 'debit' THEN t.amount ELSE 0 END), 0) as calculated_balance
+		FROM bank_accounts ba
+		LEFT JOIN transactions t ON ba.family_id = t.family_id AND ba.account_number = t.account_number AND t.account_number != ''
+		WHERE ba.id = $1
+		GROUP BY ba.id, ba.family_id, ba.name, ba.account_number, ba.balance, ba.icon, ba.color, ba.created_at, ba.updated_at
 	`
 	var account model.BankAccount
 	err := r.db.QueryRow(ctx, query, id).Scan(
@@ -66,6 +72,7 @@ func (r *bankAccountRepository) FindByID(ctx context.Context, id string) (*model
 		&account.Color,
 		&account.CreatedAt,
 		&account.UpdatedAt,
+		&account.CalculatedBalance,
 	)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -105,10 +112,15 @@ func (r *bankAccountRepository) FindByAccountNumber(ctx context.Context, familyI
 
 func (r *bankAccountRepository) ListByFamilyID(ctx context.Context, familyID string) ([]model.BankAccount, error) {
 	query := `
-		SELECT id, family_id, name, account_number, balance, icon, color, created_at, updated_at
-		FROM bank_accounts
-		WHERE family_id = $1
-		ORDER BY name ASC
+		SELECT
+			ba.id, ba.family_id, ba.name, ba.account_number, ba.balance, ba.icon, ba.color, ba.created_at, ba.updated_at,
+			COALESCE(SUM(CASE WHEN t.type = 'credit' THEN t.amount ELSE 0 END), 0) -
+			COALESCE(SUM(CASE WHEN t.type = 'debit' THEN t.amount ELSE 0 END), 0) as calculated_balance
+		FROM bank_accounts ba
+		LEFT JOIN transactions t ON ba.family_id = t.family_id AND ba.account_number = t.account_number AND t.account_number != ''
+		WHERE ba.family_id = $1
+		GROUP BY ba.id, ba.family_id, ba.name, ba.account_number, ba.balance, ba.icon, ba.color, ba.created_at, ba.updated_at
+		ORDER BY ba.name ASC
 	`
 	rows, err := r.db.Query(ctx, query, familyID)
 	if err != nil {
@@ -129,6 +141,7 @@ func (r *bankAccountRepository) ListByFamilyID(ctx context.Context, familyID str
 			&account.Color,
 			&account.CreatedAt,
 			&account.UpdatedAt,
+			&account.CalculatedBalance,
 		)
 		if err != nil {
 			return nil, err
@@ -163,13 +176,44 @@ func (r *bankAccountRepository) Delete(ctx context.Context, id string) error {
 }
 
 func (r *bankAccountRepository) GetTotalBalance(ctx context.Context, familyID string) (decimal.Decimal, error) {
-	query := `SELECT COALESCE(SUM(balance), 0) FROM bank_accounts WHERE family_id = $1`
+	query := `
+		SELECT COALESCE(SUM(calculated_balance), 0) FROM (
+			SELECT
+				COALESCE(SUM(CASE WHEN t.type = 'credit' THEN t.amount ELSE 0 END), 0) -
+				COALESCE(SUM(CASE WHEN t.type = 'debit' THEN t.amount ELSE 0 END), 0) as calculated_balance
+			FROM bank_accounts ba
+			LEFT JOIN transactions t ON ba.family_id = t.family_id AND ba.account_number = t.account_number AND t.account_number != ''
+			WHERE ba.family_id = $1
+			GROUP BY ba.id
+		) sub
+	`
 	var total decimal.Decimal
 	err := r.db.QueryRow(ctx, query, familyID).Scan(&total)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return decimal.Zero, nil
+		}
 		return decimal.Zero, err
 	}
 	return total, nil
+}
+
+func (r *bankAccountRepository) GetBalanceByAccountNumber(ctx context.Context, familyID, accountNumber string) (decimal.Decimal, error) {
+	query := `
+		SELECT COALESCE(SUM(CASE WHEN type = 'credit' THEN amount ELSE 0 END), 0) -
+		       COALESCE(SUM(CASE WHEN type = 'debit' THEN amount ELSE 0 END), 0)
+		FROM transactions
+		WHERE family_id = $1 AND account_number = $2
+	`
+	var balance decimal.Decimal
+	err := r.db.QueryRow(ctx, query, familyID, accountNumber).Scan(&balance)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return decimal.Zero, nil
+		}
+		return decimal.Zero, err
+	}
+	return balance, nil
 }
 
 func (r *bankAccountRepository) UpdateBalance(ctx context.Context, id string, delta decimal.Decimal) error {

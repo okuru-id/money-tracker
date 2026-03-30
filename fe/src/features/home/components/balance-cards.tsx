@@ -75,10 +75,10 @@ export function BalanceCards({
 
       <div className="home-quick-actions" role="group" aria-label="Quick add transaction">
         <button type="button" className="home-quick-actions__button" onClick={() => onQuickAction('debit')}>
-          + Pengeluaran
+          + Expense
         </button>
         <button type="button" className="home-quick-actions__button" onClick={() => onQuickAction('credit')}>
-          + Pemasukan
+          + Income
         </button>
       </div>
     </section>

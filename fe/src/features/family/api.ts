@@ -295,7 +295,7 @@ export async function createFamilyInvite(familyId: string): Promise<FamilyInvite
     return normalized
   }
 
-  throw new ApiError('Response invite tidak valid.', 500, 'INVALID_INVITE_RESPONSE')
+  throw new ApiError('Invalid invite response.', 500, 'INVALID_INVITE_RESPONSE')
 }
 
 export async function removeFamilyMember(familyId: string, userId: string): Promise<void> {

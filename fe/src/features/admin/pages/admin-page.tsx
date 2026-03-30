@@ -367,14 +367,14 @@ export function AdminPage() {
                 className="modal__button modal__button--secondary"
                 onClick={() => setShowLogoutConfirm(false)}
               >
-                Batal
+                Cancel
               </button>
               <button
                 className="modal__button modal__button--danger"
                 onClick={handleLogout}
                 disabled={isLoggingOut}
               >
-                {isLoggingOut ? "Keluar..." : "Keluar"}
+                {isLoggingOut ? "Logging out..." : "Logout"}
               </button>
             </div>
           </div>

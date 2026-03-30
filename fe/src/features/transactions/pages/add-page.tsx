@@ -234,7 +234,7 @@ export function AddPage() {
               }
             }}
           >
-            Pengeluaran
+            Expense
           </button>
           <button
             type="button"
@@ -254,7 +254,7 @@ export function AddPage() {
               }
             }}
           >
-            Pemasukan
+            Income
           </button>
         </div>
 

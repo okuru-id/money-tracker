@@ -127,10 +127,10 @@ export function HistoryPage() {
 
       {errorMessage ? <p className="history-page__error">{errorMessage}</p> : null}
 
-      {transactionsQuery.isLoading ? <p className="history-page__hint">Memuat riwayat transaksi...</p> : null}
+      {transactionsQuery.isLoading ? <p className="history-page__hint">Loading transaction history...</p> : null}
 
       {!transactionsQuery.isLoading && transactions.length === 0 ? (
-        <EmptyState message="Belum ada transaksi pada bulan ini." />
+        <EmptyState message="No transactions this month." />
       ) : null}
 
         <div className="history-page__list">

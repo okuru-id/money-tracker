@@ -95,12 +95,13 @@ type UpdateBankAccountRequest struct {
 }
 
 type BankAccountResponse struct {
-	ID            string          `json:"id"`
-	Name          string          `json:"name"`
-	AccountNumber string          `json:"account_number"`
-	Balance       decimal.Decimal `json:"balance"`
-	Icon          *string         `json:"icon,omitempty"`
-	Color         *string         `json:"color,omitempty"`
+	ID               string          `json:"id"`
+	Name             string          `json:"name"`
+	AccountNumber    string          `json:"account_number"`
+	Balance          decimal.Decimal `json:"balance"`           // Initial/manual balance
+	CalculatedBalance decimal.Decimal `json:"calculated_balance"` // Balance from transactions (credit - debit)
+	Icon             *string         `json:"icon,omitempty"`
+	Color            *string         `json:"color,omitempty"`
 }
 
 // Invite DTOs

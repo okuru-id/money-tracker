@@ -164,6 +164,21 @@ func (s *transactionService) Update(ctx context.Context, userID string, userRole
 		return nil, err
 	}
 
+	// Update bank account balance if account_number is set
+	if tx.AccountNumber != nil && *tx.AccountNumber != "" {
+		newBalance, calcErr := s.bankAccountRepo.GetBalanceByAccountNumber(ctx, tx.FamilyID, *tx.AccountNumber)
+		if calcErr == nil {
+			bankAccount, err := s.bankAccountRepo.FindByAccountNumber(ctx, tx.FamilyID, *tx.AccountNumber)
+			if err == nil && bankAccount != nil {
+				// Calculate delta from current balance
+				delta := newBalance.Sub(bankAccount.Balance)
+				if !delta.IsZero() {
+					s.bankAccountRepo.UpdateBalance(ctx, bankAccount.ID, delta)
+				}
+			}
+		}
+	}
+
 	return tx, nil
 }
 
@@ -196,7 +211,32 @@ func (s *transactionService) Delete(ctx context.Context, userID string, userRole
 		return errors.New("not authorized to delete this transaction")
 	}
 
-	return s.transactionRepo.Delete(ctx, transactionID)
+	// Get account_number before delete to update balance
+	var accountNumber *string
+	if tx.AccountNumber != nil {
+		accountNumber = tx.AccountNumber
+	}
+
+	if err := s.transactionRepo.Delete(ctx, transactionID); err != nil {
+		return err
+	}
+
+	// Update bank account balance if account_number is set
+	if accountNumber != nil && *accountNumber != "" {
+		newBalance, calcErr := s.bankAccountRepo.GetBalanceByAccountNumber(ctx, tx.FamilyID, *accountNumber)
+		if calcErr == nil {
+			bankAccount, err := s.bankAccountRepo.FindByAccountNumber(ctx, tx.FamilyID, *accountNumber)
+			if err == nil && bankAccount != nil {
+				// Calculate delta from current balance
+				delta := newBalance.Sub(bankAccount.Balance)
+				if !delta.IsZero() {
+					s.bankAccountRepo.UpdateBalance(ctx, bankAccount.ID, delta)
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 func (s *transactionService) GetPersonalSummary(ctx context.Context, familyID string) (*model.PersonalSummaryResponse, error) {

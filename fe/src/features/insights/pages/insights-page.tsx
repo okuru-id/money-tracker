@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState, useRef } from 'react'
-import { IconTrendingDown, IconTrendingUp, IconWallet, IconReceipt, IconPlus, IconPencil, IconTrash, IconBuildingBank } from '@tabler/icons-react'
+import { useState, useRef, useEffect } from 'react'
+import { IconTrendingDown, IconTrendingUp, IconWallet, IconReceipt, IconPlus, IconPencil, IconTrash, IconBuildingBank, IconChevronDown } from '@tabler/icons-react'
 
 import { getInsights, getBankAccounts, createBankAccount, updateBankAccount, deleteBankAccount, type BankAccount } from '../../transactions/api'
 
@@ -29,6 +29,30 @@ const BANK_COLORS = [
   { name: 'GoPay', color: '#00AED6' },
   { name: 'OVO', color: '#4C3494' },
   { name: 'Dana', color: '#108EE9' },
+  { name: 'CIMB', color: '#D20014' },
+  { name: 'BCA Syariah', color: '#003D79' },
+  { name: 'Mandiri Syariah', color: '#006848' },
+  { name: 'BRI Syariah', color: '#003F6D' },
+  { name: 'BNI Syariah', color: '#004E7A' },
+  { name: 'Sinarmas', color: '#C41E3A' },
+  { name: 'BTPN', color: '#FF6600' },
+  { name: 'Jenius', color: '#FF4B42' },
+  { name: 'T Bank', color: '#00A8E8' },
+  { name: 'Miliki', color: '#2196F3' },
+  { name: 'Cimb Niaga', color: '#D20014' },
+  { name: 'Maybank', color: '#003F70' },
+  { name: 'UOB', color: '#DA291C' },
+  { name: 'MB Bank', color: '#004B93' },
+  { name: 'Bank Danamon', color: '#0066CC' },
+  { name: 'Panin Bank', color: '#004B93' },
+  { name: 'Permata', color: '#0057A8' },
+  { name: 'Commonwealth', color: '#004B93' },
+  { name: 'Bii', color: '#0057A8' },
+  { name: 'Mandiri Direct', color: '#006848' },
+  { name: 'BRI Virtual Account', color: '#00529C' },
+  { name: 'BNI VA', color: '#004E7A' },
+  { name: 'BCA VA', color: '#0066AE' },
+  { name: 'Custom', color: '#4a4a6a' },
 ]
 
 function getBankColor(name: string): string {
@@ -38,7 +62,7 @@ function getBankColor(name: string): string {
 
 type BankAccountFormProps = {
   account?: BankAccount
-  onSave: (data: { name: string; accountNumber: string; balance: number }) => void
+  onSave: (data: { name: string; accountNumber: string; balance: number; color?: string }) => void
   onCancel: () => void
   isLoading: boolean
 }
@@ -47,37 +71,57 @@ function BankAccountForm({ account, onSave, onCancel, isLoading }: BankAccountFo
   const [name, setName] = useState(account?.name ?? '')
   const [accountNumber, setAccountNumber] = useState(account?.accountNumber ?? '')
   const [balance, setBalance] = useState(String(account?.balance ?? ''))
+  const [color, setColor] = useState(account?.color ?? getBankColor(account?.name ?? '') ?? '#4a4a6a')
+  const [showColorPicker, setShowColorPicker] = useState(false)
+
+  // Update form state when account changes (for edit mode)
+  useEffect(() => {
+    if (account) {
+      setName(account.name)
+      setAccountNumber(account.accountNumber)
+      setBalance(String(account.balance))
+      setColor(account.color ?? getBankColor(account.name))
+      setShowColorPicker(false)
+    } else {
+      // Reset for new account
+      setName('')
+      setAccountNumber('')
+      setBalance('')
+      setColor(getBankColor(''))
+      setShowColorPicker(false)
+    }
+  }, [account])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim()) return
-    onSave({ name: name.trim(), accountNumber: accountNumber.trim(), balance: Number(balance) || 0 })
+    onSave({ name: name.trim(), accountNumber: accountNumber.trim(), balance: Number(balance) || 0, color })
   }
 
   return (
     <form className="bank-form" onSubmit={handleSubmit}>
       <label className="bank-form__field">
-        <span>Nama Bank</span>
+        <span>Bank Name</span>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Contoh: BCA, Mandiri, Jago"
+          placeholder="e.g. BCA, Mandiri, Jago"
           disabled={isLoading}
         />
       </label>
       <label className="bank-form__field">
-        <span>No. Rekening</span>
+        <span>Account Number</span>
         <input
           type="text"
           value={accountNumber}
           onChange={(e) => setAccountNumber(e.target.value)}
-          placeholder="Nomor rekening (untuk match transaksi)"
+          placeholder="Account number (for transaction matching)"
           disabled={isLoading}
         />
       </label>
       <label className="bank-form__field">
-        <span>Saldo</span>
+        <span>Balance</span>
         <input
           type="number"
           value={balance}
@@ -86,12 +130,49 @@ function BankAccountForm({ account, onSave, onCancel, isLoading }: BankAccountFo
           disabled={isLoading}
         />
       </label>
+      <div className="bank-form__field">
+        <span>Color</span>
+        <div className="bank-form__color-picker">
+          {/* Active Color Preview */}
+          <button
+            type="button"
+            className="bank-form__color-preview"
+            onClick={() => setShowColorPicker(!showColorPicker)}
+          >
+            <div className="bank-form__color-badge" style={{ backgroundColor: color }} />
+            <span>Select color</span>
+            <IconChevronDown size={14} className="bank-form__color-chevron" />
+          </button>
+
+          {/* Color Picker Dropdown */}
+          {showColorPicker && (
+            <div className="bank-form__color-dropdown">
+              <div className="bank-form__color-grid">
+                {BANK_COLORS.map((c) => (
+                  <button
+                    key={c.name}
+                    type="button"
+                    className={`bank-form__color-btn${color === c.color ? ' bank-form__color-btn--active' : ''}`}
+                    style={{ backgroundColor: c.color }}
+                    onClick={() => {
+                      setColor(c.color)
+                      setShowColorPicker(false)
+                    }}
+                    title={c.name}
+                    disabled={isLoading}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
       <div className="bank-form__actions">
         <button type="button" onClick={onCancel} disabled={isLoading}>
-          Batal
+          Cancel
         </button>
         <button type="submit" disabled={isLoading || !name.trim()}>
-          {isLoading ? 'Menyimpan...' : 'Simpan'}
+          {isLoading ? 'Saving...' : 'Save'}
         </button>
       </div>
     </form>
@@ -121,7 +202,7 @@ export function InsightsPage() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { name: string; accountNumber: string; balance: number } }) =>
+    mutationFn: ({ id, data }: { id: string; data: { name: string; accountNumber: string; balance: number; color?: string } }) =>
       updateBankAccount(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bank-accounts'] })
@@ -156,12 +237,12 @@ export function InsightsPage() {
   const bankAccounts = bankAccountsQuery.data ?? []
   const isLoading = insightsQuery.isLoading || bankAccountsQuery.isLoading
 
-  const totalBankBalance = bankAccounts.reduce((sum, acc) => sum + acc.balance, 0)
+  const totalBankBalance = bankAccounts.reduce((sum, acc) => sum + acc.calculatedBalance, 0)
 
   if (isLoading) {
     return (
       <section className="insights-page" aria-label="Insights">
-        <p className="insights-page__hint">Memuat data insights...</p>
+        <p className="insights-page__hint">Loading insights...</p>
       </section>
     )
   }
@@ -178,7 +259,7 @@ export function InsightsPage() {
           {!isAdding && (
             <button type="button" className="bank-add-btn" onClick={() => setIsAdding(true)}>
               <IconPlus size={18} />
-              Tambah
+              Add
             </button>
           )}
         </div>
@@ -202,7 +283,7 @@ export function InsightsPage() {
             {bankAccounts.map((account) => {
               const isEditing = editingId === account.id
               const isDeleting = deletingId === account.id
-              const color = account.color ?? getBankColor(account.name)
+              const cardColor = account?.color ?? getBankColor(account?.name ?? '')
 
               if (isEditing) {
                 return (
@@ -221,7 +302,7 @@ export function InsightsPage() {
                 <article
                   key={account.id}
                   className="bank-card bank-card--custom"
-                  style={{ '--bank-color': color } as React.CSSProperties}
+                  style={{ '--bank-color': cardColor } as React.CSSProperties}
                 >
                   <div className="bank-card__header">
                     <div className="bank-card__icon">
@@ -229,7 +310,7 @@ export function InsightsPage() {
                     </div>
                     <span className="bank-card__label">{account.name}</span>
                   </div>
-                  <h2 className="bank-card__amount">{formatAmount(account.balance)}</h2>
+                  <h2 className="bank-card__amount">{formatAmount(account.calculatedBalance)}</h2>
                   <div className="bank-card__actions">
                     <button
                       type="button"
@@ -250,17 +331,17 @@ export function InsightsPage() {
                   </div>
                   {isDeleting && (
                     <div className="bank-card__delete-confirm">
-                      <p>Hapus {account.name}?</p>
+                      <p>Delete {account.name}?</p>
                       <div className="bank-card__delete-actions">
                         <button type="button" onClick={() => setDeletingId(null)}>
-                          Batal
+                          Cancel
                         </button>
                         <button
                           type="button"
                           onClick={() => deleteMutation.mutate(account.id)}
                           className="bank-card__delete-confirm-btn"
                         >
-                          Hapus
+                          Delete
                         </button>
                       </div>
                     </div>
@@ -281,13 +362,13 @@ export function InsightsPage() {
 
         {bankAccounts.length > 0 && (
           <div className="bank-total">
-            <span>Total Aset</span>
+            <span>Total Assets</span>
             <strong>{formatAmount(totalBankBalance)}</strong>
           </div>
         )}
 
         {bankAccounts.length === 0 && !isAdding && (
-          <p className="bank-accounts-empty">Belum ada bank account. Tambahkan untuk melacak aset.</p>
+          <p className="bank-accounts-empty">No bank accounts yet. Add one to track your assets.</p>
         )}
       </div>
 
@@ -302,8 +383,8 @@ export function InsightsPage() {
           </div>
           <h2 className="bank-card__amount">{insights ? formatAmount(insights.totalExpense) : 'Rp 0'}</h2>
           <div className="bank-card__stats">
-            <span>{insights?.expenseTx ?? 0} transaksi</span>
-            <span>{formatPercent(insights?.expenseRatio ?? 0)} dari income</span>
+            <span>{insights?.expenseTx ?? 0} transactions</span>
+            <span>{formatPercent(insights?.expenseRatio ?? 0)} of income</span>
           </div>
         </article>
 
@@ -316,7 +397,7 @@ export function InsightsPage() {
           </div>
           <h2 className="bank-card__amount">{insights ? formatAmount(insights.totalIncome) : 'Rp 0'}</h2>
           <div className="bank-card__stats">
-            <span>{insights?.incomeTx ?? 0} transaksi</span>
+            <span>{insights?.incomeTx ?? 0} transactions</span>
           </div>
         </article>
 
@@ -329,7 +410,7 @@ export function InsightsPage() {
           </div>
           <h2 className="bank-card__amount">{insights ? formatAmount(insights.netBalance) : 'Rp 0'}</h2>
           <div className="bank-card__stats">
-            <span>{insights?.totalTx ?? 0} total transaksi</span>
+            <span>{insights?.totalTx ?? 0} total transactions</span>
           </div>
         </article>
 
@@ -338,7 +419,7 @@ export function InsightsPage() {
             <div className="bank-card__icon">
               <IconReceipt size={22} />
             </div>
-            <span className="bank-card__label">Transaksi</span>
+            <span className="bank-card__label">Transactions</span>
           </div>
           <h2 className="bank-card__amount">{insights?.totalTx ?? 0}</h2>
           <div className="bank-card__stats">
@@ -353,7 +434,7 @@ export function InsightsPage() {
         <article className="category-card">
           <h3 className="category-card__title">Top Expense</h3>
           {!insights || insights.topExpense.length === 0 ? (
-            <p className="category-card__empty">Belum ada pengeluaran.</p>
+            <p className="category-card__empty">No expenses yet.</p>
           ) : (
             <div className="category-card__list">
               {insights.topExpense.map(({ category, amount }, index) => (
@@ -370,7 +451,7 @@ export function InsightsPage() {
         <article className="category-card">
           <h3 className="category-card__title">Top Income</h3>
           {!insights || insights.topIncome.length === 0 ? (
-            <p className="category-card__empty">Belum ada pemasukan.</p>
+            <p className="category-card__empty">No income yet.</p>
           ) : (
             <div className="category-card__list">
               {insights.topIncome.map(({ category, amount }, index) => (
