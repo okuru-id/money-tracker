@@ -1,16 +1,17 @@
 import { useMemo, useState, type FormEvent } from 'react'
 
 import { Dropdown } from '../../../components/dropdown'
-import type { CategoryItem, TransactionItem as TransactionRow } from '../../transactions/api'
+import type { BankAccount, CategoryItem, TransactionItem as TransactionRow } from '../../transactions/api'
 
 type TransactionItemProps = {
   transaction: TransactionRow
   categories: CategoryItem[]
+  bankAccounts: BankAccount[]
   canEdit: boolean
   canDelete: boolean
   isSaving: boolean
   isDeleting: boolean
-  onSave: (payload: { id: string; amount: number; categoryId: string | null; notes?: string }) => Promise<void>
+  onSave: (payload: { id: string; amount: number; categoryId: string | null; notes?: string; accountNumber?: string | null }) => Promise<void>
   onDelete: () => Promise<void>
 }
 
@@ -51,13 +52,14 @@ function formatFullDate(value: string | null): string {
   }).format(date)
 }
 
-export function TransactionItem({ transaction, categories, canEdit, canDelete, isSaving, isDeleting, onSave, onDelete }: TransactionItemProps) {
+export function TransactionItem({ transaction, categories, bankAccounts, canEdit, canDelete, isSaving, isDeleting, onSave, onDelete }: TransactionItemProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const [showDetail, setShowDetail] = useState(false)
   const [amountInput, setAmountInput] = useState(String(transaction.amount || ''))
   const [categoryId, setCategoryId] = useState(transaction.categoryId ?? '')
   const [notes, setNotes] = useState(transaction.notes)
+  const [accountNumber, setAccountNumber] = useState(transaction.accountNumber ?? '')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   // Map transaction types to category types: debit -> expense, credit -> income
@@ -92,6 +94,7 @@ export function TransactionItem({ transaction, categories, canEdit, canDelete, i
         amount,
         categoryId,
         notes: notes.trim() || undefined,
+        accountNumber: accountNumber || null,
       })
       setIsEditing(false)
     } catch (error) {
@@ -107,6 +110,7 @@ export function TransactionItem({ transaction, categories, canEdit, canDelete, i
     setAmountInput(String(transaction.amount || ''))
     setCategoryId(transaction.categoryId ?? '')
     setNotes(transaction.notes)
+    setAccountNumber(transaction.accountNumber ?? '')
     setErrorMessage(null)
     setIsEditing(false)
   }
@@ -221,6 +225,15 @@ export function TransactionItem({ transaction, categories, canEdit, canDelete, i
               <span>Notes</span>
               <input value={notes} onChange={(event) => setNotes(event.target.value)} disabled={isSaving} />
             </label>
+
+            <Dropdown
+              label="Bank Account"
+              placeholder="None"
+              value={accountNumber}
+              onChange={setAccountNumber}
+              disabled={isSaving}
+              options={bankAccounts.map((acc) => ({ value: acc.accountNumber, label: `${acc.name} - ${acc.accountNumber}` }))}
+            />
 
             {errorMessage ? <p className="history-transaction-item__error">{errorMessage}</p> : null}
 

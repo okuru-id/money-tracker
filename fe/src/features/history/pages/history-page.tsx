@@ -7,6 +7,7 @@ import { getFamilyMembers } from '../../family/api'
 import {
   getCategories,
   getTransactions,
+  getBankAccounts,
   updateTransaction,
   deleteTransaction,
 } from '../../transactions/api'
@@ -64,6 +65,11 @@ export function HistoryPage() {
     queryFn: getCategories,
   })
 
+  const bankAccountsQuery = useQuery({
+    queryKey: ['bank-accounts'],
+    queryFn: getBankAccounts,
+  })
+
   const familyMembersQuery = useQuery({
     queryKey: ['family-members', familyId],
     queryFn: () => getFamilyMembers(familyId!),
@@ -81,21 +87,25 @@ export function HistoryPage() {
       amount,
       categoryId,
       notes,
+      accountNumber,
     }: {
       id: string
       amount: number
       categoryId: string | null
       notes?: string
+      accountNumber?: string | null
     }) =>
       updateTransaction(id, {
         amount,
         categoryId,
         notes,
+        accountNumber,
       }),
     onSuccess: () => {
       setErrorMessage(null)
       void queryClient.invalidateQueries({ queryKey: ['transactions'] })
       void queryClient.invalidateQueries({ queryKey: ['family-summary'] })
+      void queryClient.invalidateQueries({ queryKey: ['bank-accounts'] })
     },
     onError: (error) => {
       setErrorMessage(toErrorMessage(error))
@@ -108,6 +118,7 @@ export function HistoryPage() {
       setErrorMessage(null)
       void queryClient.invalidateQueries({ queryKey: ['transactions'] })
       void queryClient.invalidateQueries({ queryKey: ['family-summary'] })
+      void queryClient.invalidateQueries({ queryKey: ['bank-accounts'] })
     },
     onError: (error) => {
       setErrorMessage(toErrorMessage(error))
@@ -156,6 +167,7 @@ export function HistoryPage() {
               key={transaction.id}
               transaction={transaction}
               categories={categoriesQuery.data ?? []}
+              bankAccounts={bankAccountsQuery.data ?? []}
               canEdit={canEdit}
               canDelete={canDelete}
               isSaving={updateMutation.isPending && updateMutation.variables?.id === transaction.id}

@@ -220,7 +220,7 @@ func (r *transactionRepository) Update(ctx context.Context, tx *model.Transactio
 	query := `
 		UPDATE transactions
 		SET wallet_owner_id = $2, type = $3, amount = $4, category_id = $5,
-			note = $6, transaction_date = $7, updated_at = $8
+			note = $6, transaction_date = $7, account_number = $8, updated_at = $9
 		WHERE id = $1
 	`
 	now := time.Now()
@@ -232,6 +232,7 @@ func (r *transactionRepository) Update(ctx context.Context, tx *model.Transactio
 		tx.CategoryID,
 		tx.Note,
 		tx.TransactionDate,
+		tx.AccountNumber,
 		&now,
 	)
 	if err != nil {

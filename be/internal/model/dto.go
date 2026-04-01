@@ -132,6 +132,7 @@ type UpdateTransactionRequest struct {
 	CategoryID      *string         `json:"category_id,omitempty"`
 	Note            *string         `json:"note,omitempty"`
 	TransactionDate *string         `json:"transaction_date,omitempty"`
+	AccountNumber   *string         `json:"account_number,omitempty"`
 }
 
 type TransactionResponse struct {

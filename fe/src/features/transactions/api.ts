@@ -232,6 +232,7 @@ export async function updateTransaction(
     amount: number
     categoryId: string | null
     notes?: string
+    accountNumber?: string | null
   },
 ): Promise<void> {
   await request(`/transactions/${encodeURIComponent(id)}`, {
@@ -240,6 +241,7 @@ export async function updateTransaction(
       amount: payload.amount,
       category_id: payload.categoryId,
       note: payload.notes,
+      account_number: payload.accountNumber,
     }),
   })
 }

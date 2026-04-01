@@ -1,5 +1,24 @@
 basePath: /api
 definitions:
+  model.BankAccountResponse:
+    properties:
+      account_number:
+        type: string
+      balance:
+        description: Initial/manual balance
+        type: number
+      calculated_balance:
+        description: Balance from transactions (credit - debit)
+        type: number
+      color:
+        type: string
+      icon:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   model.CategoryResponse:
     properties:
       id:
@@ -11,8 +30,37 @@ definitions:
       type:
         type: string
     type: object
+  model.CategoryTotal:
+    properties:
+      amount:
+        type: number
+      category:
+        type: string
+    type: object
+  model.CreateBankAccountRequest:
+    properties:
+      account_number:
+        maxLength: 50
+        type: string
+      balance:
+        type: number
+      color:
+        maxLength: 20
+        type: string
+      icon:
+        maxLength: 50
+        type: string
+      name:
+        maxLength: 100
+        type: string
+    required:
+    - account_number
+    - name
+    type: object
   model.CreateFamilyRequest:
     properties:
+      created_by:
+        type: string
       name:
         type: string
     required:
@@ -27,6 +75,8 @@ definitions:
     type: object
   model.CreateTransactionRequest:
     properties:
+      account_number:
+        type: string
       amount:
         type: number
       category_id:
@@ -37,8 +87,6 @@ definitions:
         type: string
       type:
         enum:
-        - income
-        - expense
         - debit
         - credit
         type: string
@@ -85,6 +133,8 @@ definitions:
         type: string
       created_by:
         type: string
+      created_by_name:
+        type: string
       id:
         type: string
       name:
@@ -101,6 +151,31 @@ definitions:
       total_income:
         type: number
     type: object
+  model.InsightsResponse:
+    properties:
+      expense_ratio:
+        type: number
+      expense_tx:
+        type: integer
+      income_tx:
+        type: integer
+      net_balance:
+        type: number
+      top_expense:
+        items:
+          $ref: '#/definitions/model.CategoryTotal'
+        type: array
+      top_income:
+        items:
+          $ref: '#/definitions/model.CategoryTotal'
+        type: array
+      total_expense:
+        type: number
+      total_income:
+        type: number
+      total_tx:
+        type: integer
+    type: object
   model.LoginRequest:
     properties:
       email:
@@ -110,6 +185,15 @@ definitions:
     required:
     - email
     - password
+    type: object
+  model.PersonalSummaryResponse:
+    properties:
+      net_balance:
+        type: number
+      total_expense:
+        type: number
+      total_income:
+        type: number
     type: object
   model.RegisterRequest:
     properties:
@@ -142,13 +226,23 @@ definitions:
     type: object
   model.TransactionResponse:
     properties:
+      account_number:
+        type: string
       amount:
         type: number
+      bank_account_name:
+        type: string
+      bank_name:
+        type: string
       category_id:
+        type: string
+      category_name:
         type: string
       created_at:
         type: string
       created_by:
+        type: string
+      created_by_name:
         type: string
       family_id:
         type: string
@@ -164,9 +258,30 @@ definitions:
         type: string
       wallet_owner_id:
         type: string
+      wallet_owner_name:
+        type: string
+    type: object
+  model.UpdateBankAccountRequest:
+    properties:
+      account_number:
+        maxLength: 50
+        type: string
+      balance:
+        type: number
+      color:
+        maxLength: 20
+        type: string
+      icon:
+        maxLength: 50
+        type: string
+      name:
+        maxLength: 100
+        type: string
     type: object
   model.UpdateTransactionRequest:
     properties:
+      account_number:
+        type: string
       amount:
         type: number
       category_id:
@@ -177,8 +292,6 @@ definitions:
         type: string
       type:
         enum:
-        - income
-        - expense
         - debit
         - credit
         type: string
@@ -247,6 +360,24 @@ paths:
       summary: User logout
       tags:
       - auth
+  /auth/me:
+    get:
+      description: Get current authenticated user info including family context
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Current user info
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Get current user
+      tags:
+      - auth
   /auth/register:
     post:
       consumes:
@@ -282,6 +413,172 @@ paths:
       summary: Register new user
       tags:
       - auth
+  /bank-accounts:
+    get:
+      description: Get all bank accounts for the user's family
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of bank accounts
+          schema:
+            items:
+              $ref: '#/definitions/model.BankAccountResponse'
+            type: array
+        "400":
+          description: No family
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: List bank accounts
+      tags:
+      - bank-accounts
+    post:
+      consumes:
+      - application/json
+      description: Create a new bank account for tracking assets
+      parameters:
+      - description: Bank account data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateBankAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Bank account created
+          schema:
+            $ref: '#/definitions/model.BankAccountResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Create bank account
+      tags:
+      - bank-accounts
+  /bank-accounts/{id}:
+    delete:
+      description: Delete a bank account
+      parameters:
+      - description: Bank account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: Bank account deleted
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Delete bank account
+      tags:
+      - bank-accounts
+    patch:
+      consumes:
+      - application/json
+      description: Update a bank account
+      parameters:
+      - description: Bank account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Bank account data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateBankAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Bank account updated
+          schema:
+            $ref: '#/definitions/model.BankAccountResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Update bank account
+      tags:
+      - bank-accounts
+  /bank-accounts/total:
+    get:
+      description: Get total balance across all bank accounts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Total balance
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: No family
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Get total balance
+      tags:
+      - bank-accounts
   /categories:
     get:
       description: Get list of transaction categories (income/expense)
@@ -419,6 +716,50 @@ paths:
       security:
       - session: []
       summary: Get family members
+      tags:
+      - family
+  /families/{id}/members/{userId}:
+    delete:
+      description: Remove a member from the family. Only owner can remove members.
+      parameters:
+      - description: Family ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User ID to remove
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Member removed successfully
+        "400":
+          description: Cannot remove owner
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: Forbidden - not owner
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: Member not found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Remove family member
       tags:
       - family
   /families/{id}/summary:
@@ -580,7 +921,8 @@ paths:
       - transaction
   /transactions/{id}:
     delete:
-      description: Delete a transaction. Only the creator can delete.
+      description: Delete a transaction. Only the creator, family owner, or admin
+        can delete.
       parameters:
       - description: Transaction ID
         in: path
@@ -620,7 +962,8 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Update an existing transaction. Only the creator can modify.
+      description: Update an existing transaction. Only the creator, family owner,
+        or admin can modify.
       parameters:
       - description: Transaction ID
         in: path
@@ -663,6 +1006,60 @@ paths:
       security:
       - session: []
       summary: Update transaction
+      tags:
+      - transaction
+  /transactions/insights:
+    get:
+      description: Get insights data for dashboard (totals, counts, top categories)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Insights data
+          schema:
+            $ref: '#/definitions/model.InsightsResponse'
+        "400":
+          description: No family
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Get insights data
+      tags:
+      - transaction
+  /transactions/summary:
+    get:
+      description: Get personal income/expense summary for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Personal summary
+          schema:
+            $ref: '#/definitions/model.PersonalSummaryResponse'
+        "400":
+          description: No family
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - session: []
+      summary: Get personal summary
       tags:
       - transaction
 swagger: "2.0"

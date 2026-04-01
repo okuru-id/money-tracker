@@ -97,6 +97,33 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/me": {
+            "get": {
+                "description": "Get current authenticated user info including family context",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get current user",
+                "responses": {
+                    "200": {
+                        "description": "Current user info",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/register": {
             "post": {
                 "description": "Create a new user account",
@@ -137,6 +164,267 @@ const docTemplate = `{
                     },
                     "409": {
                         "description": "Email already registered",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/bank-accounts": {
+            "get": {
+                "security": [
+                    {
+                        "session": []
+                    }
+                ],
+                "description": "Get all bank accounts for the user's family",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-accounts"
+                ],
+                "summary": "List bank accounts",
+                "responses": {
+                    "200": {
+                        "description": "List of bank accounts",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.BankAccountResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "No family",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "session": []
+                    }
+                ],
+                "description": "Create a new bank account for tracking assets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-accounts"
+                ],
+                "summary": "Create bank account",
+                "parameters": [
+                    {
+                        "description": "Bank account data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateBankAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Bank account created",
+                        "schema": {
+                            "$ref": "#/definitions/model.BankAccountResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/bank-accounts/total": {
+            "get": {
+                "security": [
+                    {
+                        "session": []
+                    }
+                ],
+                "description": "Get total balance across all bank accounts",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-accounts"
+                ],
+                "summary": "Get total balance",
+                "responses": {
+                    "200": {
+                        "description": "Total balance",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "No family",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/bank-accounts/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "session": []
+                    }
+                ],
+                "description": "Delete a bank account",
+                "tags": [
+                    "bank-accounts"
+                ],
+                "summary": "Delete bank account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bank account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Bank account deleted"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "session": []
+                    }
+                ],
+                "description": "Update a bank account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank-accounts"
+                ],
+                "summary": "Update bank account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bank account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Bank account data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UpdateBankAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bank account updated",
+                        "schema": {
+                            "$ref": "#/definitions/model.BankAccountResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
                         "schema": {
                             "$ref": "#/definitions/model.ErrorResponse"
                         }
@@ -355,6 +643,74 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/families/{id}/members/{userId}": {
+            "delete": {
+                "security": [
+                    {
+                        "session": []
+                    }
+                ],
+                "description": "Remove a member from the family. Only owner can remove members.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "family"
+                ],
+                "summary": "Remove family member",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Family ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID to remove",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Member removed successfully"
+                    },
+                    "400": {
+                        "description": "Cannot remove owner",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - not owner",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Member not found",
                         "schema": {
                             "$ref": "#/definitions/model.ErrorResponse"
                         }
@@ -612,6 +968,92 @@ const docTemplate = `{
                 }
             }
         },
+        "/transactions/insights": {
+            "get": {
+                "security": [
+                    {
+                        "session": []
+                    }
+                ],
+                "description": "Get insights data for dashboard (totals, counts, top categories)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transaction"
+                ],
+                "summary": "Get insights data",
+                "responses": {
+                    "200": {
+                        "description": "Insights data",
+                        "schema": {
+                            "$ref": "#/definitions/model.InsightsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "No family",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/transactions/summary": {
+            "get": {
+                "security": [
+                    {
+                        "session": []
+                    }
+                ],
+                "description": "Get personal income/expense summary for the authenticated user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transaction"
+                ],
+                "summary": "Get personal summary",
+                "responses": {
+                    "200": {
+                        "description": "Personal summary",
+                        "schema": {
+                            "$ref": "#/definitions/model.PersonalSummaryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "No family",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/transactions/{id}": {
             "delete": {
                 "security": [
@@ -619,7 +1061,7 @@ const docTemplate = `{
                         "session": []
                     }
                 ],
-                "description": "Delete a transaction. Only the creator can delete.",
+                "description": "Delete a transaction. Only the creator, family owner, or admin can delete.",
                 "produces": [
                     "application/json"
                 ],
@@ -678,7 +1120,7 @@ const docTemplate = `{
                         "session": []
                     }
                 ],
-                "description": "Update an existing transaction. Only the creator can modify.",
+                "description": "Update an existing transaction. Only the creator, family owner, or admin can modify.",
                 "consumes": [
                     "application/json"
                 ],
@@ -749,6 +1191,34 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "model.BankAccountResponse": {
+            "type": "object",
+            "properties": {
+                "account_number": {
+                    "type": "string"
+                },
+                "balance": {
+                    "description": "Initial/manual balance",
+                    "type": "number"
+                },
+                "calculated_balance": {
+                    "description": "Balance from transactions (credit - debit)",
+                    "type": "number"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "model.CategoryResponse": {
             "type": "object",
             "properties": {
@@ -766,12 +1236,54 @@ const docTemplate = `{
                 }
             }
         },
+        "model.CategoryTotal": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "category": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CreateBankAccountRequest": {
+            "type": "object",
+            "required": [
+                "account_number",
+                "name"
+            ],
+            "properties": {
+                "account_number": {
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "balance": {
+                    "type": "number"
+                },
+                "color": {
+                    "type": "string",
+                    "maxLength": 20
+                },
+                "icon": {
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100
+                }
+            }
+        },
         "model.CreateFamilyRequest": {
             "type": "object",
             "required": [
                 "name"
             ],
             "properties": {
+                "created_by": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 }
@@ -796,6 +1308,9 @@ const docTemplate = `{
                 "type"
             ],
             "properties": {
+                "account_number": {
+                    "type": "string"
+                },
                 "amount": {
                     "type": "number"
                 },
@@ -811,8 +1326,6 @@ const docTemplate = `{
                 "type": {
                     "type": "string",
                     "enum": [
-                        "income",
-                        "expense",
                         "debit",
                         "credit"
                     ]
@@ -877,6 +1390,9 @@ const docTemplate = `{
                 "created_by": {
                     "type": "string"
                 },
+                "created_by_name": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -902,6 +1418,44 @@ const docTemplate = `{
                 }
             }
         },
+        "model.InsightsResponse": {
+            "type": "object",
+            "properties": {
+                "expense_ratio": {
+                    "type": "number"
+                },
+                "expense_tx": {
+                    "type": "integer"
+                },
+                "income_tx": {
+                    "type": "integer"
+                },
+                "net_balance": {
+                    "type": "number"
+                },
+                "top_expense": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CategoryTotal"
+                    }
+                },
+                "top_income": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CategoryTotal"
+                    }
+                },
+                "total_expense": {
+                    "type": "number"
+                },
+                "total_income": {
+                    "type": "number"
+                },
+                "total_tx": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.LoginRequest": {
             "type": "object",
             "required": [
@@ -914,6 +1468,20 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "model.PersonalSummaryResponse": {
+            "type": "object",
+            "properties": {
+                "net_balance": {
+                    "type": "number"
+                },
+                "total_expense": {
+                    "type": "number"
+                },
+                "total_income": {
+                    "type": "number"
                 }
             }
         },
@@ -963,16 +1531,31 @@ const docTemplate = `{
         "model.TransactionResponse": {
             "type": "object",
             "properties": {
+                "account_number": {
+                    "type": "string"
+                },
                 "amount": {
                     "type": "number"
                 },
+                "bank_account_name": {
+                    "type": "string"
+                },
+                "bank_name": {
+                    "type": "string"
+                },
                 "category_id": {
+                    "type": "string"
+                },
+                "category_name": {
                     "type": "string"
                 },
                 "created_at": {
                     "type": "string"
                 },
                 "created_by": {
+                    "type": "string"
+                },
+                "created_by_name": {
                     "type": "string"
                 },
                 "family_id": {
@@ -995,12 +1578,42 @@ const docTemplate = `{
                 },
                 "wallet_owner_id": {
                     "type": "string"
+                },
+                "wallet_owner_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UpdateBankAccountRequest": {
+            "type": "object",
+            "properties": {
+                "account_number": {
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "balance": {
+                    "type": "number"
+                },
+                "color": {
+                    "type": "string",
+                    "maxLength": 20
+                },
+                "icon": {
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100
                 }
             }
         },
         "model.UpdateTransactionRequest": {
             "type": "object",
             "properties": {
+                "account_number": {
+                    "type": "string"
+                },
                 "amount": {
                     "type": "number"
                 },
@@ -1016,8 +1629,6 @@ const docTemplate = `{
                 "type": {
                     "type": "string",
                     "enum": [
-                        "income",
-                        "expense",
                         "debit",
                         "credit"
                     ]

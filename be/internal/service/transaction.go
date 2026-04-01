@@ -159,24 +159,25 @@ func (s *transactionService) Update(ctx context.Context, userID string, userRole
 		}
 		tx.TransactionDate = transactionDate
 	}
+	if req.AccountNumber != nil {
+		tx.AccountNumber = req.AccountNumber
+	}
+
+	// Track old account_number before update for balance recalculation
+	oldAccountNumber := tx.AccountNumber
 
 	if err := s.transactionRepo.Update(ctx, tx); err != nil {
 		return nil, err
 	}
 
-	// Update bank account balance if account_number is set
+	// Recalculate balance for old account if account_number changed
+	if oldAccountNumber != nil && *oldAccountNumber != "" && (req.AccountNumber != nil && *req.AccountNumber != *oldAccountNumber || tx.AccountNumber == nil || (tx.AccountNumber != nil && *tx.AccountNumber != *oldAccountNumber)) {
+		s.recalcAccountBalance(ctx, tx.FamilyID, *oldAccountNumber)
+	}
+
+	// Update bank account balance for current account_number
 	if tx.AccountNumber != nil && *tx.AccountNumber != "" {
-		newBalance, calcErr := s.bankAccountRepo.GetBalanceByAccountNumber(ctx, tx.FamilyID, *tx.AccountNumber)
-		if calcErr == nil {
-			bankAccount, err := s.bankAccountRepo.FindByAccountNumber(ctx, tx.FamilyID, *tx.AccountNumber)
-			if err == nil && bankAccount != nil {
-				// Calculate delta from current balance
-				delta := newBalance.Sub(bankAccount.Balance)
-				if !delta.IsZero() {
-					s.bankAccountRepo.UpdateBalance(ctx, bankAccount.ID, delta)
-				}
-			}
-		}
+		s.recalcAccountBalance(ctx, tx.FamilyID, *tx.AccountNumber)
 	}
 
 	return tx, nil
@@ -221,22 +222,29 @@ func (s *transactionService) Delete(ctx context.Context, userID string, userRole
 		return err
 	}
 
-	// Update bank account balance if account_number is set
+	// Recalculate balance for the account after delete
 	if accountNumber != nil && *accountNumber != "" {
-		newBalance, calcErr := s.bankAccountRepo.GetBalanceByAccountNumber(ctx, tx.FamilyID, *accountNumber)
-		if calcErr == nil {
-			bankAccount, err := s.bankAccountRepo.FindByAccountNumber(ctx, tx.FamilyID, *accountNumber)
-			if err == nil && bankAccount != nil {
-				// Calculate delta from current balance
-				delta := newBalance.Sub(bankAccount.Balance)
-				if !delta.IsZero() {
-					s.bankAccountRepo.UpdateBalance(ctx, bankAccount.ID, delta)
-				}
-			}
-		}
+		s.recalcAccountBalance(ctx, tx.FamilyID, *accountNumber)
 	}
 
 	return nil
+}
+
+// recalcAccountBalance recalculates and updates the balance of a bank account
+// based on all transactions matching the account number.
+func (s *transactionService) recalcAccountBalance(ctx context.Context, familyID, accountNumber string) {
+	newBalance, calcErr := s.bankAccountRepo.GetBalanceByAccountNumber(ctx, familyID, accountNumber)
+	if calcErr != nil {
+		return
+	}
+	bankAccount, err := s.bankAccountRepo.FindByAccountNumber(ctx, familyID, accountNumber)
+	if err != nil || bankAccount == nil {
+		return
+	}
+	delta := newBalance.Sub(bankAccount.Balance)
+	if !delta.IsZero() {
+		_ = s.bankAccountRepo.UpdateBalance(ctx, bankAccount.ID, delta)
+	}
 }
 
 func (s *transactionService) GetPersonalSummary(ctx context.Context, familyID string) (*model.PersonalSummaryResponse, error) {
