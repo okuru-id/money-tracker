@@ -9,7 +9,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      includeAssets: ['favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
+      includeAssets: ['favicon.png', 'icons/icon-192.png', 'icons/icon-512.png'],
       manifest: false,
       workbox: {
         globPatterns: [],
