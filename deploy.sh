@@ -19,6 +19,12 @@ err()  { printf "${RED}[err]${NC}   %s\n" "$*" >&2; exit 1; }
 
 # ── Steps ───────────────────────────────────────────────
 
+update_source() {
+  log "Pulling latest changes..."
+  git pull
+  ok "Source code updated"
+}
+
 build_backend() {
   log "Building backend..."
   (cd "$BACKEND_DIR" && docker compose build --no-cache backend)
@@ -93,6 +99,7 @@ done
 
 case "$COMMAND" in
   all)
+    update_source
     build_backend
     build_frontend
     deploy_backend
@@ -101,18 +108,21 @@ case "$COMMAND" in
     show_status
     ;;
   backend)
+    update_source
     build_backend
     deploy_backend
     prune_images
     show_status
     ;;
   frontend)
+    update_source
     build_frontend
     deploy_frontend
     prune_images
     show_status
     ;;
   build)
+    update_source
     build_backend
     build_frontend
     [[ "$NO_PRUNE" == false ]] && prune_images
