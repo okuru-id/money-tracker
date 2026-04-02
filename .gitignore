@@ -20,8 +20,11 @@ fe/apps/web/.vite/
 *.swo
 *~
 
-# Claude Code
-.claude/settings.local.json
+# AI tools (local only)
+.claude/
+.agents/
+.zencoder/
+skills-lock.json
 
 # OS
 .DS_Store
