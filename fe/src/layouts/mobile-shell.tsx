@@ -3,6 +3,7 @@ import { IconCash, IconChartBar, IconHome, IconPlus, IconSettings } from '@table
 import type { Icon } from '@tabler/icons-react'
 
 import { useSessionState } from '../features/auth/session-store'
+import { PwaInstallPrompt } from '../components/pwa-install-prompt'
 import { PullToRefresh } from '../components/pull-to-refresh'
 import { TopBar } from '../components/top-bar'
 
@@ -56,6 +57,8 @@ export function MobileShell() {
           <Outlet />
         </main>
       </PullToRefresh>
+
+      <PwaInstallPrompt position="bottom" />
 
       <nav className="mobile-shell__tabs" aria-label="Primary">
         {tabs.map((tab) => {

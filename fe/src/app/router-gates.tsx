@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { hydrateSession, rememberIntendedPath, useSessionState } from '../features/auth/session-store'
+import { PwaInstallPrompt } from '../components/pwa-install-prompt'
 
 function isFamilyOnboardingPath(path: string): boolean {
   return path.startsWith('/family/setup') || path.startsWith('/family/join') || path.startsWith('/invite/')
@@ -62,7 +63,12 @@ export function PublicOnlyGate() {
     return <Navigate to="/family/setup" replace />
   }
 
-  return <Outlet />
+  return (
+    <>
+      <Outlet />
+      <PwaInstallPrompt position="top" />
+    </>
+  )
 }
 
 export function FamilyRequiredGate() {
