@@ -16,12 +16,14 @@ export type PwaInstallPromptState = {
   isAvailable: boolean
   isInstalled: boolean
   isDismissedForSession: boolean
+  isIOS: boolean
 }
 
 let state: PwaInstallPromptState = {
   isAvailable: false,
   isInstalled: false,
   isDismissedForSession: false,
+  isIOS: false,
 }
 
 let deferredPrompt: DeferredPwaInstallPromptEvent | null = null
@@ -91,6 +93,15 @@ function detectStandaloneMode(): boolean {
   )
 }
 
+function detectIOS(): boolean {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  const ua = window.navigator.userAgent
+  return /iPad|iPhone|iPod/.test(ua) || (ua.includes('Mac') && 'ontouchend' in document)
+}
+
 function isDeferredPwaInstallPromptEvent(
   event: Event,
 ): event is DeferredPwaInstallPromptEvent {
@@ -105,11 +116,14 @@ function isDeferredPwaInstallPromptEvent(
 function syncStateFromEnvironment(): void {
   const isInstalled = detectStandaloneMode()
   const isDismissedForSession = readDismissedForSession()
+  const isIOS = detectIOS()
 
   patchState({
     isInstalled,
     isDismissedForSession,
-    isAvailable: Boolean(deferredPrompt) && !isInstalled && !isDismissedForSession,
+    isIOS,
+    isAvailable:
+      (Boolean(deferredPrompt) || isIOS) && !isInstalled && !isDismissedForSession,
   })
 }
 
@@ -136,6 +150,7 @@ function handleAppInstalled(): void {
     isAvailable: false,
     isInstalled: true,
     isDismissedForSession: false,
+    isIOS: state.isIOS,
   })
 }
 

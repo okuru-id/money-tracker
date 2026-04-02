@@ -8,7 +8,7 @@ import { promptPwaInstall, usePwaInstallPromptState } from '../../../lib/pwa-ins
 export function SettingsPage() {
   const navigate = useNavigate()
   const session = useSessionState()
-  const { isAvailable: isPwaInstallAvailable, isInstalled: isPwaInstalled } = usePwaInstallPromptState()
+  const { isAvailable: isPwaInstallAvailable, isInstalled: isPwaInstalled, isIOS } = usePwaInstallPromptState()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [isInstallingPwa, setIsInstallingPwa] = useState(false)
@@ -120,26 +120,33 @@ export function SettingsPage() {
           <p className="settings-page__install-description">
             Save Money Tracker to your home screen for faster access and a native app experience.
           </p>
-          {!isPwaInstalled && !isPwaInstallAvailable ? (
+          {!isPwaInstalled && !isPwaInstallAvailable && !isIOS ? (
             <p className="settings-page__install-hint">
               If the install button is not available, open your browser menu and select <strong>Install app</strong> or{' '}
               <strong>Add to Home Screen</strong>.
             </p>
           ) : null}
+          {!isPwaInstalled && isIOS ? (
+            <p className="settings-page__install-hint">
+              Tap the <strong>Share</strong> button in Safari, then tap <strong>Add to Home Screen</strong>.
+            </p>
+          ) : null}
         </div>
 
         {!isPwaInstalled ? (
-          <button
-            className="settings-page__install-button"
-            type="button"
-            onClick={() => {
-              void handleInstallPwa()
-            }}
-            disabled={!isPwaInstallAvailable || isInstallingPwa}
-            aria-busy={isInstallingPwa}
-          >
-            {isInstallingPwa ? 'Installing...' : isPwaInstallAvailable ? 'Install now' : 'Waiting for browser prompt'}
-          </button>
+          isIOS ? null : (
+            <button
+              className="settings-page__install-button"
+              type="button"
+              onClick={() => {
+                void handleInstallPwa()
+              }}
+              disabled={!isPwaInstallAvailable || isInstallingPwa}
+              aria-busy={isInstallingPwa}
+            >
+              {isInstallingPwa ? 'Installing...' : isPwaInstallAvailable ? 'Install now' : 'Waiting for browser prompt'}
+            </button>
+          )
         ) : null}
       </div>
 
