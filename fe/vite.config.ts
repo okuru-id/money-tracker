@@ -9,7 +9,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      includeAssets: ['favicon.png', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'],
+      includeAssets: ['favicon.ico', 'icons/android-chrome-192x192.png', 'icons/android-chrome-512x512.png', 'icons/apple-touch-icon-180x180.png', 'icons/favicon-16x16.png', 'icons/favicon-32x32.png', 'icons/favicon-48x48.png'],
       manifest: false,
       workbox: {
         globPatterns: [],
