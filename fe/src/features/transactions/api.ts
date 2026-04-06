@@ -332,11 +332,41 @@ export async function getFamilyMonthlySummary(familyId: string): Promise<FamilyM
 export type BankAccount = {
   id: string
   name: string
-  accountNumber: string
+  accountNumbers: string[]
   balance: number
   calculatedBalance: number // Balance from transactions (credit - debit)
   icon?: string
   color?: string
+}
+
+function normalizeStringArray(value: unknown): string[] {
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    return trimmed ? [trimmed] : []
+  }
+
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  const seen = new Set<string>()
+  const result: string[] = []
+
+  for (const item of value) {
+    if (typeof item !== 'string') {
+      continue
+    }
+
+    const trimmed = item.trim()
+    if (!trimmed || seen.has(trimmed)) {
+      continue
+    }
+
+    seen.add(trimmed)
+    result.push(trimmed)
+  }
+
+  return result
 }
 
 export async function getBankAccounts(): Promise<BankAccount[]> {
@@ -346,10 +376,12 @@ export async function getBankAccounts(): Promise<BankAccount[]> {
 
   return accounts.map((item: unknown) => {
     const row = (item ?? {}) as Record<string, unknown>
+    const accountNumbers = normalizeStringArray(row.account_numbers)
+
     return {
       id: typeof row.id === 'string' ? row.id : '',
       name: typeof row.name === 'string' ? row.name : '',
-      accountNumber: typeof row.account_number === 'string' ? row.account_number : '',
+      accountNumbers: accountNumbers.length > 0 ? accountNumbers : normalizeStringArray(row.account_number),
       balance: toNumber(row.balance),
       calculatedBalance: toNumber(row.calculated_balance),
       icon: typeof row.icon === 'string' ? row.icon : undefined,
@@ -360,7 +392,7 @@ export async function getBankAccounts(): Promise<BankAccount[]> {
 
 export async function createBankAccount(data: {
   name: string
-  accountNumber: string
+  accountNumbers: string[]
   balance?: number
   icon?: string
   color?: string
@@ -369,17 +401,19 @@ export async function createBankAccount(data: {
     method: 'POST',
     body: JSON.stringify({
       name: data.name,
-      account_number: data.accountNumber,
+      account_numbers: data.accountNumbers,
       balance: data.balance ?? 0,
       icon: data.icon,
       color: data.color,
     }),
   })
   const row = (payload ?? {}) as Record<string, unknown>
+  const accountNumbers = normalizeStringArray(row.account_numbers)
+
   return {
     id: typeof row.id === 'string' ? row.id : '',
     name: typeof row.name === 'string' ? row.name : '',
-    accountNumber: typeof row.account_number === 'string' ? row.account_number : '',
+    accountNumbers: accountNumbers.length > 0 ? accountNumbers : normalizeStringArray(row.account_number),
     balance: toNumber(row.balance),
     calculatedBalance: toNumber(row.calculated_balance),
     icon: typeof row.icon === 'string' ? row.icon : undefined,
@@ -391,7 +425,7 @@ export async function updateBankAccount(
   id: string,
   data: {
     name?: string
-    accountNumber?: string
+    accountNumbers: string[]
     balance?: number
     icon?: string
     color?: string
@@ -401,17 +435,19 @@ export async function updateBankAccount(
     method: 'PATCH',
     body: JSON.stringify({
       name: data.name,
-      account_number: data.accountNumber,
+      account_numbers: data.accountNumbers,
       balance: data.balance,
       icon: data.icon,
       color: data.color,
     }),
   })
   const row = (payload ?? {}) as Record<string, unknown>
+  const accountNumbers = normalizeStringArray(row.account_numbers)
+
   return {
     id: typeof row.id === 'string' ? row.id : '',
     name: typeof row.name === 'string' ? row.name : '',
-    accountNumber: typeof row.account_number === 'string' ? row.account_number : '',
+    accountNumbers: accountNumbers.length > 0 ? accountNumbers : normalizeStringArray(row.account_number),
     balance: toNumber(row.balance),
     calculatedBalance: toNumber(row.calculated_balance),
     icon: typeof row.icon === 'string' ? row.icon : undefined,

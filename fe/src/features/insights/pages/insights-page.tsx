@@ -60,42 +60,92 @@ function getBankColor(name: string): string {
   return found?.color ?? '#4a4a6a'
 }
 
+function normalizeAccountNumbers(numbers: string[]): string[] {
+  const seen = new Set<string>()
+  const result: string[] = []
+
+  for (const number of numbers) {
+    const trimmed = number.trim()
+    if (!trimmed || seen.has(trimmed)) {
+      continue
+    }
+
+    seen.add(trimmed)
+    result.push(trimmed)
+  }
+
+  return result
+}
+
 type BankAccountFormProps = {
   account?: BankAccount
-  onSave: (data: { name: string; accountNumber: string; balance: number; color?: string }) => void
+  onSave: (data: { name: string; accountNumbers: string[]; balance: number; color?: string }) => void
   onCancel: () => void
   isLoading: boolean
 }
 
 function BankAccountForm({ account, onSave, onCancel, isLoading }: BankAccountFormProps) {
   const [name, setName] = useState(account?.name ?? '')
-  const [accountNumber, setAccountNumber] = useState(account?.accountNumber ?? '')
+  const [accountNumbers, setAccountNumbers] = useState<string[]>(account?.accountNumbers ?? [])
+  const [accountNumberInput, setAccountNumberInput] = useState('')
   const [balance, setBalance] = useState(String(account?.balance ?? ''))
   const [color, setColor] = useState(account?.color ?? getBankColor(account?.name ?? '') ?? '#4a4a6a')
   const [showColorPicker, setShowColorPicker] = useState(false)
+  const [formError, setFormError] = useState<string | null>(null)
 
   // Update form state when account changes (for edit mode)
   useEffect(() => {
     if (account) {
       setName(account.name)
-      setAccountNumber(account.accountNumber)
+      setAccountNumbers(account.accountNumbers)
+      setAccountNumberInput('')
       setBalance(String(account.balance))
       setColor(account.color ?? getBankColor(account.name))
       setShowColorPicker(false)
+      setFormError(null)
     } else {
       // Reset for new account
       setName('')
-      setAccountNumber('')
+      setAccountNumbers([])
+      setAccountNumberInput('')
       setBalance('')
       setColor(getBankColor(''))
       setShowColorPicker(false)
+      setFormError(null)
     }
   }, [account])
 
+  function addAccountNumber(): void {
+    const nextAccountNumber = accountNumberInput.trim()
+    if (!nextAccountNumber) {
+      setFormError('Account number cannot be empty.')
+      return
+    }
+
+    setAccountNumbers((current) => normalizeAccountNumbers([...current, nextAccountNumber]))
+    setAccountNumberInput('')
+    setFormError(null)
+  }
+
+  function removeAccountNumber(numberToRemove: string): void {
+    const nextAccountNumbers = accountNumbers.filter((number) => number !== numberToRemove)
+    setAccountNumbers(nextAccountNumbers)
+    if (nextAccountNumbers.length > 0) {
+      setFormError(null)
+    }
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    const nextAccountNumbers = normalizeAccountNumbers(accountNumbers)
     if (!name.trim()) return
-    onSave({ name: name.trim(), accountNumber: accountNumber.trim(), balance: Number(balance) || 0, color })
+    if (nextAccountNumbers.length === 0) {
+      setFormError('At least one account number is required.')
+      return
+    }
+
+    setFormError(null)
+    onSave({ name: name.trim(), accountNumbers: nextAccountNumbers, balance: Number(balance) || 0, color })
   }
 
   return (
@@ -111,14 +161,38 @@ function BankAccountForm({ account, onSave, onCancel, isLoading }: BankAccountFo
         />
       </label>
       <label className="bank-form__field">
-        <span>Account Number</span>
-        <input
-          type="text"
-          value={accountNumber}
-          onChange={(e) => setAccountNumber(e.target.value)}
-          placeholder="Account number (for transaction matching)"
-          disabled={isLoading}
-        />
+        <span>Account Numbers</span>
+        {accountNumbers.length > 0 ? (
+          <div className="bank-form__number-list">
+            {accountNumbers.map((number) => (
+              <span key={number} className="bank-form__number-pill">
+                <span>{number}</span>
+                <button
+                  type="button"
+                  className="bank-form__number-remove"
+                  onClick={() => removeAccountNumber(number)}
+                  disabled={isLoading}
+                  aria-label={`Remove account number ${number}`}
+                >
+                  x
+                </button>
+              </span>
+            ))}
+          </div>
+        ) : null}
+        <div className="bank-form__number-entry">
+          <input
+            type="text"
+            value={accountNumberInput}
+            onChange={(e) => setAccountNumberInput(e.target.value)}
+            placeholder="Add another account number"
+            disabled={isLoading}
+          />
+          <button type="button" onClick={addAccountNumber} disabled={isLoading}>
+            Add
+          </button>
+        </div>
+        <p className="bank-form__hint">Nomor yang tampil di sini adalah daftar final yang akan disimpan.</p>
       </label>
       <label className="bank-form__field">
         <span>Balance</span>
@@ -175,6 +249,8 @@ function BankAccountForm({ account, onSave, onCancel, isLoading }: BankAccountFo
           {isLoading ? 'Saving...' : 'Save'}
         </button>
       </div>
+
+      {formError ? <p className="bank-form__error">{formError}</p> : null}
     </form>
   )
 }
@@ -202,7 +278,7 @@ export function InsightsPage() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { name: string; accountNumber: string; balance: number; color?: string } }) =>
+    mutationFn: ({ id, data }: { id: string; data: { name: string; accountNumbers: string[]; balance: number; color?: string } }) =>
       updateBankAccount(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bank-accounts'] })
@@ -311,6 +387,17 @@ export function InsightsPage() {
                     <span className="bank-card__label">{account.name}</span>
                   </div>
                   <h2 className="bank-card__amount">{formatAmount(account.calculatedBalance)}</h2>
+                  {account.accountNumbers.length > 0 ? (
+                    <div className="bank-card__numbers">
+                      {account.accountNumbers.map((number) => (
+                        <span key={number} className="bank-card__number">
+                          {number}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="bank-card__numbers bank-card__numbers--empty">No account numbers</p>
+                  )}
                   <div className="bank-card__actions">
                     <button
                       type="button"

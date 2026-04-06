@@ -574,6 +574,31 @@ p {
   color: var(--color-text);
 }
 
+.bank-card__numbers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.bank-card__numbers--empty {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.bank-card__number {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bank-color), #fff 86%);
+  border: 1px solid color-mix(in srgb, var(--bank-color), transparent 55%);
+  color: color-mix(in srgb, var(--bank-color), #111 22%);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
 .bank-card__stats {
   display: flex;
   flex-wrap: wrap;
@@ -852,6 +877,84 @@ p {
 .bank-form__field input:focus {
   outline: none;
   border-color: var(--color-brand);
+}
+
+.bank-form__number-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.bank-form__number-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  background: var(--color-brand-soft);
+  border: 1px solid color-mix(in srgb, var(--color-brand), #fff 55%);
+  color: var(--color-brand-strong);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.bank-form__number-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  margin-left: 0.35rem;
+  border: none;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-brand), #fff 35%);
+  color: #fff;
+  font-size: 0.72rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.bank-form__number-remove:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bank-form__number-entry {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.bank-form__number-entry input {
+  flex: 1 1 auto;
+}
+
+.bank-form__number-entry button {
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--color-brand), #fff 40%);
+  background: var(--color-brand-soft);
+  color: var(--color-brand-strong);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bank-form__number-entry button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bank-form__hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.bank-form__error {
+  margin: 0;
+  color: #a23c29;
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 .bank-form__actions {

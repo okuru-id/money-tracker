@@ -120,7 +120,8 @@ func (r *transactionRepository) List(ctx context.Context, filter TransactionFilt
 	baseQuery := `
 		FROM transactions t
 		LEFT JOIN categories c ON t.category_id = c.id
-		LEFT JOIN bank_accounts ba ON t.family_id = ba.family_id AND t.account_number = ba.account_number AND t.account_number != ''
+		LEFT JOIN bank_account_numbers ban ON t.family_id = ban.family_id AND t.account_number = ban.account_number AND t.account_number != ''
+		LEFT JOIN bank_accounts ba ON ba.id = ban.bank_account_id
 		WHERE t.family_id = $1
 	`
 	args := []interface{}{filter.FamilyID}
@@ -412,7 +413,8 @@ func (r *transactionRepository) ListAll(ctx context.Context, filter TransactionF
 		LEFT JOIN categories c ON t.category_id = c.id
 		LEFT JOIN users u1 ON t.created_by = u1.id
 		LEFT JOIN users u2 ON t.wallet_owner_id = u2.id
-		LEFT JOIN bank_accounts ba ON t.family_id = ba.family_id AND t.account_number = ba.account_number AND t.account_number != ''
+		LEFT JOIN bank_account_numbers ban ON t.family_id = ban.family_id AND t.account_number = ban.account_number AND t.account_number != ''
+		LEFT JOIN bank_accounts ba ON ba.id = ban.bank_account_id
 		WHERE 1=1
 	`
 	args := []interface{}{}

@@ -14,6 +14,18 @@ type BankAccountHandler struct {
 	bankAccountSvc service.BankAccountService
 }
 
+func bankAccountResponse(account *model.BankAccount) model.BankAccountResponse {
+	return model.BankAccountResponse{
+		ID:                account.ID,
+		Name:              account.Name,
+		AccountNumbers:    account.AccountNumbers,
+		Balance:           account.Balance,
+		CalculatedBalance: account.CalculatedBalance,
+		Icon:              account.Icon,
+		Color:             account.Color,
+	}
+}
+
 func NewBankAccountHandler(bankAccountSvc service.BankAccountService) *BankAccountHandler {
 	return &BankAccountHandler{
 		bankAccountSvc: bankAccountSvc,
@@ -56,6 +68,22 @@ func (h *BankAccountHandler) Create(c *gin.Context) {
 
 	account, err := h.bankAccountSvc.Create(c.Request.Context(), familyID, &req)
 	if err != nil {
+		if err.Error() == "account number already used" {
+			c.JSON(http.StatusConflict, middleware.ErrorResponse(
+				middleware.CodeConflict,
+				"Account number already used",
+				nil,
+			))
+			return
+		}
+		if err.Error() == "at least one account number is required" {
+			c.JSON(http.StatusBadRequest, middleware.ErrorResponse(
+				middleware.CodeValidationError,
+				err.Error(),
+				nil,
+			))
+			return
+		}
 		c.JSON(http.StatusInternalServerError, middleware.ErrorResponse(
 			middleware.CodeInternalError,
 			"Failed to create bank account",
@@ -64,15 +92,7 @@ func (h *BankAccountHandler) Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, model.BankAccountResponse{
-		ID:                account.ID,
-		Name:              account.Name,
-		AccountNumber:     account.AccountNumber,
-		Balance:           account.Balance,
-		CalculatedBalance: account.CalculatedBalance, // Will be 0 for new account
-		Icon:              account.Icon,
-		Color:             account.Color,
-	})
+	c.JSON(http.StatusCreated, bankAccountResponse(account))
 }
 
 // List godoc
@@ -109,15 +129,7 @@ func (h *BankAccountHandler) List(c *gin.Context) {
 
 	var response []model.BankAccountResponse
 	for _, account := range accounts {
-		response = append(response, model.BankAccountResponse{
-			ID:                account.ID,
-			Name:              account.Name,
-			AccountNumber:     account.AccountNumber,
-			Balance:           account.Balance,
-			CalculatedBalance: account.CalculatedBalance,
-			Icon:              account.Icon,
-			Color:             account.Color,
-		})
+		response = append(response, bankAccountResponse(&account))
 	}
 
 	c.JSON(http.StatusOK, gin.H{"bank_accounts": response})
@@ -161,6 +173,22 @@ func (h *BankAccountHandler) Update(c *gin.Context) {
 			))
 			return
 		}
+		if err.Error() == "account number already used" {
+			c.JSON(http.StatusConflict, middleware.ErrorResponse(
+				middleware.CodeConflict,
+				"Account number already used",
+				nil,
+			))
+			return
+		}
+		if err.Error() == "at least one account number is required" {
+			c.JSON(http.StatusBadRequest, middleware.ErrorResponse(
+				middleware.CodeValidationError,
+				err.Error(),
+				nil,
+			))
+			return
+		}
 		c.JSON(http.StatusInternalServerError, middleware.ErrorResponse(
 			middleware.CodeInternalError,
 			"Failed to update bank account",
@@ -169,15 +197,7 @@ func (h *BankAccountHandler) Update(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, model.BankAccountResponse{
-		ID:                account.ID,
-		Name:              account.Name,
-		AccountNumber:     account.AccountNumber,
-		Balance:           account.Balance,
-		CalculatedBalance: account.CalculatedBalance,
-		Icon:              account.Icon,
-		Color:             account.Color,
-	})
+	c.JSON(http.StatusOK, bankAccountResponse(account))
 }
 
 // Delete godoc

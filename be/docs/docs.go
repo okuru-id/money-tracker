@@ -1194,9 +1194,12 @@ const docTemplate = `{
         "model.BankAccountResponse": {
             "type": "object",
             "properties": {
-                "account_number": {
-                    "type": "string"
-                },
+		        "account_numbers": {
+		            "type": "array",
+		            "items": {
+		                "type": "string"
+		            }
+		        },
                 "balance": {
                     "description": "Initial/manual balance",
                     "type": "number"
@@ -1250,14 +1253,18 @@ const docTemplate = `{
         "model.CreateBankAccountRequest": {
             "type": "object",
             "required": [
-                "account_number",
+		        "account_numbers",
                 "name"
             ],
             "properties": {
-                "account_number": {
-                    "type": "string",
-                    "maxLength": 50
-                },
+		        "account_numbers": {
+		            "type": "array",
+		            "minItems": 1,
+		            "items": {
+		                "type": "string",
+		                "maxLength": 50
+		            }
+		        },
                 "balance": {
                     "type": "number"
                 },
@@ -1587,10 +1594,14 @@ const docTemplate = `{
         "model.UpdateBankAccountRequest": {
             "type": "object",
             "properties": {
-                "account_number": {
-                    "type": "string",
-                    "maxLength": 50
-                },
+		        "account_numbers": {
+		            "type": "array",
+		            "minItems": 1,
+		            "items": {
+		                "type": "string",
+		                "maxLength": 50
+		            }
+		        },
                 "balance": {
                     "type": "number"
                 },

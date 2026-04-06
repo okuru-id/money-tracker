@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
@@ -35,17 +36,26 @@ func NewBankAccountService(bankAccountRepo repository.BankAccountRepository) Ban
 }
 
 func (s *bankAccountService) Create(ctx context.Context, familyID string, req *model.CreateBankAccountRequest) (*model.BankAccount, error) {
+	accountNumbers := normalizeAccountNumbers(req.AccountNumbers)
+	if len(accountNumbers) == 0 {
+		return nil, errors.New("at least one account number is required")
+	}
+
+	if err := s.ensureAccountNumbersAvailable(ctx, familyID, accountNumbers, ""); err != nil {
+		return nil, err
+	}
+
 	now := time.Now()
 	account := &model.BankAccount{
-		ID:            uuid.New().String(),
-		FamilyID:      familyID,
-		Name:          req.Name,
-		AccountNumber: req.AccountNumber,
-		Balance:       req.Balance,
-		Icon:          req.Icon,
-		Color:         req.Color,
-		CreatedAt:     now,
-		UpdatedAt:     now,
+		ID:              uuid.New().String(),
+		FamilyID:        familyID,
+		Name:            req.Name,
+		AccountNumbers:  accountNumbers,
+		Balance:         req.Balance,
+		Icon:            req.Icon,
+		Color:           req.Color,
+		CreatedAt:       now,
+		UpdatedAt:       now,
 	}
 
 	if err := s.bankAccountRepo.Create(ctx, account); err != nil {
@@ -85,11 +95,21 @@ func (s *bankAccountService) Update(ctx context.Context, id string, req *model.U
 		return nil, errors.New("bank account not found")
 	}
 
+	currentNumbers := normalizeAccountNumbers(account.AccountNumbers)
+	accountNumbers := normalizeAccountNumbers(req.AccountNumbers)
+	if len(accountNumbers) == 0 {
+		accountNumbers = currentNumbers
+	}
+	if len(accountNumbers) == 0 {
+		return nil, errors.New("at least one account number is required")
+	}
+
+	if err := s.ensureAccountNumbersAvailable(ctx, account.FamilyID, accountNumbers, account.ID); err != nil {
+		return nil, err
+	}
+
 	if req.Name != nil {
 		account.Name = *req.Name
-	}
-	if req.AccountNumber != nil {
-		account.AccountNumber = *req.AccountNumber
 	}
 	if req.Balance != nil {
 		account.Balance = *req.Balance
@@ -100,6 +120,7 @@ func (s *bankAccountService) Update(ctx context.Context, id string, req *model.U
 	if req.Color != nil {
 		account.Color = req.Color
 	}
+	account.AccountNumbers = accountNumbers
 	account.UpdatedAt = time.Now()
 
 	if err := s.bankAccountRepo.Update(ctx, account); err != nil {
@@ -140,4 +161,34 @@ func (s *bankAccountService) GetBalanceByAccountNumber(ctx context.Context, fami
 
 func (s *bankAccountService) UpdateBalance(ctx context.Context, id string, delta decimal.Decimal) error {
 	return s.bankAccountRepo.UpdateBalance(ctx, id, delta)
+}
+
+func normalizeAccountNumbers(numbers []string) []string {
+	seen := make(map[string]struct{}, len(numbers))
+	normalized := make([]string, 0, len(numbers))
+	for _, number := range numbers {
+		trimmed := strings.TrimSpace(number)
+		if trimmed == "" {
+			continue
+		}
+		if _, ok := seen[trimmed]; ok {
+			continue
+		}
+		seen[trimmed] = struct{}{}
+		normalized = append(normalized, trimmed)
+	}
+	return normalized
+}
+
+func (s *bankAccountService) ensureAccountNumbersAvailable(ctx context.Context, familyID string, accountNumbers []string, excludeID string) error {
+	for _, accountNumber := range accountNumbers {
+		existing, err := s.bankAccountRepo.FindByAccountNumber(ctx, familyID, accountNumber)
+		if err != nil {
+			return err
+		}
+		if existing != nil && existing.ID != excludeID {
+			return errors.New("account number already used")
+		}
+	}
+	return nil
 }

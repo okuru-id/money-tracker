@@ -69,6 +69,16 @@ export function TransactionItem({ transaction, categories, bankAccounts, canEdit
     () => categories.filter((item) => item.type === (isCredit ? 'income' : 'expense')),
     [categories, isCredit],
   )
+  const bankAccountOptions = useMemo(
+    () =>
+      bankAccounts.flatMap((account) =>
+        account.accountNumbers.map((accountNumber) => ({
+          value: accountNumber,
+          label: `${account.name} - ${accountNumber}`,
+        })),
+      ),
+    [bankAccounts],
+  )
 
   const displayBankName = transaction.bankAccountName || transaction.bankName || ''
 
@@ -232,7 +242,7 @@ export function TransactionItem({ transaction, categories, bankAccounts, canEdit
               value={accountNumber}
               onChange={setAccountNumber}
               disabled={isSaving}
-              options={bankAccounts.map((acc) => ({ value: acc.accountNumber, label: `${acc.name} - ${acc.accountNumber}` }))}
+              options={bankAccountOptions}
             />
 
             {errorMessage ? <p className="history-transaction-item__error">{errorMessage}</p> : null}

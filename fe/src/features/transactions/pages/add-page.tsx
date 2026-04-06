@@ -71,6 +71,15 @@ function toErrorMessage(error: unknown): string {
   return 'Failed to save transaction. Please try again later.'
 }
 
+function getBankAccountNumberOptions(accounts: BankAccount[]): Array<{ value: string; label: string }> {
+  return accounts.flatMap((account) =>
+    account.accountNumbers.map((accountNumber) => ({
+      value: accountNumber,
+      label: `${account.name} - ${accountNumber}`,
+    })),
+  )
+}
+
 export function AddPage() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -101,7 +110,7 @@ export function AddPage() {
   const [manualType, setManualType] = useState<TransactionType | null>(() => storedLastUsedType)
   const [amountInput, setAmountInput] = useState('')
   const [categoryId, setCategoryId] = useState('')
-  const [selectedBankAccountId, setSelectedBankAccountId] = useState('')
+  const [selectedBankAccountNumber, setSelectedBankAccountNumber] = useState('')
   const [notes, setNotes] = useState('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [retryMode, setRetryMode] = useState(false)
@@ -128,6 +137,10 @@ export function AddPage() {
   const favorites = useMemo(
     () => pickFavoriteCategories(transactionsQuery.data ?? [], categoriesQuery.data ?? [], categoryType),
     [transactionsQuery.data, categoriesQuery.data, categoryType],
+  )
+  const bankAccountNumberOptions = useMemo(
+    () => getBankAccountNumberOptions(bankAccountsQuery.data ?? []),
+    [bankAccountsQuery.data],
   )
 
   const submitMutation = useMutation({
@@ -191,15 +204,13 @@ export function AddPage() {
     setRetryMode(false)
     submitStartedAtRef.current = performance.now()
 
-    const selectedBankAccount = bankAccountsQuery.data?.find((acc) => acc.id === selectedBankAccountId)
-
     submitMutation.mutate({
       amount: amountValue,
       type,
       categoryId,
       notes: notes.trim() || undefined,
       transactionDate: formatToday(),
-      accountNumber: selectedBankAccount?.accountNumber || undefined,
+      accountNumber: selectedBankAccountNumber || undefined,
     })
   }
 
@@ -269,16 +280,13 @@ export function AddPage() {
           isLoading={categoriesQuery.isLoading}
         />
 
-        {bankAccountsQuery.data && bankAccountsQuery.data.length > 0 ? (
+        {bankAccountNumberOptions.length > 0 ? (
           <div className="transaction-form__field">
             <Dropdown
               label="Bank Account (optional)"
-              options={bankAccountsQuery.data.map((account: BankAccount) => ({
-                value: account.id,
-                label: account.name,
-              }))}
-              value={selectedBankAccountId}
-              onChange={setSelectedBankAccountId}
+              options={bankAccountNumberOptions}
+              value={selectedBankAccountNumber}
+              onChange={setSelectedBankAccountNumber}
               placeholder="Select account"
             />
           </div>

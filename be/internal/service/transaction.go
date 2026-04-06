@@ -136,6 +136,8 @@ func (s *transactionService) Update(ctx context.Context, userID string, userRole
 		return nil, errors.New("not authorized to modify this transaction")
 	}
 
+	oldAccountNumber := tx.AccountNumber
+
 	// Apply updates
 	if req.WalletOwnerID != nil {
 		tx.WalletOwnerID = *req.WalletOwnerID
@@ -162,9 +164,6 @@ func (s *transactionService) Update(ctx context.Context, userID string, userRole
 	if req.AccountNumber != nil {
 		tx.AccountNumber = req.AccountNumber
 	}
-
-	// Track old account_number before update for balance recalculation
-	oldAccountNumber := tx.AccountNumber
 
 	if err := s.transactionRepo.Update(ctx, tx); err != nil {
 		return nil, err

@@ -30,6 +30,12 @@ go run ./cmd/server
 # Run with Docker
 docker compose up --build
 
+# Deploy from root
+../deploy.sh
+../deploy.sh backend
+../deploy.sh frontend
+../deploy.sh status
+
 # Apply database migrations (Atlas)
 atlas migrate apply --env local
 

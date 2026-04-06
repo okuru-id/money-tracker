@@ -79,25 +79,25 @@ type InsightsResponse struct {
 
 // Bank Account DTOs
 type CreateBankAccountRequest struct {
-	Name          string          `json:"name" binding:"required,max=100"`
-	AccountNumber string          `json:"account_number" binding:"required,max=50"`
-	Balance       decimal.Decimal `json:"balance"`
-	Icon          *string         `json:"icon,omitempty" binding:"omitempty,max=50"`
-	Color         *string         `json:"color,omitempty" binding:"omitempty,max=20"`
+	Name           string   `json:"name" binding:"required,max=100"`
+	AccountNumbers []string `json:"account_numbers" binding:"required,min=1,dive,required,max=50"`
+	Balance        decimal.Decimal `json:"balance"`
+	Icon           *string  `json:"icon,omitempty" binding:"omitempty,max=50"`
+	Color          *string  `json:"color,omitempty" binding:"omitempty,max=20"`
 }
 
 type UpdateBankAccountRequest struct {
-	Name          *string         `json:"name,omitempty" binding:"omitempty,max=100"`
-	AccountNumber *string         `json:"account_number,omitempty" binding:"omitempty,max=50"`
-	Balance       *decimal.Decimal `json:"balance,omitempty"`
-	Icon          *string         `json:"icon,omitempty" binding:"omitempty,max=50"`
-	Color         *string         `json:"color,omitempty" binding:"omitempty,max=20"`
+	Name           *string  `json:"name,omitempty" binding:"omitempty,max=100"`
+	AccountNumbers []string `json:"account_numbers" binding:"required,min=1,dive,required,max=50"`
+	Balance        *decimal.Decimal `json:"balance,omitempty"`
+	Icon           *string  `json:"icon,omitempty" binding:"omitempty,max=50"`
+	Color          *string  `json:"color,omitempty" binding:"omitempty,max=20"`
 }
 
 type BankAccountResponse struct {
 	ID               string          `json:"id"`
 	Name             string          `json:"name"`
-	AccountNumber    string          `json:"account_number"`
+	AccountNumbers   []string        `json:"account_numbers"`
 	Balance          decimal.Decimal `json:"balance"`           // Initial/manual balance
 	CalculatedBalance decimal.Decimal `json:"calculated_balance"` // Balance from transactions (credit - debit)
 	Icon             *string         `json:"icon,omitempty"`

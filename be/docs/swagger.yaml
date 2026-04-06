@@ -2,8 +2,10 @@ basePath: /api
 definitions:
   model.BankAccountResponse:
     properties:
-      account_number:
-        type: string
+      account_numbers:
+        items:
+          type: string
+        type: array
       balance:
         description: Initial/manual balance
         type: number
@@ -39,9 +41,12 @@ definitions:
     type: object
   model.CreateBankAccountRequest:
     properties:
-      account_number:
-        maxLength: 50
-        type: string
+      account_numbers:
+        items:
+          maxLength: 50
+          type: string
+        minItems: 1
+        type: array
       balance:
         type: number
       color:
@@ -54,7 +59,7 @@ definitions:
         maxLength: 100
         type: string
     required:
-    - account_number
+    - account_numbers
     - name
     type: object
   model.CreateFamilyRequest:
@@ -263,9 +268,12 @@ definitions:
     type: object
   model.UpdateBankAccountRequest:
     properties:
-      account_number:
-        maxLength: 50
-        type: string
+      account_numbers:
+        items:
+          maxLength: 50
+          type: string
+        minItems: 1
+        type: array
       balance:
         type: number
       color:
