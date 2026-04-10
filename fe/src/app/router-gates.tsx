@@ -3,6 +3,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { hydrateSession, rememberIntendedPath, useSessionState } from '../features/auth/session-store'
 import { PwaInstallPrompt } from '../components/pwa-install-prompt'
+import { LandingPage } from '../features/landing/pages/landing-page'
 
 function isFamilyOnboardingPath(path: string): boolean {
   return path.startsWith('/family/setup') || path.startsWith('/family/join') || path.startsWith('/invite/')
@@ -27,6 +28,10 @@ export function SessionGate() {
   }
 
   if (session.status === 'unauthenticated') {
+    if (location.pathname === '/') {
+      return <LandingPage />
+    }
+
     const intendedPath = `${location.pathname}${location.search}${location.hash}`
     rememberIntendedPath(intendedPath)
 
