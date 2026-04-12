@@ -6037,8 +6037,8 @@ body {
 
   .landing-moneyhub-hero {
     grid-template-columns: minmax(0, 1fr);
-    gap: 2rem;
-    padding: 1.5rem 0 2.5rem;
+    gap: 3rem;
+    padding: 1.5rem 1rem 2.5rem;
   }
 
   .landing-moneyhub-hero__visual {
@@ -6052,6 +6052,14 @@ body {
 
   .landing-moneyhub-hero__top-section {
     gap: 0.6rem;
+    left: 0;
+    right: 0;
+  }
+
+  .landing-hero-bg-circles {
+    left: 0;
+    right: 0;
+    height: 78%;
   }
 
   .landing-moneyhub-hero__photo-area {}
@@ -6078,7 +6086,11 @@ body {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .landing-moneyhub-hero__cta-row,
+  .landing-moneyhub-hero__cta-row {
+    justify-content: flex-start;
+
+  }
+
   .landing-download-cta__actions {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
