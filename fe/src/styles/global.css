@@ -4803,6 +4803,8 @@ body {
    --landing-dark-surface: #182f3a;
    --landing-light-base: #f4faf8;
    --landing-light-card: #fcfefd;
+   --landing-section-white: #fffefb;
+   --landing-section-cream: #f5ede1;
    --landing-border-light: rgb(214 226 224 / 0.92);
    --landing-text-dark: #f0f7f8;
    --landing-text-dark-muted: #94b5bc;
@@ -4948,6 +4950,17 @@ body {
    background: var(--landing-light-base);
    color: var(--landing-text-light);
    border: 0;
+}
+
+.landing-shell.landing-features,
+.landing-shell.landing-pricing,
+.landing-shell.landing-final-cta {
+   background: var(--landing-section-white);
+}
+
+.landing-shell.landing-hiw,
+.landing-shell.landing-faq {
+   background: var(--landing-section-cream);
 }
 
 .landing-shell--stats {
@@ -6176,7 +6189,6 @@ body {
 .landing-final-cta {
    align-items: center;
    justify-items: center;
-   background: #ffffff;
 }
 
 .landing-final-cta__card {
@@ -6258,7 +6270,6 @@ body {
 /* ---- FAQ ---- */
 .landing-faq {
    gap: 2rem;
-   background: #f0f9f4;
 }
 
 .landing-faq-list {
@@ -6349,7 +6360,6 @@ body {
 /* ---- Features ---- */
 .landing-features {
    gap: 2rem;
-   background: #f0f9f4;
 }
 
 .landing-features__grid {
@@ -6397,7 +6407,6 @@ body {
 /* ---- How It Works ---- */
 .landing-hiw {
    gap: 2rem;
-   background: #ffffff;
 }
 
 .landing-hiw__steps {
@@ -6492,7 +6501,6 @@ body {
 /* ---- Pricing ---- */
 .landing-pricing {
    gap: 2rem;
-   background: #ffffff;
 }
 
 .landing-pricing__grid {
