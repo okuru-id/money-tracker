@@ -26,7 +26,10 @@ export function ContributionSummary({ contributions, isLoading }: ContributionSu
     <ul className="contribution-summary">
       {contributions.map((item) => (
         <li key={item.memberId} className="contribution-summary__item">
-          <p className="contribution-summary__name">{item.memberName}</p>
+          <div className="contribution-summary__head">
+            <p className="contribution-summary__name">{item.memberName}</p>
+            <span className="contribution-summary__badge">Monthly</span>
+          </div>
           <dl className="contribution-summary__stats">
             <div>
               <dt>Income</dt>

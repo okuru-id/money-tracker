@@ -40,7 +40,7 @@ function getPageTitle(location: { pathname: string }, tabs: TabItem[]): string {
   for (const page of familyPages) {
     if (location.pathname.startsWith(page.path)) return page.label
   }
-  return 'Money Tracker'
+  return 'dompetku.id'
 }
 
 export function MobileShell() {
@@ -48,10 +48,11 @@ export function MobileShell() {
   const location = useLocation()
   const tabs = session.hasFamily ? allTabs : allTabs.filter((tab) => !tab.requiresFamily)
   const pageTitle = getPageTitle(location, tabs)
+  const userName = session.user?.name?.trim() || 'You'
 
   return (
     <div className="mobile-shell">
-      <TopBar title={pageTitle} />
+      <TopBar title={pageTitle} subtitle={`Welcome back, ${userName}`} />
       <PullToRefresh>
         <main className="mobile-shell__content">
           <Outlet />

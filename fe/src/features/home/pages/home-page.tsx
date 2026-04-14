@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
-import { IconCircleMinus, IconCirclePlus } from '@tabler/icons-react'
+import { IconArrowUpRight, IconCircleMinus, IconCirclePlus } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
 
 import { getPersonalSummary, getTransactions, type TransactionItem, type TransactionType } from '../../transactions/api'
+import { useSessionState } from '../../auth/session-store'
 import { EmptyState } from '../../../components/empty-state'
 
 const idrFormatter = new Intl.NumberFormat('id-ID', {
@@ -26,6 +27,7 @@ const MAX_RECENT = 5
 
 export function HomePage() {
   const navigate = useNavigate()
+  const session = useSessionState()
 
   const summaryQuery = useQuery({
     queryKey: ['transactions', 'personal-summary'],
@@ -39,6 +41,7 @@ export function HomePage() {
 
   const summary = summaryQuery.data
   const recentTransactions = transactionsQuery.data ?? []
+  const firstName = session.user?.name?.trim().split(/\s+/)[0] ?? 'teman'
 
   function handleQuickAction(type: TransactionType) {
     navigate(`/add?type=${type}`)
@@ -46,10 +49,20 @@ export function HomePage() {
 
   return (
     <div className="home-page">
-      <section className="home-balance" aria-label="Summary">
-        <article className="balance-card">
-          <p className="balance-card__eyebrow">Personal</p>
-          <h2 className="balance-card__value">{summary ? formatAmount(summary.netBalance) : '-'}</h2>
+      <section className="home-hero" aria-label="Summary hero">
+        <div className="home-hero__copy">
+          <p className="page-card__eyebrow">Good flow</p>
+          <h1 className="home-hero__title">Halo, {firstName}. Mari jaga cashflow tetap sehat hari ini.</h1>
+          <p className="home-hero__description">Ringkasan saldo, quick action, dan transaksi terakhir dirapikan supaya lebih cepat dipindai saat membuka app.</p>
+        </div>
+
+        <article className="home-hero__summary-card">
+          <div className="home-hero__summary-copy">
+            <p className="balance-card__eyebrow">Personal balance</p>
+            <h2 className="balance-card__value">{summary ? formatAmount(summary.netBalance) : '-'}</h2>
+            <p className="balance-card__hint">Saldo bersih bulan ini dari semua transaksi yang sudah tercatat.</p>
+          </div>
+
           {summaryQuery.isLoading ? (
             <p className="balance-card__hint">Loading transactions...</p>
           ) : summary ? (
@@ -67,6 +80,23 @@ export function HomePage() {
         </article>
       </section>
 
+      <section className="home-balance" aria-label="Highlights">
+        <article className="balance-card balance-card--dark">
+          <div className="balance-card__topline">
+            <p className="balance-card__eyebrow">Focus today</p>
+            <span className="balance-card__badge">Live</span>
+          </div>
+          <h2 className="balance-card__value">{summary ? formatAmount(summary.totalIncome) : '-'}</h2>
+          <p className="balance-card__hint">Income yang sudah masuk selama periode aktif.</p>
+        </article>
+
+        <article className="balance-card balance-card--soft">
+          <p className="balance-card__eyebrow">Control expense</p>
+          <h2 className="balance-card__value">{summary ? formatAmount(summary.totalExpense) : '-'}</h2>
+          <p className="balance-card__hint">Pantau pengeluaran agar pergerakan saldo tetap terasa aman.</p>
+        </article>
+      </section>
+
       <div className="home-quick-actions" role="group" aria-label="Quick add transaction">
         <button type="button" className="home-quick-actions__button" onClick={() => handleQuickAction('debit')}>
           <IconCircleMinus size={20} />
@@ -80,10 +110,14 @@ export function HomePage() {
 
       <section className="home-recent" aria-label="Recent transactions">
         <div className="home-recent__header">
-          <h3>Recent Transactions</h3>
+          <div>
+            <p className="home-recent__eyebrow">Recent activity</p>
+            <h3>Recent Transactions</h3>
+          </div>
           {recentTransactions.length > 0 ? (
             <button type="button" className="home-recent__link" onClick={() => navigate('/history')}>
-              View all
+              <span>View all</span>
+              <IconArrowUpRight size={16} />
             </button>
           ) : null}
         </div>

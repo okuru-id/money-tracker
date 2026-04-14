@@ -271,3 +271,17 @@ Fokus polish:
 - footer dirapikan agar struktur newsletter, links, dan socials terasa lebih bersih
 
 Polish ini tidak mengubah arsitektur landing atau route behavior; hanya memperhalus hierarchy, spacing, density, dan emphasis visual.
+
+## Rebranding
+
+Brand frontend diubah dari `Money Tracker` menjadi `dompetku.id` untuk seluruh surface yang terlihat user.
+
+Scope rebrand:
+
+- landing page
+- login/register
+- shell title/app title
+- settings copy yang menyebut nama produk
+- title HTML dan manifest PWA
+
+Rebrand ini bersifat UI/product naming. Nama repo, struktur folder, dan detail teknis internal tidak perlu diubah bila tidak terlihat user.

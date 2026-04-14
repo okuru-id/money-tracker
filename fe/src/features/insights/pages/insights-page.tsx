@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState, useRef, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import { IconTrendingDown, IconTrendingUp, IconWallet, IconReceipt, IconPlus, IconPencil, IconTrash, IconBuildingBank, IconChevronDown } from '@tabler/icons-react'
 
 import { getInsights, getBankAccounts, createBankAccount, updateBankAccount, deleteBankAccount, type BankAccount } from '../../transactions/api'
@@ -92,28 +92,6 @@ function BankAccountForm({ account, onSave, onCancel, isLoading }: BankAccountFo
   const [color, setColor] = useState(account?.color ?? getBankColor(account?.name ?? '') ?? '#4a4a6a')
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
-
-  // Update form state when account changes (for edit mode)
-  useEffect(() => {
-    if (account) {
-      setName(account.name)
-      setAccountNumbers(account.accountNumbers)
-      setAccountNumberInput('')
-      setBalance(String(account.balance))
-      setColor(account.color ?? getBankColor(account.name))
-      setShowColorPicker(false)
-      setFormError(null)
-    } else {
-      // Reset for new account
-      setName('')
-      setAccountNumbers([])
-      setAccountNumberInput('')
-      setBalance('')
-      setColor(getBankColor(''))
-      setShowColorPicker(false)
-      setFormError(null)
-    }
-  }, [account])
 
   function addAccountNumber(): void {
     const nextAccountNumber = accountNumberInput.trim()
@@ -325,13 +303,28 @@ export function InsightsPage() {
 
   return (
     <section className="insights-page" aria-label="Insights">
+      <header className="insights-page__hero">
+        <div>
+          <p className="page-card__eyebrow">Money pulse</p>
+          <h1 className="insights-page__title">Lihat aset, cashflow, dan kategori paling aktif dalam satu tempat.</h1>
+          <p className="insights-page__description">Insights sekarang ditata sebagai rangkaian kartu lembut agar angka utama lebih cepat terlihat, tanpa mengubah data yang sudah ada.</p>
+        </div>
+        <div className="insights-page__hero-card" aria-hidden="true">
+          <p>Total assets</p>
+          <strong>{formatAmount(totalBankBalance)}</strong>
+        </div>
+      </header>
+
       {/* Bank Accounts Section */}
       <div className="bank-accounts-section">
         <div className="bank-accounts-header">
-          <h3 className="bank-accounts-title">
-            <IconBuildingBank size={20} />
-            Bank Accounts
-          </h3>
+          <div>
+            <p className="bank-accounts-eyebrow">Assets overview</p>
+            <h3 className="bank-accounts-title">
+              <IconBuildingBank size={20} />
+              Bank Accounts
+            </h3>
+          </div>
           {!isAdding && (
             <button type="button" className="bank-add-btn" onClick={() => setIsAdding(true)}>
               <IconPlus size={18} />
@@ -343,6 +336,7 @@ export function InsightsPage() {
         {isAdding && (
           <div className="bank-account-form-wrapper">
             <BankAccountForm
+              key="new-bank-account"
               onSave={(data) => createMutation.mutate(data)}
               onCancel={() => setIsAdding(false)}
               isLoading={createMutation.isPending}
@@ -365,6 +359,7 @@ export function InsightsPage() {
                 return (
                   <div key={account.id} className="bank-account-form-wrapper">
                     <BankAccountForm
+                      key={account.id}
                       account={account}
                       onSave={(data) => updateMutation.mutate({ id: account.id, data })}
                       onCancel={() => setEditingId(null)}

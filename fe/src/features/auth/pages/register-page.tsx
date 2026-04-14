@@ -43,61 +43,71 @@ export function RegisterPage() {
   return (
     <section className="auth-screen" aria-labelledby="register-title">
       <div className="auth-screen__panel">
-        <p className="page-card__eyebrow">Money Tracker</p>
-        <h1 id="register-title">Create a new account</h1>
-        <p className="auth-screen__description">Start tracking family finances in just a few steps.</p>
+        <div className="auth-screen__hero">
+          <div className="auth-screen__hero-copy">
+            <p className="page-card__eyebrow">dompetku.id</p>
+            <h1 id="register-title">Buat akun baru untuk mulai tracking lebih rapi.</h1>
+            <p className="auth-screen__description">Masuk ke app dengan tampilan baru, summary yang lebih jelas, dan flow keuangan keluarga yang lebih cepat dibuka.</p>
+          </div>
+          <div className="auth-screen__spotlight" aria-hidden="true">
+            <p className="auth-screen__spotlight-label">Quick start</p>
+            <strong className="auth-screen__spotlight-value">Daftar, buat family, lalu mulai catat transaksi</strong>
+          </div>
+        </div>
 
         {errorMessage ? <p className="auth-screen__error">{errorMessage}</p> : null}
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <label className="auth-form__field">
-            <span>Name</span>
-            <input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" required />
-          </label>
+        <div className="auth-screen__form-card">
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <label className="auth-form__field">
+              <span>Name</span>
+              <input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" required />
+            </label>
 
-          <label className="auth-form__field">
-            <span>Email</span>
-            <input
-              autoComplete="email"
-              inputMode="email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-            />
-          </label>
-
-          <label className="auth-form__field">
-            <span>Password</span>
-            <div className="auth-form__password">
+            <label className="auth-form__field">
+              <span>Email</span>
               <input
-                autoComplete="new-password"
-                type={showPassword ? 'text' : 'password'}
-                minLength={8}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                autoComplete="email"
+                inputMode="email"
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 required
               />
-              <button
-                type="button"
-                className="auth-form__password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
-              </button>
-            </div>
-          </label>
+            </label>
 
-          <button className="auth-form__submit" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Creating account...' : 'Sign up'}
-          </button>
-        </form>
+            <label className="auth-form__field">
+              <span>Password</span>
+              <div className="auth-form__password">
+                <input
+                  autoComplete="new-password"
+                  type={showPassword ? 'text' : 'password'}
+                  minLength={8}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="auth-form__password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+                </button>
+              </div>
+            </label>
 
-        <p className="auth-screen__switch">
-          Already have an account? <Link to="/login">Log in here</Link>
-        </p>
+            <button className="auth-form__submit" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Creating account...' : 'Sign up'}
+            </button>
+          </form>
+
+          <p className="auth-screen__switch">
+            Already have an account? <Link to="/login">Log in here</Link>
+          </p>
+        </div>
       </div>
     </section>
   )

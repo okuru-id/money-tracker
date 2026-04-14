@@ -50,6 +50,7 @@ function resolveInviteLink(invite: FamilyInviteStatus): string {
 function FamilyMissingState() {
   return (
     <article className="family-card family-card--empty" aria-live="polite">
+      <p className="page-card__eyebrow">Family</p>
       <h2>Family context not ready</h2>
       <p className="family-card__hint">
         We couldn't find an active family in this session. You can create a new family or join using an invite token.
@@ -136,7 +137,10 @@ export function FamilyPageContent() {
     <>
       <article className="family-card">
         <div className="family-card__header-row">
-          <h2>Latest invite</h2>
+          <div>
+            <p className="family-card__eyebrow">Invite center</p>
+            <h2>Latest invite</h2>
+          </div>
           <button
             type="button"
             className="family-card__action"
@@ -191,7 +195,12 @@ export function FamilyPageContent() {
       </article>
 
       <article className="family-card">
-        <h2>Family members</h2>
+        <div className="family-card__header-row family-card__header-row--stacked">
+          <div>
+            <p className="family-card__eyebrow">Members</p>
+            <h2>Family members</h2>
+          </div>
+        </div>
         {membersQuery.isLoading ? <p className="family-card__hint">Loading members...</p> : null}
         <MemberList
           members={membersQuery.data?.members ?? []}
@@ -228,7 +237,12 @@ export function FamilyPageContent() {
       </article>
 
       <article className="family-card">
-        <h2>This month's contribution</h2>
+        <div className="family-card__header-row family-card__header-row--stacked">
+          <div>
+            <p className="family-card__eyebrow">Contribution</p>
+            <h2>This month's contribution</h2>
+          </div>
+        </div>
         <ContributionSummary
           contributions={summaryQuery.data?.perMemberContributions ?? []}
           isLoading={summaryQuery.isLoading}
@@ -242,9 +256,15 @@ export function FamilyPage() {
   return (
     <section className="family-page" aria-labelledby="family-page-title">
       <header className="family-page__header">
-        <p className="page-card__eyebrow">Family</p>
-        <h1 id="family-page-title">Family members and contributions</h1>
-        <p>Monitor who's active and their monthly contributions from one screen.</p>
+        <div>
+          <p className="page-card__eyebrow">Family</p>
+          <h1 id="family-page-title">Family members and contributions</h1>
+          <p>Monitor who's active, bagikan invite, dan lihat kontribusi bulanan dalam layout yang lebih rapi.</p>
+        </div>
+        <div className="family-page__hero-card" aria-hidden="true">
+          <p>Shared household</p>
+          <strong>One family, one dashboard</strong>
+        </div>
       </header>
 
       <FamilyPageContent />

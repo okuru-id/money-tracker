@@ -66,56 +66,66 @@ export function LoginPage() {
   return (
     <section className="auth-screen" aria-labelledby="login-title">
       <div className="auth-screen__panel">
-        <p className="page-card__eyebrow">Money Tracker</p>
-        <h1 id="login-title">Log in to your account</h1>
-        <p className="auth-screen__description">Track family balance and record daily transactions without switching apps.</p>
+        <div className="auth-screen__hero">
+          <div className="auth-screen__hero-copy">
+            <p className="page-card__eyebrow">dompetku.id</p>
+            <h1 id="login-title">Masuk ke dashboard keuangan yang terasa lebih ringan.</h1>
+            <p className="auth-screen__description">Pantau saldo keluarga, catat transaksi harian, dan masuk ke flow pencatatan dalam beberapa tap saja.</p>
+          </div>
+          <div className="auth-screen__spotlight" aria-hidden="true">
+            <p className="auth-screen__spotlight-label">Today flow</p>
+            <strong className="auth-screen__spotlight-value">Saldo, transaksi, dan insight dalam satu layar</strong>
+          </div>
+        </div>
 
         {locationState.message ? <p className="auth-screen__notice">{locationState.message}</p> : null}
         {errorMessage ? <p className="auth-screen__error">{errorMessage}</p> : null}
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <label className="auth-form__field">
-            <span>Email</span>
-            <input
-              autoComplete="email"
-              inputMode="email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-            />
-          </label>
-
-          <label className="auth-form__field">
-            <span>Password</span>
-            <div className="auth-form__password">
+        <div className="auth-screen__form-card">
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <label className="auth-form__field">
+              <span>Email</span>
               <input
-                autoComplete="current-password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                autoComplete="email"
+                inputMode="email"
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 required
               />
-              <button
-                type="button"
-                className="auth-form__password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
-              </button>
-            </div>
-          </label>
+            </label>
 
-          <button className="auth-form__submit" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Processing...' : 'Log in'}
-          </button>
-        </form>
+            <label className="auth-form__field">
+              <span>Password</span>
+              <div className="auth-form__password">
+                <input
+                  autoComplete="current-password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="auth-form__password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+                </button>
+              </div>
+            </label>
 
-        <p className="auth-screen__switch">
-          Don't have an account? <Link to="/register">Sign up now</Link>
-        </p>
+            <button className="auth-form__submit" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Processing...' : 'Log in'}
+            </button>
+          </form>
+
+          <p className="auth-screen__switch">
+            Don't have an account? <Link to="/register">Sign up now</Link>
+          </p>
+        </div>
       </div>
     </section>
   )

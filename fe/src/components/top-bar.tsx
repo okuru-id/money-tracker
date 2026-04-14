@@ -8,9 +8,10 @@ import { showToast } from '../lib/toast'
 
 type TopBarProps = {
   title?: ReactNode
+  subtitle?: ReactNode
 }
 
-export function TopBar({ title }: TopBarProps) {
+export function TopBar({ title, subtitle }: TopBarProps) {
   const navigate = useNavigate()
   const session = useSessionState()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -42,6 +43,7 @@ export function TopBar({ title }: TopBarProps) {
     <>
       <div className="topbar">
         <div className="topbar__left">
+          {subtitle ? <p className="topbar__subtitle">{subtitle}</p> : null}
           {title && <div className="topbar__title">{title}</div>}
         </div>
         <div className="topbar__right">

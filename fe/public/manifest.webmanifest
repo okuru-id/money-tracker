@@ -1,7 +1,7 @@
 {
-  "name": "Money Tracker",
-  "short_name": "MoneyTrack",
-  "description": "Money Tracker mobile web app (online-only)",
+  "name": "dompetku.id",
+  "short_name": "dompetku.id",
+  "description": "dompetku.id mobile web app (online-only)",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

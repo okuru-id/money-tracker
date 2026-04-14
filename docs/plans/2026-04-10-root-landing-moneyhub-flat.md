@@ -24,7 +24,7 @@
 **Step 2: Rapikan source data statis**
 
 - Definisikan array data untuk menu, logos, features, metrics, testimonial, dan footer links langsung di file page
-- Pastikan copy tetap menjual Money Tracker, bukan brand referensi
+- Pastikan copy tetap menjual dompetku.id, bukan brand referensi
 
 **Step 3: Pertahankan CTA route existing**
 
@@ -169,4 +169,4 @@ Expected: hanya file terkait landing redesign dan dokumen plan yang berubah
 - Jangan membuat atau mengubah test file karena user tidak memintanya dan repo melarang itu
 - Jangan ubah routing root lagi karena perilaku guest/authenticated sudah benar
 - Fokus hanya pada landing page publik, bukan app setelah login
-- Vibe MoneyHub hanya sebagai referensi visual; branding dan konten tetap Money Tracker
+- Vibe MoneyHub hanya sebagai referensi visual; branding dan konten tetap dompetku.id

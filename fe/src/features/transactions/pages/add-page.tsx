@@ -225,82 +225,100 @@ export function AddPage() {
 
   return (
     <section className="add-page" aria-labelledby="add-page-title">
-      <form className="transaction-form" onSubmit={handleSubmit}>
-        <div className="transaction-form__type-toggle" role="group" aria-label="Transaction type">
-          <button
-            type="button"
-            className={type === 'debit' ? 'transaction-form__type-button transaction-form__type-button--active' : 'transaction-form__type-button'}
-            onClick={() => {
-              setManualType('debit')
-              if (typeFromQuery) {
-                const next = new URLSearchParams(searchParams)
-                next.delete('type')
-                setSearchParams(next, { replace: true })
-              }
-              if (!submitMutation.isSuccess && !hasSwitchedTypeBeforeSubmit && type !== 'debit') {
-                setHasSwitchedTypeBeforeSubmit(true)
-                trackKpiEvent('type_switch_before_submit', {
-                  switchedToType: 'debit',
-                })
-              }
-            }}
-          >
-            Expense
-          </button>
-          <button
-            type="button"
-            className={type === 'credit' ? 'transaction-form__type-button transaction-form__type-button--active' : 'transaction-form__type-button'}
-            onClick={() => {
-              setManualType('credit')
-              if (typeFromQuery) {
-                const next = new URLSearchParams(searchParams)
-                next.delete('type')
-                setSearchParams(next, { replace: true })
-              }
-              if (!submitMutation.isSuccess && !hasSwitchedTypeBeforeSubmit && type !== 'credit') {
-                setHasSwitchedTypeBeforeSubmit(true)
-                trackKpiEvent('type_switch_before_submit', {
-                  switchedToType: 'credit',
-                })
-              }
-            }}
-          >
-            Income
-          </button>
+      <header className="add-page__hero">
+        <div>
+          <p className="page-card__eyebrow">Quick add</p>
+          <h1 id="add-page-title">Catat transaksi baru tanpa kehilangan ritme.</h1>
+          <p>Form ini dipoles supaya input nominal, pilih kategori, dan simpan transaksi terasa lebih cepat di layar mobile.</p>
         </div>
+        <div className="add-page__hero-card" aria-hidden="true">
+          <p>Tap, pilih, simpan</p>
+          <strong>{type === 'credit' ? 'Income mode' : 'Expense mode'}</strong>
+        </div>
+      </header>
 
-        <AmountInput value={amountInput} onChange={setAmountInput} autoFocus />
-
-        <CategoryPicker
-          type={categoryType}
-          categories={categoriesQuery.data ?? []}
-          favoriteCategories={favorites}
-          selectedCategoryId={categoryId}
-          onSelect={setCategoryId}
-          isLoading={categoriesQuery.isLoading}
-        />
-
-        {bankAccountNumberOptions.length > 0 ? (
-          <div className="transaction-form__field">
-            <Dropdown
-              label="Bank Account (optional)"
-              options={bankAccountNumberOptions}
-              value={selectedBankAccountNumber}
-              onChange={setSelectedBankAccountNumber}
-              placeholder="Select account"
-            />
+      <form className="transaction-form" onSubmit={handleSubmit}>
+        <section className="transaction-form__section transaction-form__section--hero">
+          <div className="transaction-form__type-toggle" role="group" aria-label="Transaction type">
+            <button
+              type="button"
+              className={type === 'debit' ? 'transaction-form__type-button transaction-form__type-button--active' : 'transaction-form__type-button'}
+              onClick={() => {
+                setManualType('debit')
+                if (typeFromQuery) {
+                  const next = new URLSearchParams(searchParams)
+                  next.delete('type')
+                  setSearchParams(next, { replace: true })
+                }
+                if (!submitMutation.isSuccess && !hasSwitchedTypeBeforeSubmit && type !== 'debit') {
+                  setHasSwitchedTypeBeforeSubmit(true)
+                  trackKpiEvent('type_switch_before_submit', {
+                    switchedToType: 'debit',
+                  })
+                }
+              }}
+            >
+              Expense
+            </button>
+            <button
+              type="button"
+              className={type === 'credit' ? 'transaction-form__type-button transaction-form__type-button--active' : 'transaction-form__type-button'}
+              onClick={() => {
+                setManualType('credit')
+                if (typeFromQuery) {
+                  const next = new URLSearchParams(searchParams)
+                  next.delete('type')
+                  setSearchParams(next, { replace: true })
+                }
+                if (!submitMutation.isSuccess && !hasSwitchedTypeBeforeSubmit && type !== 'credit') {
+                  setHasSwitchedTypeBeforeSubmit(true)
+                  trackKpiEvent('type_switch_before_submit', {
+                    switchedToType: 'credit',
+                  })
+                }
+              }}
+            >
+              Income
+            </button>
           </div>
-        ) : null}
 
-        <label className="transaction-form__field" htmlFor="notes-input">
-          <span>Notes (optional)</span>
-          <input
-            id="notes-input"
-            value={notes}
-            onChange={(event) => setNotes(event.target.value)}
-            placeholder="Example: team lunch"
+          <AmountInput value={amountInput} onChange={setAmountInput} autoFocus />
+        </section>
+
+        <section className="transaction-form__section">
+          <CategoryPicker
+            type={categoryType}
+            categories={categoriesQuery.data ?? []}
+            favoriteCategories={favorites}
+            selectedCategoryId={categoryId}
+            onSelect={setCategoryId}
+            isLoading={categoriesQuery.isLoading}
           />
-        </label>
+        </section>
+
+        <section className="transaction-form__section">
+          {bankAccountNumberOptions.length > 0 ? (
+            <div className="transaction-form__field">
+              <Dropdown
+                label="Bank Account (optional)"
+                options={bankAccountNumberOptions}
+                value={selectedBankAccountNumber}
+                onChange={setSelectedBankAccountNumber}
+                placeholder="Select account"
+              />
+            </div>
+          ) : null}
+
+          <label className="transaction-form__field" htmlFor="notes-input">
+            <span>Notes (optional)</span>
+            <input
+              id="notes-input"
+              value={notes}
+              onChange={(event) => setNotes(event.target.value)}
+              placeholder="Example: team lunch"
+            />
+          </label>
+        </section>
 
         {errorMessage ? <p className="transaction-form__error">{errorMessage}</p> : null}
 

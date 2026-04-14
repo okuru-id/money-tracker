@@ -150,6 +150,9 @@ export function TransactionItem({ transaction, categories, bankAccounts, canEdit
           onKeyDown={(e) => { if (e.key === 'Enter') setShowDetail(true) }}
         >
           <div>
+            <p className="history-transaction-item__type-pill">
+              {transaction.type === 'credit' ? 'Income' : 'Expense'}
+            </p>
             <p className="history-transaction-item__category">{transaction.categoryName || 'No category'}</p>
             <p className="history-transaction-item__date">{formatDate(transaction.transactionDate ?? transaction.createdAt)}</p>
           </div>

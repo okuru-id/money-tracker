@@ -66,37 +66,47 @@ export function InviteJoinPage() {
       <TopBar title="Family Join" />
       <section className="auth-screen" aria-labelledby="join-family-title">
         <div className="auth-screen__panel">
-          <p className="auth-screen__description">
-            Enter the invite token from the family owner to join the shared dashboard.
-          </p>
+          <div className="auth-screen__hero">
+            <div className="auth-screen__hero-copy">
+              <p className="page-card__eyebrow">Join family</p>
+              <h1 id="join-family-title">Masuk ke dashboard keluarga dengan invite token.</h1>
+              <p className="auth-screen__description">Tempel token dari owner untuk langsung bergabung ke ruang keuangan bersama dan melihat transaksi yang sama.</p>
+            </div>
+            <div className="auth-screen__spotlight" aria-hidden="true">
+              <p className="auth-screen__spotlight-label">One step</p>
+              <strong className="auth-screen__spotlight-value">Join cepat tanpa setup ulang akun</strong>
+            </div>
+          </div>
 
           {errorMessage ? <p className="auth-screen__error">{errorMessage}</p> : null}
 
-          <form className="auth-form" onSubmit={handleSubmit}>
-            <label className="auth-form__field">
-              <span>Invite token</span>
-              <input
-                value={token}
-                onChange={(event) => setToken(event.target.value)}
-                placeholder="Paste invite token here"
-                autoCapitalize="none"
-                autoCorrect="off"
-                required
-              />
-            </label>
+          <div className="auth-screen__form-card">
+            <form className="auth-form" onSubmit={handleSubmit}>
+              <label className="auth-form__field">
+                <span>Invite token</span>
+                <input
+                  value={token}
+                  onChange={(event) => setToken(event.target.value)}
+                  placeholder="Paste invite token here"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  required
+                />
+              </label>
 
-            <button className="auth-form__submit" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Processing...' : 'Join family'}
+              <button className="auth-form__submit" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Processing...' : 'Join family'}
+              </button>
+            </form>
+
+            <p className="auth-screen__switch">
+              Don't have a token? <Link to="/family/setup">Create your own family</Link>
+            </p>
+
+            <button className="auth-screen__skip" type="button" onClick={handleSkip}>
+              Skip for now
             </button>
-          </form>
-
-          <p className="auth-screen__switch">
-            Don't have a token? <Link to="/family/setup">Create your own family</Link>
-          </p>
-
-          <button className="auth-screen__skip" type="button" onClick={handleSkip}>
-            Skip for now
-          </button>
+          </div>
         </div>
       </section>
     </div>

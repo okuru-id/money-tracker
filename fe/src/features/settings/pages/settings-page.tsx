@@ -50,6 +50,20 @@ export function SettingsPage() {
 
   return (
     <section className="settings-page" aria-labelledby="settings-title">
+      <header className="settings-page__header">
+        <div>
+          <p className="page-card__eyebrow">Settings</p>
+          <h1 id="settings-title">Atur akses, family, dan app dari satu panel yang lebih rapi.</h1>
+          <p>Semua kontrol penting tetap sama, hanya ditata ulang supaya terasa lebih ringan dan konsisten dengan tampilan baru.</p>
+        </div>
+        {session.user ? (
+          <div className="settings-page__profile-chip">
+            <strong>{session.user.name}</strong>
+            <span>{session.user.email}</span>
+          </div>
+        ) : null}
+      </header>
+
       {showFamilySetupPrompt && (
         <div className="settings-page__family-prompt">
           <div className="settings-page__family-prompt-content">
@@ -118,7 +132,7 @@ export function SettingsPage() {
             {isPwaInstalled ? <span className="settings-installed-badge">Installed</span> : null}
           </div>
           <p className="settings-page__install-description">
-            Save Money Tracker to your home screen for faster access and a native app experience.
+            Save dompetku.id to your home screen for faster access and a native app experience.
           </p>
           {!isPwaInstalled && !isPwaInstallAvailable && !isIOS ? (
             <p className="settings-page__install-hint">
