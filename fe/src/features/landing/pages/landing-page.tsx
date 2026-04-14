@@ -1,21 +1,35 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
-const navItems = ["Tentang", "Fitur", "Pricing", "FAQ"];
+import { getPublicAbsoluteUrl, usePageSeo } from '../../../lib/seo'
 
-const problems = [
-   "Pengeluaran sering tidak tercatat",
-   "Lupa mencatat transaksi kecil",
-   "Harus input manual yang ribet",
-   "Sulit memantau keuangan keluarga",
-];
+const navItems = [
+   { label: 'Tentang', href: '#tentang' },
+   { label: 'Fitur', href: '#fitur' },
+   { label: 'Pricing', href: '#pricing' },
+   { label: 'FAQ', href: '#faq' },
+]
 
-const solutions = [
-   "Catat transaksi otomatis dari email & notifikasi",
-   "Scan struk belanja langsung jadi data",
-   "Input transaksi lewat chat",
-   "Kelola keuangan bersama keluarga",
-];
+const landingStructuredData = [
+   {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'dompetku.id',
+      url: getPublicAbsoluteUrl('/'),
+      inLanguage: 'id-ID',
+      description:
+         'Aplikasi catat keuangan keluarga untuk memantau pemasukan, pengeluaran, scan struk, dan transaksi bersama dalam satu dashboard.',
+   },
+   {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'dompetku.id',
+      url: getPublicAbsoluteUrl('/'),
+      logo: getPublicAbsoluteUrl('/icons/android-chrome-512x512.png'),
+      description:
+         'Platform pencatatan keuangan keluarga dengan AI, scan struk, dan dashboard transaksi bersama.',
+   },
+]
 
 const features = [
    {
@@ -136,93 +150,6 @@ const howItWorks = [
    },
 ];
 
-const useCases = [
-   {
-      title: "Untuk Keluarga",
-      desc: "Kelola pengeluaran rumah tangga dalam satu dashboard bersama.",
-      icon: (
-         <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-         >
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            <polyline points="9 22 9 12 15 12 15 22" />
-         </svg>
-      ),
-   },
-   {
-      title: "Untuk Freelancer",
-      desc: "Pantau pemasukan dari berbagai sumber dengan rapi dan terstruktur.",
-      icon: (
-         <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-         >
-            <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-         </svg>
-      ),
-   },
-   {
-      title: "Untuk Karyawan",
-      desc: "Kontrol pengeluaran bulanan dan terapkan budgeting lebih disiplin.",
-      icon: (
-         <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-         >
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-            <line x1="8" y1="21" x2="16" y2="21" />
-            <line x1="12" y1="17" x2="12" y2="21" />
-         </svg>
-      ),
-   },
-];
-
-const aiPoints = [
-   "Membaca transaksi dari email secara otomatis",
-   "Mengenali data dari foto struk",
-   "Memahami input dari chat",
-   "Mengurangi kebutuhan input manual",
-];
-
-const dashboardFeatures = [
-   {
-      label: "Grafik pemasukan & pengeluaran",
-      desc: "Lihat tren keuangan dalam grafik visual yang mudah dipahami.",
-   },
-   {
-      label: "Kategori transaksi otomatis",
-      desc: "AI mengelompokkan transaksi ke kategori yang tepat.",
-   },
-   {
-      label: "Ringkasan saldo",
-      desc: "Pantau total saldo dari semua akun dalam satu tampilan.",
-   },
-   {
-      label: "Riwayat transaksi lengkap",
-      desc: "Telusuri setiap transaksi dengan filter tanggal dan kategori.",
-   },
-];
-
 const heroPills = [
    {
       text: "Ribuan transaksi dicatat",
@@ -323,6 +250,17 @@ const footerLinks = {
 };
 
 export function LandingPage() {
+   usePageSeo({
+      title: 'dompetku.id | Aplikasi Catat Keuangan Keluarga dengan AI dan Scan Struk',
+      description:
+         'Catat pemasukan dan pengeluaran keluarga lebih cepat dengan dompetku.id. Gunakan scan struk, AI, dan dashboard bersama untuk memantau keuangan dari satu tempat.',
+      path: '/',
+      imagePath: '/hero-person.png',
+      imageAlt:
+         'Ilustrasi pengguna memantau pertumbuhan keuangan keluarga bersama dompetku.id',
+      jsonLd: landingStructuredData,
+   })
+
    useEffect(() => {
       document.documentElement.classList.add("landing-route");
       document.body.classList.add("landing-route");
@@ -339,7 +277,7 @@ export function LandingPage() {
    return (
       <main className="landing-page landing-page--moneyhub-flat">
          {/* ── Hero ── */}
-         <section className="landing-shell landing-shell--hero">
+         <section id="tentang" className="landing-shell landing-shell--hero">
             <header className="landing-navbar">
                <Link className="landing-navbar__brand" to="/">
                   <span className="landing-navbar__brand-mark">D</span>
@@ -350,12 +288,16 @@ export function LandingPage() {
                   className="landing-navbar__menu"
                   aria-label="Landing navigation"
                >
-                  {navItems.map((item) => (
-                     <span key={item} className="landing-navbar__menu-link">
-                        {item}
-                     </span>
-                  ))}
-               </nav>
+                   {navItems.map((item) => (
+                      <a
+                         key={item.label}
+                         className="landing-navbar__menu-link"
+                         href={item.href}
+                      >
+                         {item.label}
+                      </a>
+                   ))}
+                </nav>
 
                <div className="landing-navbar__actions">
                   <Link className="landing-navbar__login" to="/login">
@@ -441,95 +383,36 @@ export function LandingPage() {
                         </div>
                      </div>
 
-                     <div className="landing-hero-bg-circles">
-                        <span className="landing-hero-bg-circle landing-hero-bg-circle--1" />
-                        <span className="landing-hero-bg-circle landing-hero-bg-circle--2" />
-                     </div>
+                       <div className="landing-hero-bg-circles">
+                          <img
+                             className="landing-hero-bg-chart"
+                             src="/bar-chart.png"
+                             alt=""
+                             loading="lazy"
+                             decoding="async"
+                          />
+                         <span className="landing-hero-bg-circle landing-hero-bg-circle--1" />
+                         <span className="landing-hero-bg-circle landing-hero-bg-circle--2" />
+                      </div>
 
                      <div className="landing-moneyhub-hero__photo-area">
-                        <img
-                           className="landing-moneyhub-hero__photo"
-                           src="/hero-person.png"
-                           alt=""
-                        />
-                     </div>
+                         <img
+                            className="landing-moneyhub-hero__photo"
+                            src="/hero-person.png"
+                            alt="Ilustrasi pengguna memantau pertumbuhan keuangan keluarga bersama dompetku.id"
+                            loading="eager"
+                            decoding="async"
+                            fetchPriority="high"
+                         />
+                      </div>
                   </div>
                </div>
             </section>
          </section>
 
-         {/* ── 1. Problem & Solution ── */}
+         {/* ── 1. Fitur Unggulan ── */}
          <section
-            className="landing-shell landing-shell--light landing-ps"
-            aria-label="Masalah dan solusi"
-         >
-            <div className="landing-section-copy landing-section-copy--centered">
-               <p className="landing-section-copy__eyebrow">Masalah & Solusi</p>
-               <h2>Kenapa Mengelola Keuangan Itu Sulit?</h2>
-            </div>
-            <div className="landing-ps__grid">
-               <div className="landing-ps__col landing-ps__col--before">
-                  <p className="landing-ps__col-label">Sebelum</p>
-                  {problems.map((p) => (
-                     <div
-                        key={p}
-                        className="landing-ps__item landing-ps__item--problem"
-                     >
-                        <span
-                           className="landing-ps__mark landing-ps__mark--x"
-                           aria-hidden="true"
-                        >
-                           <svg
-                              width="14"
-                              height="14"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                           >
-                              <line x1="18" y1="6" x2="6" y2="18" />
-                              <line x1="6" y1="6" x2="18" y2="18" />
-                           </svg>
-                        </span>
-                        <span>{p}</span>
-                     </div>
-                  ))}
-               </div>
-               <div className="landing-ps__col landing-ps__col--after">
-                  <p className="landing-ps__col-label">Dengan dompetku.id</p>
-                  {solutions.map((s) => (
-                     <div
-                        key={s}
-                        className="landing-ps__item landing-ps__item--solution"
-                     >
-                        <span
-                           className="landing-ps__mark landing-ps__mark--check"
-                           aria-hidden="true"
-                        >
-                           <svg
-                              width="14"
-                              height="14"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                           >
-                              <polyline points="20 6 9 17 4 12" />
-                           </svg>
-                        </span>
-                        <span>{s}</span>
-                     </div>
-                  ))}
-               </div>
-            </div>
-         </section>
-
-         {/* ── 2. Fitur Unggulan ── */}
-         <section
+            id="fitur"
             className="landing-shell landing-shell--light landing-features"
             aria-label="Fitur unggulan"
          >
@@ -557,7 +440,7 @@ export function LandingPage() {
             </div>
          </section>
 
-         {/* ── 3. Cara Kerja ── */}
+         {/* ── 2. Cara Kerja ── */}
          <section
             className="landing-shell landing-shell--light landing-hiw"
             aria-label="Cara kerja"
@@ -583,96 +466,9 @@ export function LandingPage() {
             </div>
          </section>
 
-         {/* ── 4. Use Case ── */}
+         {/* ── 3. Pricing ── */}
          <section
-            className="landing-shell landing-shell--light landing-uc"
-            aria-label="Untuk siapa"
-         >
-            <div className="landing-section-copy landing-section-copy--centered">
-               <p className="landing-section-copy__eyebrow">Untuk Siapa?</p>
-               <h2>Cocok untuk Berbagai Kebutuhan</h2>
-               <p>
-                  Baik untuk keluarga, freelancer, maupun karyawan — dompetku.id
-                  siap membantu.
-               </p>
-            </div>
-            <div className="landing-uc__grid">
-               {useCases.map((uc) => (
-                  <article key={uc.title} className="landing-uc-card">
-                     <div className="landing-uc-card__icon" aria-hidden="true">
-                        {uc.icon}
-                     </div>
-                     <h3 className="landing-uc-card__title">{uc.title}</h3>
-                     <p className="landing-uc-card__desc">{uc.desc}</p>
-                  </article>
-               ))}
-            </div>
-         </section>
-
-         {/* ── 5. Keunggulan AI ── */}
-         <section
-            className="landing-shell landing-shell--light landing-ai"
-            aria-label="Keunggulan AI"
-         >
-            <div className="landing-ai__layout">
-               <div className="landing-section-copy">
-                  <p className="landing-section-copy__eyebrow">Keunggulan AI</p>
-                  <h2>Keuangan yang Bekerja untuk Kamu</h2>
-                  <p>
-                     Teknologi AI yang kami gunakan dirancang khusus untuk
-                     memahami dan memproses data keuangan sehari-hari.
-                  </p>
-               </div>
-               <div className="landing-ai__side">
-                  <ul className="landing-ai__points">
-                     {aiPoints.map((point) => (
-                        <li key={point} className="landing-ai__point">
-                           <span
-                              className="landing-ai__point-dot"
-                              aria-hidden="true"
-                           />
-                           {point}
-                        </li>
-                     ))}
-                  </ul>
-                  <blockquote className="landing-ai__quote">
-                     Fokus ke hidup, bukan ke catatan keuangan.
-                  </blockquote>
-               </div>
-            </div>
-         </section>
-
-         {/* ── 6. Dashboard Preview ── */}
-         <section
-            className="landing-shell landing-shell--light landing-dash"
-            aria-label="Tampilan dashboard"
-         >
-            <div className="landing-section-copy landing-section-copy--centered">
-               <p className="landing-section-copy__eyebrow">
-                  Tampilan Dashboard
-               </p>
-               <h2>Semua dalam Satu Pandangan</h2>
-               <p>
-                  Dashboard yang bersih dan ringkas — dirancang agar kamu cepat
-                  paham kondisi keuangan hari ini.
-               </p>
-            </div>
-            <div className="landing-dash__grid">
-               {dashboardFeatures.map((f) => (
-                  <article key={f.label} className="landing-dash-card">
-                     <span
-                        className="landing-dash-card__dot"
-                        aria-hidden="true"
-                     />
-                     <h3 className="landing-dash-card__label">{f.label}</h3>
-                     <p className="landing-dash-card__desc">{f.desc}</p>
-                  </article>
-               ))}
-            </div>
-         </section>
-
-         {/* ── 7. Pricing ── */}
-         <section
+            id="pricing"
             className="landing-shell landing-shell--light landing-pricing"
             aria-label="Harga"
          >
@@ -749,10 +545,10 @@ export function LandingPage() {
             </div>
          </section>
 
-         {/* ── 9. FAQ ── */}
+         {/* ── 4. FAQ ── */}
          <LandingFaq />
 
-         {/* ── 10. Final CTA ── */}
+         {/* ── 5. Final CTA ── */}
          <section
             className="landing-shell landing-shell--light landing-final-cta"
             aria-label="Ajakan bertindak"
@@ -850,6 +646,7 @@ function LandingFaq() {
 
    return (
       <section
+         id="faq"
          className="landing-shell landing-shell--light landing-faq"
          aria-label="Pertanyaan umum"
       >

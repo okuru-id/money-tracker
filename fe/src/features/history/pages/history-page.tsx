@@ -126,7 +126,6 @@ export function HistoryPage() {
   })
 
   const transactions = transactionsQuery.data ?? []
-  const totalTransactions = transactions.length
 
   function handleMonthChange(nextYear: number, nextMonth: number) {
     setYear(nextYear)
@@ -134,19 +133,7 @@ export function HistoryPage() {
   }
 
   return (
-    <section className="history-page" aria-labelledby="history-page-title">
-      <header className="history-page__hero">
-        <div className="history-page__hero-copy">
-          <p className="page-card__eyebrow">Transaction history</p>
-          <h1 id="history-page-title">Riwayat transaksi dibuat lebih mudah dipindai.</h1>
-          <p>Buka periode tertentu, lihat detail, lalu edit transaksi dari layout kartu yang lebih tenang di layar mobile.</p>
-        </div>
-        <div className="history-page__hero-card" aria-live="polite">
-          <p>Entries this month</p>
-          <strong>{transactionsQuery.isLoading ? '...' : totalTransactions}</strong>
-        </div>
-      </header>
-
+    <section className="history-page">
       <MonthNavigator year={year} month={month} disabled={transactionsQuery.isLoading} onChange={handleMonthChange} />
 
       {errorMessage ? <p className="history-page__error">{errorMessage}</p> : null}

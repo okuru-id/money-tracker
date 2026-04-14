@@ -1,19 +1,145 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="48x48" href="/icons/favicon-48x48.png" />
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180x180.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="theme-color" content="#fffdf8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>dompetku.id</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<html lang="id">
+   <head>
+      <meta charset="UTF-8" />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+      <link
+         rel="icon"
+         type="image/png"
+         sizes="16x16"
+         href="/icons/favicon-16x16.png"
+      />
+      <link
+         rel="icon"
+         type="image/png"
+         sizes="32x32"
+         href="/icons/favicon-32x32.png"
+      />
+      <link
+         rel="icon"
+         type="image/png"
+         sizes="48x48"
+         href="/icons/favicon-48x48.png"
+      />
+      <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180x180.png" />
+      <link rel="manifest" href="/manifest.webmanifest" />
+      <link rel="canonical" href="https://dompetku.id/" />
+      <meta name="theme-color" content="#f8f5ee" />
+      <meta
+         name="description"
+         content="Dompetku.id adalah aplikasi catat keuangan keluarga untuk memantau pemasukan, pengeluaran, scan struk, dan transaksi bersama dalam satu dashboard." 
+      />
+      <meta name="robots" content="index,follow,max-image-preview:large" />
+      <meta property="og:locale" content="id_ID" />
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content="dompetku.id" />
+      <meta property="og:title" content="dompetku.id | Aplikasi Catat Keuangan Keluarga dengan AI dan Scan Struk" />
+      <meta
+         property="og:description"
+         content="Catat pemasukan dan pengeluaran keluarga lebih cepat dengan dompetku.id. Gunakan scan struk, AI, dan dashboard bersama untuk memantau keuangan dari satu tempat." 
+      />
+      <meta property="og:url" content="https://dompetku.id/" />
+      <meta property="og:image" content="https://dompetku.id/hero-person.png" />
+      <meta property="og:image:alt" content="Ilustrasi pengguna memantau pertumbuhan keuangan keluarga bersama dompetku.id" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="dompetku.id | Aplikasi Catat Keuangan Keluarga dengan AI dan Scan Struk" />
+      <meta
+         name="twitter:description"
+         content="Catat pemasukan dan pengeluaran keluarga lebih cepat dengan dompetku.id. Gunakan scan struk, AI, dan dashboard bersama untuk memantau keuangan dari satu tempat." 
+      />
+      <meta name="twitter:image" content="https://dompetku.id/hero-person.png" />
+      <meta name="twitter:image:alt" content="Ilustrasi pengguna memantau pertumbuhan keuangan keluarga bersama dompetku.id" />
+      <script id="route-json-ld" type="application/ld+json">
+         [
+           {
+             "@context": "https://schema.org",
+             "@type": "WebSite",
+             "name": "dompetku.id",
+             "url": "https://dompetku.id/",
+             "inLanguage": "id-ID",
+             "description": "Aplikasi catat keuangan keluarga untuk memantau pemasukan, pengeluaran, scan struk, dan transaksi bersama dalam satu dashboard."
+           },
+           {
+             "@context": "https://schema.org",
+             "@type": "Organization",
+             "name": "dompetku.id",
+             "url": "https://dompetku.id/",
+             "logo": "https://dompetku.id/icons/android-chrome-512x512.png",
+             "description": "Platform pencatatan keuangan keluarga dengan AI, scan struk, dan dashboard transaksi bersama."
+           }
+         ]
+      </script>
+      <script>
+         (() => {
+            const productionBaseUrl = 'https://dompetku.id'
+            const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+            const baseUrl = isLocalHost
+               ? window.location.origin.replace(/\/$/, '')
+               : productionBaseUrl
+            const pathname = window.location.pathname
+            const defaultTitle = 'dompetku.id | Aplikasi Catat Keuangan Keluarga dengan AI dan Scan Struk'
+            const defaultDescription =
+               'Catat pemasukan dan pengeluaran keluarga lebih cepat dengan dompetku.id. Gunakan scan struk, AI, dan dashboard bersama untuk memantau keuangan dari satu tempat.'
+            const defaultRobots = 'index,follow,max-image-preview:large'
+
+            const routeMetadata = {
+               '/login': {
+                  title: 'Login dompetku.id | Masuk ke dashboard keuangan keluarga',
+                  description:
+                     'Masuk ke dompetku.id untuk melanjutkan pencatatan keuangan keluarga, memantau saldo, dan mengelola transaksi dari satu dashboard.',
+                  robots: 'noindex,follow',
+               },
+               '/register': {
+                  title: 'Daftar dompetku.id | Buat akun catat keuangan keluarga',
+                  description:
+                     'Buat akun dompetku.id untuk mulai mencatat pemasukan, pengeluaran, dan keuangan keluarga dalam satu aplikasi yang simpel.',
+                  robots: 'noindex,follow',
+               },
+            }
+
+            const metadata = routeMetadata[pathname] ?? {
+               title: defaultTitle,
+               description: defaultDescription,
+               robots: defaultRobots,
+            }
+            const canonicalUrl = `${baseUrl}${pathname === '/' ? '/' : pathname}`
+            const jsonLdElement = document.getElementById('route-json-ld')
+
+            document.title = metadata.title
+
+            const updateMeta = (selector, content) => {
+               const element = document.querySelector(selector)
+               if (element) {
+                  element.setAttribute('content', content)
+               }
+            }
+
+            const canonicalElement = document.querySelector('link[rel="canonical"]')
+            if (canonicalElement) {
+               canonicalElement.setAttribute('href', canonicalUrl)
+            }
+
+            updateMeta('meta[name="description"]', metadata.description)
+            updateMeta('meta[name="robots"]', metadata.robots)
+            updateMeta('meta[property="og:title"]', metadata.title)
+            updateMeta('meta[property="og:description"]', metadata.description)
+            updateMeta('meta[property="og:url"]', canonicalUrl)
+            updateMeta('meta[name="twitter:title"]', metadata.title)
+            updateMeta('meta[name="twitter:description"]', metadata.description)
+
+            if (pathname !== '/') {
+               jsonLdElement?.remove()
+            }
+         })()
+      </script>
+      <meta
+         name="viewport"
+         content="width=device-width, initial-scale=1.0"
+      />
+      <title>dompetku.id | Aplikasi Catat Keuangan Keluarga dengan AI dan Scan Struk</title>
+   </head>
+   <body>
+      <div id="root"></div>
+      <script type="module" src="/src/main.tsx"></script>
+   </body>
 </html>
