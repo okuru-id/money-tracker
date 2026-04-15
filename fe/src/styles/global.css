@@ -60,6 +60,7 @@ p {
 }
 
 .mobile-shell {
+   --mobile-shell-bottom-nav-overhang: 2rem;
    margin: 0 auto;
    width: 100%;
    max-width: 32rem;
@@ -2562,7 +2563,10 @@ p {
 
 /* Bottom position — main app pages */
 .pwa-install-prompt--bottom {
-   bottom: calc(var(--tab-bar-height) + var(--safe-bottom) + var(--space-4));
+   bottom: calc(
+      var(--tab-bar-height) + var(--safe-bottom) +
+         var(--mobile-shell-bottom-nav-overhang) + var(--space-4)
+   );
    width: min(30rem, calc(100% - var(--space-5)));
    animation: pwa-slide-up 300ms ease-out;
 }
@@ -2572,6 +2576,10 @@ p {
    top: calc(var(--safe-top) + var(--space-3));
    width: min(28rem, calc(100% - var(--space-5)));
    animation: pwa-slide-down 300ms ease-out;
+}
+
+.mobile-shell__pwa-prompt-desktop {
+   display: none;
 }
 
 @keyframes pwa-slide-up {
@@ -2741,7 +2749,7 @@ p {
    .pwa-install-prompt--bottom {
       bottom: calc(
          var(--space-6) + var(--tab-bar-height) + var(--safe-bottom) +
-            var(--space-4)
+            var(--mobile-shell-bottom-nav-overhang) + var(--space-4)
       );
    }
 
@@ -4735,6 +4743,13 @@ body {
    .mobile-shell__tab-link {
       justify-content: center;
       padding-inline: 0.5rem;
+   }
+}
+
+@media (max-width: 47.999rem) {
+   .mobile-shell {
+      max-width: none;
+      box-shadow: none;
    }
 }
 
@@ -7528,6 +7543,7 @@ body {
 
 @media (min-width: 48rem) {
    .mobile-shell {
+      --mobile-shell-bottom-nav-overhang: 0rem;
       position: fixed;
       inset: 0;
       max-width: none;
@@ -7578,6 +7594,130 @@ body {
       background: rgb(255 253 248 / 0.95);
       backdrop-filter: none;
       box-shadow: none;
+   }
+
+   .mobile-shell__pwa-prompt-mobile {
+      display: none;
+   }
+
+   .mobile-shell__pwa-prompt-desktop {
+      display: block;
+      margin-top: auto;
+      padding: 1.4rem 0.65rem 0.45rem;
+   }
+
+   .mobile-shell__pwa-prompt-desktop .pwa-install-prompt--desktop-sidebar {
+      position: relative;
+      left: auto;
+      width: 100%;
+      transform: none;
+      animation: none;
+      display: grid;
+      gap: 0.95rem;
+      padding: 1rem;
+      border: 1px solid rgb(15 118 110 / 0.1);
+      border-radius: 1.35rem;
+      background:
+         radial-gradient(circle at top right, rgb(240 167 70 / 0.18), transparent 40%),
+         linear-gradient(180deg, rgb(255 255 255 / 0.97), rgb(247 243 233 / 0.96));
+      box-shadow:
+         0 18px 28px -24px rgb(22 55 58 / 0.28),
+         inset 0 1px 0 rgb(255 255 255 / 0.8);
+      overflow: hidden;
+   }
+
+   .mobile-shell__pwa-prompt-desktop .pwa-install-prompt--desktop-sidebar.pwa-install-prompt--bottom {
+      bottom: auto;
+   }
+
+   .mobile-shell__pwa-prompt-desktop .pwa-install-prompt__desktop-header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.75rem;
+    }
+
+   .mobile-shell__pwa-prompt-desktop .pwa-install-prompt__desktop-heading {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      min-width: 0;
+   }
+
+   .mobile-shell__pwa-prompt-desktop .pwa-install-prompt__desktop-badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 1.55rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: rgb(15 118 110 / 0.08);
+      color: #0e625b;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+   }
+
+   .mobile-shell__pwa-prompt-desktop .pwa-install-prompt__desktop-body {
+      display: block;
+    }
+
+    .mobile-shell__pwa-prompt-desktop .pwa-install-prompt__icon {
+      width: 1.65rem;
+      height: 1.65rem;
+      border-radius: 0.55rem;
+      background: linear-gradient(135deg, rgb(240 167 70 / 0.22), rgb(15 118 110 / 0.14));
+      color: #0f6a60;
+      box-shadow:
+         inset 0 0 0 1px rgb(255 255 255 / 0.72),
+         0 6px 12px -14px rgb(17 71 68 / 0.45);
+     }
+
+   .mobile-shell__pwa-prompt-desktop .pwa-install-prompt__copy {
+      display: grid;
+      gap: 0;
+      min-width: 0;
+    }
+
+   .mobile-shell__pwa-prompt-desktop .pwa-install-prompt__title {
+      font-size: 0.98rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #123d3f;
+   }
+
+   .mobile-shell__pwa-prompt-desktop .pwa-install-prompt__description {
+      font-size: 0.8rem;
+      line-height: 1.55;
+      color: #5f6d6c;
+   }
+
+   .mobile-shell__pwa-prompt-desktop .pwa-install-prompt__actions {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .mobile-shell__pwa-prompt-desktop .pwa-install-prompt__button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 2.3rem;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.76rem;
+      text-align: center;
+      white-space: normal;
+    }
+
+   .mobile-shell__pwa-prompt-desktop .pwa-install-prompt__button--primary {
+      box-shadow: 0 12px 18px -14px rgb(240 167 70 / 0.85);
+   }
+
+   .mobile-shell__pwa-prompt-desktop .pwa-install-prompt__button--secondary {
+      border-color: rgb(15 118 110 / 0.1);
+      background: rgb(255 255 255 / 0.68);
+      color: #50605f;
    }
 
    .mobile-shell__nav-brand {

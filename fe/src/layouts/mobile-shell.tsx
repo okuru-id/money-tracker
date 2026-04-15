@@ -79,7 +79,9 @@ export function MobileShell() {
             </main>
          </PullToRefresh>
 
-         <PwaInstallPrompt position="bottom" />
+         <div className="mobile-shell__pwa-prompt-mobile">
+            <PwaInstallPrompt position="bottom" />
+         </div>
 
          <nav className="mobile-shell__tabs" aria-label="Primary">
             <div className="mobile-shell__nav-brand">
@@ -121,6 +123,10 @@ export function MobileShell() {
                   </NavLink>
                );
             })}
+
+            <div className="mobile-shell__pwa-prompt-desktop">
+               <PwaInstallPrompt position="bottom" variant="desktop-sidebar" />
+            </div>
          </nav>
       </div>
    );
