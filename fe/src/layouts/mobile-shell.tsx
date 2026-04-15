@@ -128,6 +128,25 @@ export function MobileShell() {
                <PwaInstallPrompt position="bottom" variant="desktop-sidebar" />
             </div>
          </nav>
+
+         {session.hasFamily ? (
+            <NavLink
+               to="/add"
+               className={({ isActive }) =>
+                  [
+                     "mobile-shell__desktop-add",
+                     isActive ? "mobile-shell__desktop-add--active" : "",
+                  ]
+                     .filter(Boolean)
+                     .join(" ")
+               }
+               aria-label="Add transaction"
+            >
+               <span className="mobile-shell__desktop-add-icon" aria-hidden="true">
+                  <IconPlus size={20} stroke={2.2} />
+               </span>
+            </NavLink>
+         ) : null}
       </div>
    );
 }

@@ -58,188 +58,219 @@ export function SettingsPage() {
       }
    }
 
-   return (
-      <section className="settings-page">
-         {session.user ? (
-            <div className="settings-page__profile-chip">
-               <strong>{session.user.name}</strong>
-               <span>{session.user.email}</span>
-            </div>
-         ) : null}
+    return (
+       <section className="settings-page">
+          <header className="settings-page__header">
+             <div className="settings-page__header-copy">
+                <p className="page-card__eyebrow">Control center</p>
+                <h1>Keep account, family, and app actions in one place.</h1>
+                <p>
+                   Desktop settings groups your access, install options, and
+                   next actions into a more structured workspace.
+                </p>
+             </div>
 
-         {showFamilySetupPrompt && (
-            <div className="settings-page__family-prompt">
-               <div className="settings-page__family-prompt-content">
-                  <p className="settings-page__family-prompt-title">
-                     Family Setup
-                  </p>
-                  <p className="settings-page__family-prompt-description">
-                     Create or join a family to start tracking transactions and
-                     view financial summaries.
-                  </p>
-               </div>
-               <div className="settings-page__family-prompt-actions">
-                  <Link
-                     to="/family/setup"
-                     className="settings-page__family-prompt-button"
-                  >
-                     Create Family
-                  </Link>
-                  <Link
-                     to="/family/join"
-                     className="settings-page__family-prompt-link"
-                  >
-                     Join with Token
-                  </Link>
-               </div>
-            </div>
-         )}
+             {session.user ? (
+                <div className="settings-page__profile-chip">
+                   <strong>{session.user.name}</strong>
+                   <span>{session.user.email}</span>
+                </div>
+             ) : null}
+          </header>
 
-         <div
-            className="settings-page__menu"
-            role="list"
-            aria-label="Settings menu"
-         >
-            {session.isAdmin && (
-               <Link className="settings-menu-item" to="/admin" role="listitem">
-                  <div>
-                     <p className="settings-menu-item__title">
-                        Admin Dashboard
-                     </p>
-                     <p className="settings-menu-item__description">
-                        Manage all transactions, families, and members.
-                     </p>
-                  </div>
-                  <span
-                     className="settings-menu-item__arrow"
-                     aria-hidden="true"
-                  >
-                     ›
-                  </span>
-               </Link>
-            )}
+          <div className="settings-page__desktop-layout">
+             <div className="settings-page__desktop-main">
+                {showFamilySetupPrompt && (
+                   <div className="settings-page__family-prompt">
+                      <div className="settings-page__family-prompt-content">
+                         <p className="settings-page__family-prompt-title">
+                            Family Setup
+                         </p>
+                         <p className="settings-page__family-prompt-description">
+                            Create or join a family to start tracking
+                            transactions and view financial summaries.
+                         </p>
+                      </div>
+                      <div className="settings-page__family-prompt-actions">
+                         <Link
+                            to="/family/setup"
+                            className="settings-page__family-prompt-button"
+                         >
+                            Create Family
+                         </Link>
+                         <Link
+                            to="/family/join"
+                            className="settings-page__family-prompt-link"
+                         >
+                            Join with Token
+                         </Link>
+                      </div>
+                   </div>
+                )}
 
-            {session.hasFamily && (
-               <Link
-                  className="settings-menu-item"
-                  to="/settings/family"
-                  role="listitem"
-               >
-                  <div>
-                     <p className="settings-menu-item__title">
-                        Family Management
-                     </p>
-                     <p className="settings-menu-item__description">
-                        Access family features that were previously in the
-                        Family tab.
-                     </p>
-                  </div>
-                  <span
-                     className="settings-menu-item__arrow"
-                     aria-hidden="true"
-                  >
-                     ›
-                  </span>
-               </Link>
-            )}
+                <div
+                   className="settings-page__menu"
+                   role="list"
+                   aria-label="Settings menu"
+                >
+                   {session.isAdmin && (
+                      <Link
+                         className="settings-menu-item"
+                         to="/admin"
+                         role="listitem"
+                      >
+                         <div className="settings-menu-item__copy">
+                            <p className="settings-menu-item__title">
+                               Admin Dashboard
+                            </p>
+                            <p className="settings-menu-item__description">
+                               Manage all transactions, families, and members.
+                            </p>
+                         </div>
+                         <span
+                            className="settings-menu-item__arrow"
+                            aria-hidden="true"
+                         >
+                            ›
+                         </span>
+                      </Link>
+                   )}
 
-            <div
-               className="settings-menu-item settings-menu-item--muted"
-               role="listitem"
-               aria-disabled="true"
-            >
-               <div>
-                  <p className="settings-menu-item__title">Account</p>
-                  <p className="settings-menu-item__description">
-                     Profile, security, and personal account settings.
-                  </p>
-               </div>
-               <span className="settings-soon-badge">Soon</span>
-            </div>
+                   {session.hasFamily && (
+                      <Link
+                         className="settings-menu-item"
+                         to="/settings/family"
+                         role="listitem"
+                      >
+                         <div className="settings-menu-item__copy">
+                            <p className="settings-menu-item__title">
+                               Family Management
+                            </p>
+                            <p className="settings-menu-item__description">
+                               Access family features that were previously in the
+                               Family tab.
+                            </p>
+                         </div>
+                         <span
+                            className="settings-menu-item__arrow"
+                            aria-hidden="true"
+                         >
+                            ›
+                         </span>
+                      </Link>
+                   )}
 
-            <div
-               className="settings-menu-item settings-menu-item--muted"
-               role="listitem"
-               aria-disabled="true"
-            >
-               <div>
-                  <p className="settings-menu-item__title">App Preferences</p>
-                  <p className="settings-menu-item__description">
-                     Language, number format, and display preferences.
-                  </p>
-               </div>
-               <span className="settings-soon-badge">Soon</span>
-            </div>
-         </div>
+                   <div
+                      className="settings-menu-item settings-menu-item--muted"
+                      role="listitem"
+                      aria-disabled="true"
+                   >
+                      <div className="settings-menu-item__copy">
+                         <p className="settings-menu-item__title">Account</p>
+                         <p className="settings-menu-item__description">
+                            Profile, security, and personal account settings.
+                         </p>
+                      </div>
+                      <span className="settings-soon-badge">Soon</span>
+                   </div>
 
-         <div className="settings-page__install-card">
-            <div className="settings-page__install-copy">
-               <div className="settings-page__install-heading-row">
-                  <p className="settings-page__install-title">Install App</p>
-                  {isPwaInstalled ? (
-                     <span className="settings-installed-badge">Installed</span>
-                  ) : null}
-               </div>
-               <p className="settings-page__install-description">
-                  Save dompetku.id to your home screen for faster access and a
-                  native app experience.
-               </p>
-               {!isPwaInstalled && !isPwaInstallAvailable && !isIOS ? (
-                  <p className="settings-page__install-hint">
-                     If the install button is not available, open your browser
-                     menu and select <strong>Install app</strong> or{" "}
-                     <strong>Add to Home Screen</strong>.
-                  </p>
-               ) : null}
-               {!isPwaInstalled && isIOS ? (
-                  <p className="settings-page__install-hint">
-                     Tap the <strong>Share</strong> button in Safari, then tap{" "}
-                     <strong>Add to Home Screen</strong>.
-                  </p>
-               ) : null}
-            </div>
+                   <div
+                      className="settings-menu-item settings-menu-item--muted"
+                      role="listitem"
+                      aria-disabled="true"
+                   >
+                      <div className="settings-menu-item__copy">
+                         <p className="settings-menu-item__title">
+                            App Preferences
+                         </p>
+                         <p className="settings-menu-item__description">
+                            Language, number format, and display preferences.
+                         </p>
+                      </div>
+                      <span className="settings-soon-badge">Soon</span>
+                   </div>
+                </div>
+             </div>
 
-            {!isPwaInstalled ? (
-               isIOS ? null : (
-                  <button
-                     className="settings-page__install-button"
-                     type="button"
-                     onClick={() => {
-                        void handleInstallPwa();
-                     }}
-                     disabled={!isPwaInstallAvailable || isInstallingPwa}
-                     aria-busy={isInstallingPwa}
-                  >
-                     {isInstallingPwa
-                        ? "Installing..."
-                        : isPwaInstallAvailable
-                          ? "Install now"
-                          : "Waiting for browser prompt"}
-                  </button>
-               )
-            ) : null}
-         </div>
+             <aside className="settings-page__desktop-side">
+                <div className="settings-page__install-card">
+                   <div className="settings-page__install-copy">
+                      <div className="settings-page__install-heading-row">
+                         <p className="settings-page__install-title">
+                            Install App
+                         </p>
+                         {isPwaInstalled ? (
+                            <span className="settings-installed-badge">
+                               Installed
+                            </span>
+                         ) : null}
+                      </div>
+                      <p className="settings-page__install-description">
+                         Save dompetku.id to your home screen for faster access
+                         and a native app experience.
+                      </p>
+                      {!isPwaInstalled &&
+                      !isPwaInstallAvailable &&
+                      !isIOS ? (
+                         <p className="settings-page__install-hint">
+                            If the install button is not available, open your
+                            browser menu and select <strong>Install app</strong>{" "}
+                            or <strong>Add to Home Screen</strong>.
+                         </p>
+                      ) : null}
+                      {!isPwaInstalled && isIOS ? (
+                         <p className="settings-page__install-hint">
+                            Tap the <strong>Share</strong> button in Safari, then
+                            tap <strong>Add to Home Screen</strong>.
+                         </p>
+                      ) : null}
+                   </div>
 
-         <div className="settings-page__logout-card">
-            <p className="settings-page__logout-title">Account Session</p>
-            <p className="settings-page__logout-description">
-               Log out from this account to stop access on this device.
-            </p>
+                   {!isPwaInstalled ? (
+                      isIOS ? null : (
+                         <button
+                            className="settings-page__install-button"
+                            type="button"
+                            onClick={() => {
+                               void handleInstallPwa();
+                            }}
+                            disabled={
+                               !isPwaInstallAvailable || isInstallingPwa
+                            }
+                            aria-busy={isInstallingPwa}
+                         >
+                            {isInstallingPwa
+                               ? "Installing..."
+                               : isPwaInstallAvailable
+                                 ? "Install now"
+                                 : "Waiting for browser prompt"}
+                         </button>
+                      )
+                   ) : null}
+                </div>
 
-            {errorMessage ? (
-               <p className="settings-page__error">{errorMessage}</p>
-            ) : null}
+                <div className="settings-page__logout-card">
+                   <p className="settings-page__logout-title">Account Session</p>
+                   <p className="settings-page__logout-description">
+                      Log out from this account to stop access on this device.
+                   </p>
 
-            <button
-               className="settings-page__logout-button"
-               type="button"
-               onClick={handleLogout}
-               disabled={isLoggingOut}
-               aria-busy={isLoggingOut}
-            >
-               {isLoggingOut ? "Logging out..." : "Logout"}
-            </button>
-         </div>
-      </section>
-   );
+                   {errorMessage ? (
+                      <p className="settings-page__error">{errorMessage}</p>
+                   ) : null}
+
+                   <button
+                      className="settings-page__logout-button"
+                      type="button"
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                      aria-busy={isLoggingOut}
+                   >
+                      {isLoggingOut ? "Logging out..." : "Logout"}
+                   </button>
+                </div>
+             </aside>
+          </div>
+       </section>
+    );
 }

@@ -368,50 +368,68 @@ export function InsightsPage() {
       );
    }
 
-   return (
-      <section className="insights-page">
-         {/* Bank Accounts Section */}
-         <div className="bank-accounts-section">
-            <div className="bank-accounts-header">
-               <div>
-                  <p className="bank-accounts-eyebrow">Assets overview</p>
-                  <h3 className="bank-accounts-title">
-                     <IconBuildingBank size={20} />
-                     Bank Accounts
-                  </h3>
-               </div>
-               {!isAdding && (
-                  <button
-                     type="button"
-                     className="bank-add-btn"
-                     onClick={() => setIsAdding(true)}
-                  >
-                     <IconPlus size={18} />
-                     Add
-                  </button>
-               )}
-            </div>
+    return (
+       <section className="insights-page">
+          <header className="insights-page__hero">
+             <div className="insights-page__hero-copy">
+                <p className="page-card__eyebrow">Insights workspace</p>
+                <h1 className="insights-page__title">
+                   Review assets and transaction trends side by side.
+                </h1>
+                <p className="insights-page__description">
+                   Desktop view highlights balances, movement, and top categories
+                   in one wider analytical layout.
+                </p>
+             </div>
+             <div className="insights-page__hero-card" aria-hidden="true">
+                <p>Total assets</p>
+                <strong>{formatAmount(totalBankBalance)}</strong>
+             </div>
+          </header>
 
-            {isAdding && (
-               <div className="bank-account-form-wrapper">
-                  <BankAccountForm
-                     key="new-bank-account"
-                     onSave={(data) => createMutation.mutate(data)}
-                     onCancel={() => setIsAdding(false)}
-                     isLoading={createMutation.isPending}
-                  />
-               </div>
-            )}
+          <div className="insights-page__desktop-layout">
+             <div className="insights-page__desktop-main">
+                <div className="bank-accounts-section">
+                   <div className="bank-accounts-header">
+                      <div>
+                         <p className="bank-accounts-eyebrow">Assets overview</p>
+                         <h3 className="bank-accounts-title">
+                            <IconBuildingBank size={20} />
+                            Bank Accounts
+                         </h3>
+                      </div>
+                      {!isAdding && (
+                         <button
+                            type="button"
+                            className="bank-add-btn"
+                            onClick={() => setIsAdding(true)}
+                         >
+                            <IconPlus size={18} />
+                            Add
+                         </button>
+                      )}
+                   </div>
 
-            <div className="bank-cards-wrapper">
-               <div
-                  ref={sliderRef}
-                  className={`bank-cards-grid${bankAccounts.length > 1 ? " bank-cards-grid--slider" : ""}`}
-                  onScroll={
-                     bankAccounts.length > 1 ? handleSliderScroll : undefined
-                  }
-               >
-                  {bankAccounts.map((account) => {
+                   {isAdding && (
+                      <div className="bank-account-form-wrapper">
+                         <BankAccountForm
+                            key="new-bank-account"
+                            onSave={(data) => createMutation.mutate(data)}
+                            onCancel={() => setIsAdding(false)}
+                            isLoading={createMutation.isPending}
+                         />
+                      </div>
+                   )}
+
+                   <div className="bank-cards-wrapper">
+                      <div
+                         ref={sliderRef}
+                         className={`bank-cards-grid${bankAccounts.length > 1 ? " bank-cards-grid--slider" : ""}`}
+                         onScroll={
+                            bankAccounts.length > 1 ? handleSliderScroll : undefined
+                         }
+                      >
+                         {bankAccounts.map((account) => {
                      const isEditing = editingId === account.id;
                      const isDeleting = deletingId === account.id;
                      const cardColor =
@@ -518,148 +536,150 @@ export function InsightsPage() {
                            )}
                         </article>
                      );
-                  })}
-               </div>
+                         })}
+                      </div>
 
-               {bankAccounts.length > 1 && (
-                  <div className="slider-indicator">
-                     {bankAccounts.map((_, index) => (
-                        <span
-                           key={index}
-                           className={`slider-dot${index === activeCardIndex ? " slider-dot--active" : ""}`}
-                        />
-                     ))}
-                  </div>
-               )}
-            </div>
+                      {bankAccounts.length > 1 && (
+                         <div className="slider-indicator">
+                            {bankAccounts.map((_, index) => (
+                               <span
+                                  key={index}
+                                  className={`slider-dot${index === activeCardIndex ? " slider-dot--active" : ""}`}
+                               />
+                            ))}
+                         </div>
+                      )}
+                   </div>
 
-            {bankAccounts.length > 0 && (
-               <div className="bank-total">
-                  <span>Total Assets</span>
-                  <strong>{formatAmount(totalBankBalance)}</strong>
-               </div>
-            )}
+                   {bankAccounts.length > 0 && (
+                      <div className="bank-total">
+                         <span>Total Assets</span>
+                         <strong>{formatAmount(totalBankBalance)}</strong>
+                      </div>
+                   )}
 
-            {bankAccounts.length === 0 && !isAdding && (
-               <p className="bank-accounts-empty">
-                  No bank accounts yet. Add one to track your assets.
-               </p>
-            )}
-         </div>
+                   {bankAccounts.length === 0 && !isAdding && (
+                      <p className="bank-accounts-empty">
+                         No bank accounts yet. Add one to track your assets.
+                      </p>
+                   )}
+                </div>
 
-         {/* Transaction Insights Cards */}
-         <div className="insights-cards">
-            <article className="bank-card bank-card--expense">
-               <div className="bank-card__header">
-                  <div className="bank-card__icon">
-                     <IconTrendingDown size={22} />
-                  </div>
-                  <span className="bank-card__label">Total Expense</span>
-               </div>
-               <h2 className="bank-card__amount">
-                  {insights ? formatAmount(insights.totalExpense) : "Rp 0"}
-               </h2>
-               <div className="bank-card__stats">
-                  <span>{insights?.expenseTx ?? 0} transactions</span>
-                  <span>
-                     {formatPercent(insights?.expenseRatio ?? 0)} of income
-                  </span>
-               </div>
-            </article>
+                <div className="insights-cards">
+                   <article className="bank-card bank-card--expense">
+                      <div className="bank-card__header">
+                         <div className="bank-card__icon">
+                            <IconTrendingDown size={22} />
+                         </div>
+                         <span className="bank-card__label">Total Expense</span>
+                      </div>
+                      <h2 className="bank-card__amount">
+                         {insights ? formatAmount(insights.totalExpense) : "Rp 0"}
+                      </h2>
+                      <div className="bank-card__stats">
+                         <span>{insights?.expenseTx ?? 0} transactions</span>
+                         <span>
+                            {formatPercent(insights?.expenseRatio ?? 0)} of income
+                         </span>
+                      </div>
+                   </article>
 
-            <article className="bank-card bank-card--income">
-               <div className="bank-card__header">
-                  <div className="bank-card__icon">
-                     <IconTrendingUp size={22} />
-                  </div>
-                  <span className="bank-card__label">Total Income</span>
-               </div>
-               <h2 className="bank-card__amount">
-                  {insights ? formatAmount(insights.totalIncome) : "Rp 0"}
-               </h2>
-               <div className="bank-card__stats">
-                  <span>{insights?.incomeTx ?? 0} transactions</span>
-               </div>
-            </article>
+                   <article className="bank-card bank-card--income">
+                      <div className="bank-card__header">
+                         <div className="bank-card__icon">
+                            <IconTrendingUp size={22} />
+                         </div>
+                         <span className="bank-card__label">Total Income</span>
+                      </div>
+                      <h2 className="bank-card__amount">
+                         {insights ? formatAmount(insights.totalIncome) : "Rp 0"}
+                      </h2>
+                      <div className="bank-card__stats">
+                         <span>{insights?.incomeTx ?? 0} transactions</span>
+                      </div>
+                   </article>
 
-            <article className="bank-card bank-card--balance">
-               <div className="bank-card__header">
-                  <div className="bank-card__icon">
-                     <IconWallet size={22} />
-                  </div>
-                  <span className="bank-card__label">Net Balance</span>
-               </div>
-               <h2 className="bank-card__amount">
-                  {insights ? formatAmount(insights.netBalance) : "Rp 0"}
-               </h2>
-               <div className="bank-card__stats">
-                  <span>{insights?.totalTx ?? 0} total transactions</span>
-               </div>
-            </article>
+                   <article className="bank-card bank-card--balance">
+                      <div className="bank-card__header">
+                         <div className="bank-card__icon">
+                            <IconWallet size={22} />
+                         </div>
+                         <span className="bank-card__label">Net Balance</span>
+                      </div>
+                      <h2 className="bank-card__amount">
+                         {insights ? formatAmount(insights.netBalance) : "Rp 0"}
+                      </h2>
+                      <div className="bank-card__stats">
+                         <span>{insights?.totalTx ?? 0} total transactions</span>
+                      </div>
+                   </article>
 
-            <article className="bank-card bank-card--transactions">
-               <div className="bank-card__header">
-                  <div className="bank-card__icon">
-                     <IconReceipt size={22} />
-                  </div>
-                  <span className="bank-card__label">Transactions</span>
-               </div>
-               <h2 className="bank-card__amount">{insights?.totalTx ?? 0}</h2>
-               <div className="bank-card__stats">
-                  <span>Expense: {insights?.expenseTx ?? 0}</span>
-                  <span>Income: {insights?.incomeTx ?? 0}</span>
-               </div>
-            </article>
-         </div>
+                   <article className="bank-card bank-card--transactions">
+                      <div className="bank-card__header">
+                         <div className="bank-card__icon">
+                            <IconReceipt size={22} />
+                         </div>
+                         <span className="bank-card__label">Transactions</span>
+                      </div>
+                      <h2 className="bank-card__amount">{insights?.totalTx ?? 0}</h2>
+                      <div className="bank-card__stats">
+                         <span>Expense: {insights?.expenseTx ?? 0}</span>
+                         <span>Income: {insights?.incomeTx ?? 0}</span>
+                      </div>
+                   </article>
+                </div>
+             </div>
 
-         {/* Top Categories */}
-         <div className="insights-categories">
-            <article className="category-card">
-               <h3 className="category-card__title">Top Expense</h3>
-               {!insights || insights.topExpense.length === 0 ? (
-                  <p className="category-card__empty">No expenses yet.</p>
-               ) : (
-                  <div className="category-card__list">
-                     {insights.topExpense.map(({ category, amount }, index) => (
-                        <div key={category} className="category-card__row">
-                           <span className="category-card__rank">
-                              {index + 1}
-                           </span>
-                           <span className="category-card__name">
-                              {category}
-                           </span>
-                           <span className="category-card__amount">
-                              {formatAmount(amount)}
-                           </span>
-                        </div>
-                     ))}
-                  </div>
-               )}
-            </article>
+             <aside className="insights-page__desktop-side">
+                <div className="insights-categories">
+                   <article className="category-card">
+                      <h3 className="category-card__title">Top Expense</h3>
+                      {!insights || insights.topExpense.length === 0 ? (
+                         <p className="category-card__empty">No expenses yet.</p>
+                      ) : (
+                         <div className="category-card__list">
+                            {insights.topExpense.map(({ category, amount }, index) => (
+                               <div key={category} className="category-card__row">
+                                  <span className="category-card__rank">
+                                     {index + 1}
+                                  </span>
+                                  <span className="category-card__name">
+                                     {category}
+                                  </span>
+                                  <span className="category-card__amount">
+                                     {formatAmount(amount)}
+                                  </span>
+                               </div>
+                            ))}
+                         </div>
+                      )}
+                   </article>
 
-            <article className="category-card">
-               <h3 className="category-card__title">Top Income</h3>
-               {!insights || insights.topIncome.length === 0 ? (
-                  <p className="category-card__empty">No income yet.</p>
-               ) : (
-                  <div className="category-card__list">
-                     {insights.topIncome.map(({ category, amount }, index) => (
-                        <div key={category} className="category-card__row">
-                           <span className="category-card__rank">
-                              {index + 1}
-                           </span>
-                           <span className="category-card__name">
-                              {category}
-                           </span>
-                           <span className="category-card__amount">
-                              {formatAmount(amount)}
-                           </span>
-                        </div>
-                     ))}
-                  </div>
-               )}
-            </article>
-         </div>
-      </section>
-   );
+                   <article className="category-card">
+                      <h3 className="category-card__title">Top Income</h3>
+                      {!insights || insights.topIncome.length === 0 ? (
+                         <p className="category-card__empty">No income yet.</p>
+                      ) : (
+                         <div className="category-card__list">
+                            {insights.topIncome.map(({ category, amount }, index) => (
+                               <div key={category} className="category-card__row">
+                                  <span className="category-card__rank">
+                                     {index + 1}
+                                  </span>
+                                  <span className="category-card__name">
+                                     {category}
+                                  </span>
+                                  <span className="category-card__amount">
+                                     {formatAmount(amount)}
+                                  </span>
+                               </div>
+                            ))}
+                         </div>
+                      )}
+                   </article>
+                </div>
+             </aside>
+          </div>
+       </section>
+    );
 }

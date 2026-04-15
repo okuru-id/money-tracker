@@ -145,12 +145,12 @@ export function FamilyPageContent() {
       return <FamilyMissingState />;
    }
 
-   return (
-      <>
-         <article className="family-card">
-            <div className="family-card__header-row">
-               <div>
-                  <p className="family-card__eyebrow">Invite center</p>
+    return (
+       <div className="family-page__desktop-grid">
+          <article className="family-card family-page__panel family-page__panel--invite">
+             <div className="family-card__header-row">
+                <div>
+                   <p className="family-card__eyebrow">Invite center</p>
                   <h2>Latest invite</h2>
                </div>
                <button
@@ -219,10 +219,10 @@ export function FamilyPageContent() {
             )}
          </article>
 
-         <article className="family-card">
-            <div className="family-card__header-row family-card__header-row--stacked">
-               <div>
-                  <p className="family-card__eyebrow">Members</p>
+          <article className="family-card family-page__panel family-page__panel--members">
+             <div className="family-card__header-row family-card__header-row--stacked">
+                <div>
+                   <p className="family-card__eyebrow">Members</p>
                   <h2>Family members</h2>
                </div>
             </div>
@@ -268,20 +268,20 @@ export function FamilyPageContent() {
             ) : null}
          </article>
 
-         <article className="family-card">
-            <div className="family-card__header-row family-card__header-row--stacked">
-               <div>
-                  <p className="family-card__eyebrow">Contribution</p>
+          <article className="family-card family-page__panel family-page__panel--contribution">
+             <div className="family-card__header-row family-card__header-row--stacked">
+                <div>
+                   <p className="family-card__eyebrow">Contribution</p>
                   <h2>This month's contribution</h2>
                </div>
             </div>
-            <ContributionSummary
-               contributions={summaryQuery.data?.perMemberContributions ?? []}
-               isLoading={summaryQuery.isLoading}
-            />
-         </article>
-      </>
-   );
+             <ContributionSummary
+                contributions={summaryQuery.data?.perMemberContributions ?? []}
+                isLoading={summaryQuery.isLoading}
+             />
+          </article>
+       </div>
+    );
 }
 
 export function FamilyPage() {

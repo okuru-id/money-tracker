@@ -155,6 +155,13 @@ export function AddPage() {
       () => getBankAccountNumberOptions(bankAccountsQuery.data ?? []),
       [bankAccountsQuery.data],
    );
+   const selectedCategoryName =
+      categoriesQuery.data?.find((category) => category.id === categoryId)
+         ?.name ?? "Not selected";
+   const selectedBankAccountLabel =
+      bankAccountNumberOptions.find(
+         (option) => option.value === selectedBankAccountNumber,
+      )?.label ?? "Optional";
 
    const submitMutation = useMutation({
       mutationFn: createTransaction,
@@ -238,146 +245,198 @@ export function AddPage() {
    }
 
    return (
-      <section className="add-page">
-         <form className="transaction-form" onSubmit={handleSubmit}>
-            <section className="transaction-form__section transaction-form__section--hero">
-               <div
-                  className="transaction-form__type-toggle"
-                  role="group"
-                  aria-label="Transaction type"
-               >
-                  <button
-                     type="button"
-                     className={
-                        type === "debit"
-                           ? "transaction-form__type-button transaction-form__type-button--active"
-                           : "transaction-form__type-button"
-                     }
-                     onClick={() => {
-                        setManualType("debit");
-                        if (typeFromQuery) {
-                           const next = new URLSearchParams(searchParams);
-                           next.delete("type");
-                           setSearchParams(next, { replace: true });
-                        }
-                        if (
-                           !submitMutation.isSuccess &&
-                           !hasSwitchedTypeBeforeSubmit &&
-                           type !== "debit"
-                        ) {
-                           setHasSwitchedTypeBeforeSubmit(true);
-                           trackKpiEvent("type_switch_before_submit", {
-                              switchedToType: "debit",
-                           });
-                        }
-                     }}
-                  >
-                     Expense
-                  </button>
-                  <button
-                     type="button"
-                     className={
-                        type === "credit"
-                           ? "transaction-form__type-button transaction-form__type-button--active"
-                           : "transaction-form__type-button"
-                     }
-                     onClick={() => {
-                        setManualType("credit");
-                        if (typeFromQuery) {
-                           const next = new URLSearchParams(searchParams);
-                           next.delete("type");
-                           setSearchParams(next, { replace: true });
-                        }
-                        if (
-                           !submitMutation.isSuccess &&
-                           !hasSwitchedTypeBeforeSubmit &&
-                           type !== "credit"
-                        ) {
-                           setHasSwitchedTypeBeforeSubmit(true);
-                           trackKpiEvent("type_switch_before_submit", {
-                              switchedToType: "credit",
-                           });
-                        }
-                     }}
-                  >
-                     Income
-                  </button>
-               </div>
+       <section className="add-page">
+          <header className="add-page__hero">
+             <div className="add-page__hero-copy">
+                <p className="page-card__eyebrow">Quick entry</p>
+                <h1>Capture a transaction without losing momentum.</h1>
+                <p>
+                   Use the desktop form to enter amount, category, and account
+                   details in one pass.
+                </p>
+             </div>
+             <div className="add-page__hero-card" aria-hidden="true">
+                <p>Transaction mode</p>
+                <strong>{type === "credit" ? "Income" : "Expense"}</strong>
+             </div>
+          </header>
 
-               <AmountInput
-                  value={amountInput}
-                  onChange={setAmountInput}
-                  autoFocus
-               />
-            </section>
+          <div className="add-page__desktop-layout">
+             <form className="transaction-form" onSubmit={handleSubmit}>
+                <section className="transaction-form__section transaction-form__section--hero">
+                   <div
+                      className="transaction-form__type-toggle"
+                      role="group"
+                      aria-label="Transaction type"
+                   >
+                      <button
+                         type="button"
+                         className={
+                            type === "debit"
+                               ? "transaction-form__type-button transaction-form__type-button--active"
+                               : "transaction-form__type-button"
+                         }
+                         onClick={() => {
+                            setManualType("debit");
+                            if (typeFromQuery) {
+                               const next = new URLSearchParams(searchParams);
+                               next.delete("type");
+                               setSearchParams(next, { replace: true });
+                            }
+                            if (
+                               !submitMutation.isSuccess &&
+                               !hasSwitchedTypeBeforeSubmit &&
+                               type !== "debit"
+                            ) {
+                               setHasSwitchedTypeBeforeSubmit(true);
+                               trackKpiEvent("type_switch_before_submit", {
+                                  switchedToType: "debit",
+                               });
+                            }
+                         }}
+                      >
+                         Expense
+                      </button>
+                      <button
+                         type="button"
+                         className={
+                            type === "credit"
+                               ? "transaction-form__type-button transaction-form__type-button--active"
+                               : "transaction-form__type-button"
+                         }
+                         onClick={() => {
+                            setManualType("credit");
+                            if (typeFromQuery) {
+                               const next = new URLSearchParams(searchParams);
+                               next.delete("type");
+                               setSearchParams(next, { replace: true });
+                            }
+                            if (
+                               !submitMutation.isSuccess &&
+                               !hasSwitchedTypeBeforeSubmit &&
+                               type !== "credit"
+                            ) {
+                               setHasSwitchedTypeBeforeSubmit(true);
+                               trackKpiEvent("type_switch_before_submit", {
+                                  switchedToType: "credit",
+                               });
+                            }
+                         }}
+                      >
+                         Income
+                      </button>
+                   </div>
 
-            <section className="transaction-form__section">
-               <CategoryPicker
-                  type={categoryType}
-                  categories={categoriesQuery.data ?? []}
-                  favoriteCategories={favorites}
-                  selectedCategoryId={categoryId}
-                  onSelect={setCategoryId}
-                  isLoading={categoriesQuery.isLoading}
-               />
-            </section>
+                   <AmountInput
+                      value={amountInput}
+                      onChange={setAmountInput}
+                      autoFocus
+                   />
+                </section>
 
-            <section className="transaction-form__section">
-               {bankAccountNumberOptions.length > 0 ? (
-                  <div className="transaction-form__field">
-                     <Dropdown
-                        label="Bank Account (optional)"
-                        options={bankAccountNumberOptions}
-                        value={selectedBankAccountNumber}
-                        onChange={setSelectedBankAccountNumber}
-                        placeholder="Select account"
-                     />
-                  </div>
-               ) : null}
+                <section className="transaction-form__section">
+                   <CategoryPicker
+                      type={categoryType}
+                      categories={categoriesQuery.data ?? []}
+                      favoriteCategories={favorites}
+                      selectedCategoryId={categoryId}
+                      onSelect={setCategoryId}
+                      isLoading={categoriesQuery.isLoading}
+                   />
+                </section>
 
-               <label className="transaction-form__field" htmlFor="notes-input">
-                  <span>Notes (optional)</span>
-                  <input
-                     id="notes-input"
-                     value={notes}
-                     onChange={(event) => setNotes(event.target.value)}
-                     placeholder="Example: team lunch"
-                  />
-               </label>
-            </section>
+                <section className="transaction-form__section">
+                   {bankAccountNumberOptions.length > 0 ? (
+                      <div className="transaction-form__field">
+                         <Dropdown
+                            label="Bank Account (optional)"
+                            options={bankAccountNumberOptions}
+                            value={selectedBankAccountNumber}
+                            onChange={setSelectedBankAccountNumber}
+                            placeholder="Select account"
+                         />
+                      </div>
+                   ) : null}
 
-            {errorMessage ? (
-               <p className="transaction-form__error">{errorMessage}</p>
-            ) : null}
+                   <label className="transaction-form__field" htmlFor="notes-input">
+                      <span>Notes (optional)</span>
+                      <input
+                         id="notes-input"
+                         value={notes}
+                         onChange={(event) => setNotes(event.target.value)}
+                         placeholder="Example: team lunch"
+                      />
+                   </label>
+                </section>
 
-            {retryMode ? (
-               <div className="transaction-form__retry" role="alert">
-                  <p>
-                     Network issue detected. Form data is preserved on this
-                     screen.
-                  </p>
-                  <button
-                     type="button"
-                     className="transaction-form__retry-button"
-                     onClick={() => {
-                        if (!submitMutation.isPending) {
-                           submitCurrentForm();
-                        }
-                     }}
-                  >
-                     Retry
-                  </button>
-               </div>
-            ) : null}
+                {errorMessage ? (
+                   <p className="transaction-form__error">{errorMessage}</p>
+                ) : null}
 
-            <button
-               className="transaction-form__submit"
-               type="submit"
-               disabled={!canSubmit}
-            >
-               {submitMutation.isPending ? "Saving..." : "Save transaction"}
-            </button>
-         </form>
-      </section>
-   );
+                {retryMode ? (
+                   <div className="transaction-form__retry" role="alert">
+                      <p>
+                         Network issue detected. Form data is preserved on this
+                         screen.
+                      </p>
+                      <button
+                         type="button"
+                         className="transaction-form__retry-button"
+                         onClick={() => {
+                            if (!submitMutation.isPending) {
+                               submitCurrentForm();
+                            }
+                         }}
+                      >
+                         Retry
+                      </button>
+                   </div>
+                ) : null}
+
+                <button
+                   className="transaction-form__submit"
+                   type="submit"
+                   disabled={!canSubmit}
+                >
+                   {submitMutation.isPending ? "Saving..." : "Save transaction"}
+                </button>
+             </form>
+
+             <aside className="add-page__desktop-aside" aria-label="Form summary">
+                <article className="add-page__desktop-card">
+                   <p className="page-card__eyebrow">Quick review</p>
+                   <h2>Ready to save</h2>
+                   <dl className="add-page__desktop-summary">
+                      <div>
+                         <dt>Type</dt>
+                         <dd>{type === "credit" ? "Income" : "Expense"}</dd>
+                      </div>
+                      <div>
+                         <dt>Category</dt>
+                         <dd>{selectedCategoryName}</dd>
+                      </div>
+                      <div>
+                         <dt>Account</dt>
+                         <dd>{selectedBankAccountLabel}</dd>
+                      </div>
+                      <div>
+                         <dt>Notes</dt>
+                         <dd>{notes.trim() || "Optional"}</dd>
+                      </div>
+                   </dl>
+                </article>
+
+                <article className="add-page__desktop-card add-page__desktop-card--accent">
+                   <p className="page-card__eyebrow">Workflow</p>
+                   <h2>Fast desktop entry</h2>
+                   <p>
+                      Pick the amount first, then category, then optional bank
+                      details. The current form keeps your data on screen if the
+                      network drops.
+                   </p>
+                </article>
+             </aside>
+          </div>
+       </section>
+    );
 }

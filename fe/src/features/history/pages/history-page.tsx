@@ -126,6 +126,10 @@ export function HistoryPage() {
   })
 
   const transactions = transactionsQuery.data ?? []
+  const activeMonthLabel = new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(year, month, 1))
 
   function handleMonthChange(nextYear: number, nextMonth: number) {
     setYear(nextYear)
@@ -134,15 +138,33 @@ export function HistoryPage() {
 
   return (
     <section className="history-page">
-      <MonthNavigator year={year} month={month} disabled={transactionsQuery.isLoading} onChange={handleMonthChange} />
+      <header className="history-page__hero">
+        <div className="history-page__hero-copy">
+          <p className="page-card__eyebrow">Monthly ledger</p>
+          <h1>Review and update transactions with more context.</h1>
+          <p>
+            Move across months, scan recent activity, and edit records without
+            leaving the page.
+          </p>
+        </div>
+        <div className="history-page__hero-card" aria-hidden="true">
+          <p>{activeMonthLabel}</p>
+          <strong>{transactions.length} entries</strong>
+        </div>
+      </header>
 
-      {errorMessage ? <p className="history-page__error">{errorMessage}</p> : null}
+      <div className="history-page__toolbar">
+        <MonthNavigator year={year} month={month} disabled={transactionsQuery.isLoading} onChange={handleMonthChange} />
+      </div>
 
-      {transactionsQuery.isLoading ? <p className="history-page__hint">Loading transaction history...</p> : null}
+      <div className="history-page__workspace">
+        {errorMessage ? <p className="history-page__error">{errorMessage}</p> : null}
 
-      {!transactionsQuery.isLoading && transactions.length === 0 ? (
-        <EmptyState message="No transactions this month." />
-      ) : null}
+        {transactionsQuery.isLoading ? <p className="history-page__hint">Loading transaction history...</p> : null}
+
+        {!transactionsQuery.isLoading && transactions.length === 0 ? (
+          <EmptyState message="No transactions this month." />
+        ) : null}
 
         <div className="history-page__list">
         {transactions.map((transaction) => {
@@ -181,6 +203,7 @@ export function HistoryPage() {
             />
           )
         })}
+      </div>
       </div>
     </section>
   )
