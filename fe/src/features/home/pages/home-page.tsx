@@ -12,6 +12,7 @@ import {
    type TransactionItem,
    type TransactionType,
 } from "../../transactions/api";
+import { usePwaInstallPromptState } from "../../../lib/pwa-install";
 
 import { EmptyState } from "../../../components/empty-state";
 
@@ -39,6 +40,7 @@ const MAX_RECENT = 5;
 
 export function HomePage() {
    const navigate = useNavigate();
+   const { isIOS } = usePwaInstallPromptState();
 
    const summaryQuery = useQuery({
       queryKey: ["transactions", "personal-summary"],
@@ -161,12 +163,16 @@ export function HomePage() {
                   <p className="home-recent__eyebrow">Recent activity</p>
                   <h3>Recent Transactions</h3>
                </div>
-               {recentTransactions.length > 0 ? (
-                  <button
-                     type="button"
-                     className="home-recent__link"
-                     onClick={() => navigate("/history")}
-                  >
+                {recentTransactions.length > 0 ? (
+                   <button
+                      type="button"
+                      className={
+                         isIOS
+                            ? "home-recent__link"
+                            : "home-recent__link home-recent__link--android"
+                      }
+                      onClick={() => navigate("/history")}
+                   >
                      <span>View all</span>
                      <IconArrowUpRight size={16} />
                   </button>

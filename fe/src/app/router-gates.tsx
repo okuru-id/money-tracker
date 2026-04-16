@@ -5,6 +5,41 @@ import { hydrateSession, rememberIntendedPath, useSessionState } from '../featur
 import { PwaInstallPrompt } from '../components/pwa-install-prompt'
 import { LandingPage } from '../features/landing/pages/landing-page'
 
+const DEFAULT_VIEWPORT = 'width=device-width, initial-scale=1.0'
+const NON_ZOOM_VIEWPORT = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
+
+function ViewportController() {
+  const location = useLocation()
+  const session = useSessionState()
+
+  useEffect(() => {
+    const viewport = document.querySelector('meta[name="viewport"]')
+    if (!viewport) {
+      return
+    }
+
+    viewport.setAttribute(
+      'content',
+      session.status === 'authenticated' ? NON_ZOOM_VIEWPORT : DEFAULT_VIEWPORT,
+    )
+
+    return () => {
+      viewport.setAttribute('content', DEFAULT_VIEWPORT)
+    }
+  }, [location.key, session.status])
+
+  return null
+}
+
+export function AppRouterRoot() {
+  return (
+    <>
+      <ViewportController />
+      <Outlet />
+    </>
+  )
+}
+
 function isFamilyOnboardingPath(path: string): boolean {
   return path.startsWith('/family/setup') || path.startsWith('/family/join') || path.startsWith('/invite/')
 }

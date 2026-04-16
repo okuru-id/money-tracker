@@ -12,109 +12,114 @@ import { SettingsPage } from '../features/settings/pages/settings-page'
 import { AddPage } from '../features/transactions/pages/add-page'
 import { AdminPage } from '../features/admin/pages/admin-page'
 import { MobileShell } from '../layouts/mobile-shell'
-import { AdminGate, FamilyOptionalGate, FamilyRequiredGate, NoFamilyOnlyGate, PublicOnlyGate, SessionGate } from './router-gates'
+import { AdminGate, AppRouterRoot, FamilyOptionalGate, FamilyRequiredGate, NoFamilyOnlyGate, PublicOnlyGate, SessionGate } from './router-gates'
 
 export const appRouter = createBrowserRouter([
   {
-    element: <PublicOnlyGate />,
+    element: <AppRouterRoot />,
     children: [
       {
-        path: '/login',
-        element: <LoginPage />,
-      },
-      {
-        path: '/register',
-        element: <RegisterPage />,
-      },
-    ],
-  },
-  {
-    element: <SessionGate />,
-    children: [
-      {
-        element: <NoFamilyOnlyGate />,
+        element: <PublicOnlyGate />,
         children: [
           {
-            path: '/family/setup',
-            element: <FamilySetupPage />,
+            path: '/login',
+            element: <LoginPage />,
           },
           {
-            path: '/family/join',
-            element: <InviteJoinPage />,
-          },
-          {
-            path: '/invite/:token',
-            element: <InviteJoinPage />,
+            path: '/register',
+            element: <RegisterPage />,
           },
         ],
       },
       {
-        element: <FamilyOptionalGate />,
+        element: <SessionGate />,
         children: [
           {
-            path: '/settings',
-            element: <MobileShell />,
+            element: <NoFamilyOnlyGate />,
             children: [
               {
-                index: true,
-                element: <SettingsPage />,
+                path: '/family/setup',
+                element: <FamilySetupPage />,
+              },
+              {
+                path: '/family/join',
+                element: <InviteJoinPage />,
+              },
+              {
+                path: '/invite/:token',
+                element: <InviteJoinPage />,
+              },
+            ],
+          },
+          {
+            element: <FamilyOptionalGate />,
+            children: [
+              {
+                path: '/settings',
+                element: <MobileShell />,
+                children: [
+                  {
+                    index: true,
+                    element: <SettingsPage />,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            element: <FamilyRequiredGate />,
+            children: [
+              {
+                path: '/',
+                element: <MobileShell />,
+                children: [
+                  {
+                    index: true,
+                    element: <HomePage />,
+                  },
+                  {
+                    path: 'add',
+                    element: <AddPage />,
+                  },
+                  {
+                    path: 'history',
+                    element: <HistoryPage />,
+                  },
+                  {
+                    path: 'insights',
+                    element: <InsightsPage />,
+                  },
+                  {
+                    path: 'settings',
+                    element: <Navigate to="/settings" replace />,
+                  },
+                  {
+                    path: 'settings/family',
+                    element: <FamilyManagementPage />,
+                  },
+                  {
+                    path: 'family',
+                    element: <Navigate to="/settings/family" replace />,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            element: <AdminGate />,
+            children: [
+              {
+                path: '/admin',
+                element: <AdminPage />,
               },
             ],
           },
         ],
       },
       {
-        element: <FamilyRequiredGate />,
-        children: [
-          {
-            path: '/',
-            element: <MobileShell />,
-            children: [
-              {
-                index: true,
-                element: <HomePage />,
-              },
-              {
-                path: 'add',
-                element: <AddPage />,
-              },
-              {
-                path: 'history',
-                element: <HistoryPage />,
-              },
-              {
-                path: 'insights',
-                element: <InsightsPage />,
-              },
-              {
-                path: 'settings',
-                element: <Navigate to="/settings" replace />,
-              },
-              {
-                path: 'settings/family',
-                element: <FamilyManagementPage />,
-              },
-              {
-                path: 'family',
-                element: <Navigate to="/settings/family" replace />,
-              },
-            ],
-          },
-        ],
-      },
-      {
-        element: <AdminGate />,
-        children: [
-          {
-            path: '/admin',
-            element: <AdminPage />,
-          },
-        ],
+        path: '*',
+        element: <Navigate to="/" replace />,
       },
     ],
-  },
-  {
-    path: '*',
-    element: <Navigate to="/" replace />,
   },
 ])

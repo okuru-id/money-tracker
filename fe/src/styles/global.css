@@ -218,6 +218,25 @@ p {
    letter-spacing: 0.02em;
 }
 
+.mobile-shell__tab-link--android {
+   -webkit-tap-highlight-color: transparent;
+   -webkit-touch-callout: none;
+   touch-action: manipulation;
+}
+
+.mobile-shell__tab-link--android * {
+   -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: none) and (pointer: coarse) {
+   .mobile-shell__tab-link--android:focus,
+   .mobile-shell__tab-link--android:focus-visible,
+   .mobile-shell__tab-link--android:active {
+      outline: none;
+      box-shadow: none;
+   }
+}
+
 .mobile-shell__tab-link--active {
    color: var(--color-brand-strong);
    background: var(--color-brand-soft);
@@ -4529,6 +4548,19 @@ body {
    color: #1b4a4d;
 }
 
+.home-recent__link--android {
+   -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: none) and (pointer: coarse) {
+   .home-recent__link--android:focus,
+   .home-recent__link--android:focus-visible,
+   .home-recent__link--android:active {
+      outline: none;
+      box-shadow: none;
+   }
+}
+
 .home-recent__item {
    align-items: center;
    padding: 1rem 1.05rem;
@@ -7351,6 +7383,57 @@ body {
 
 .landing-device-metric--warm {
    background: rgb(255 194 102 / 0.18);
+}
+
+@media (hover: none) and (pointer: coarse) {
+   .mobile-shell__tab-link,
+   .home-quick-actions__button,
+   .home-recent__link,
+   .transaction-form__submit,
+   .settings-page__install-button,
+   .settings-page__logout-button,
+   .family-card__action,
+   .family-card__link-action,
+   .settings-page__family-prompt-button,
+   .history-detail-modal__close-btn,
+   .settings-menu-item[href] {
+      -webkit-tap-highlight-color: transparent;
+      transition:
+         background-color 0.16s ease,
+         transform 0.16s ease,
+         box-shadow 0.16s ease;
+   }
+
+   .mobile-shell__tab-link:active,
+   .home-quick-actions__button:active,
+   .home-recent__link:active,
+   .settings-menu-item[href]:active {
+      background-color: rgb(18 92 92 / 0.08);
+      transform: scale(0.98);
+   }
+
+   .transaction-form__submit:active,
+   .settings-page__install-button:active,
+   .family-card__action:active,
+   .family-card__link-action:active,
+   .settings-page__family-prompt-button:active,
+   .history-detail-modal__close-btn:active {
+      background-color: rgb(240 167 70 / 0.14);
+      transform: scale(0.98);
+   }
+
+   .settings-page__logout-button:active {
+      background-color: rgb(235 108 75 / 0.18);
+      transform: scale(0.98);
+   }
+
+   .mobile-shell__tab-link--featured:active {
+      background-color: rgb(240 167 70 / 0.14);
+   }
+
+   .mobile-shell__tab-link--featured:active .mobile-shell__tab-icon {
+      transform: scale(0.98);
+   }
 }
 
 .landing-device-metric--cool {

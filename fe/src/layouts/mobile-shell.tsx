@@ -12,6 +12,7 @@ import { useSessionState } from "../features/auth/session-store";
 import { PwaInstallPrompt } from "../components/pwa-install-prompt";
 import { PullToRefresh } from "../components/pull-to-refresh";
 import { TopBar } from "../components/top-bar";
+import { usePwaInstallPromptState } from "../lib/pwa-install";
 
 type TabItem = {
    to: string;
@@ -63,6 +64,7 @@ function getPageTitle(location: { pathname: string }, tabs: TabItem[]): string {
 
 export function MobileShell() {
    const session = useSessionState();
+   const { isIOS } = usePwaInstallPromptState();
    const location = useLocation();
    const tabs = session.hasFamily
       ? allTabs
@@ -99,6 +101,7 @@ export function MobileShell() {
                      className={({ isActive }) =>
                         [
                            "mobile-shell__tab-link",
+                           !isIOS ? "mobile-shell__tab-link--android" : "",
                            isActive ? "mobile-shell__tab-link--active" : "",
                            tab.featured
                               ? "mobile-shell__tab-link--featured"
