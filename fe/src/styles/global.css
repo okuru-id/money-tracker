@@ -4279,6 +4279,15 @@ body {
    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.75);
 }
 
+.transaction-form__field input[type='date'],
+.history-transaction-item__field input[type='date'] {
+   min-width: 0;
+   width: 100%;
+   max-width: 100%;
+   appearance: none;
+   -webkit-appearance: none;
+}
+
 .auth-form__submit,
 .transaction-form__submit,
 .settings-page__install-button,

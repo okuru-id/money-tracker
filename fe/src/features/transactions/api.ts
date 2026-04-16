@@ -232,6 +232,7 @@ export async function updateTransaction(
     amount: number
     categoryId: string | null
     notes?: string
+    transactionDate?: string
     accountNumber?: string | null
   },
 ): Promise<void> {
@@ -241,6 +242,7 @@ export async function updateTransaction(
       amount: payload.amount,
       category_id: payload.categoryId,
       note: payload.notes,
+      transaction_date: payload.transactionDate,
       account_number: payload.accountNumber,
     }),
   })

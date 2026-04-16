@@ -119,6 +119,7 @@ export function AddPage() {
    const [selectedBankAccountNumber, setSelectedBankAccountNumber] =
       useState("");
    const [notes, setNotes] = useState("");
+   const [transactionDate, setTransactionDate] = useState(() => formatToday());
    const [errorMessage, setErrorMessage] = useState<string | null>(null);
    const [retryMode, setRetryMode] = useState(false);
    const [hasSwitchedTypeBeforeSubmit, setHasSwitchedTypeBeforeSubmit] =
@@ -230,7 +231,7 @@ export function AddPage() {
          type,
          categoryId,
          notes: notes.trim() || undefined,
-         transactionDate: formatToday(),
+         transactionDate,
          accountNumber: selectedBankAccountNumber || undefined,
       });
    }
@@ -367,6 +368,17 @@ export function AddPage() {
                          placeholder="Example: team lunch"
                       />
                    </label>
+
+                   <label className="transaction-form__field" htmlFor="transaction-date-input">
+                      <span>Date</span>
+                      <input
+                         id="transaction-date-input"
+                         type="date"
+                         value={transactionDate}
+                         onChange={(event) => setTransactionDate(event.target.value)}
+                         required
+                      />
+                   </label>
                 </section>
 
                 {errorMessage ? (
@@ -418,6 +430,10 @@ export function AddPage() {
                       <div>
                          <dt>Account</dt>
                          <dd>{selectedBankAccountLabel}</dd>
+                      </div>
+                      <div>
+                         <dt>Date</dt>
+                         <dd>{transactionDate || "Today"}</dd>
                       </div>
                       <div>
                          <dt>Notes</dt>

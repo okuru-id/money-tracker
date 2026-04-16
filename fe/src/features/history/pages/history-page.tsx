@@ -87,18 +87,21 @@ export function HistoryPage() {
       amount,
       categoryId,
       notes,
+      transactionDate,
       accountNumber,
     }: {
       id: string
       amount: number
       categoryId: string | null
       notes?: string
+      transactionDate?: string
       accountNumber?: string | null
     }) =>
       updateTransaction(id, {
         amount,
         categoryId,
         notes,
+        transactionDate,
         accountNumber,
       }),
     onSuccess: () => {

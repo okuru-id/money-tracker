@@ -11,7 +11,7 @@ type TransactionItemProps = {
   canDelete: boolean
   isSaving: boolean
   isDeleting: boolean
-  onSave: (payload: { id: string; amount: number; categoryId: string | null; notes?: string; accountNumber?: string | null }) => Promise<void>
+  onSave: (payload: { id: string; amount: number; categoryId: string | null; notes?: string; transactionDate?: string; accountNumber?: string | null }) => Promise<void>
   onDelete: () => Promise<void>
 }
 
@@ -52,6 +52,26 @@ function formatFullDate(value: string | null): string {
   }).format(date)
 }
 
+function formatDateInputValue(value: string | null): string {
+  if (!value) {
+    return ''
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}/.test(value)) {
+    return value.slice(0, 10)
+  }
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return ''
+  }
+
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export function TransactionItem({ transaction, categories, bankAccounts, canEdit, canDelete, isSaving, isDeleting, onSave, onDelete }: TransactionItemProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
@@ -59,6 +79,7 @@ export function TransactionItem({ transaction, categories, bankAccounts, canEdit
   const [amountInput, setAmountInput] = useState(String(transaction.amount || ''))
   const [categoryId, setCategoryId] = useState(transaction.categoryId ?? '')
   const [notes, setNotes] = useState(transaction.notes)
+  const [transactionDate, setTransactionDate] = useState(() => formatDateInputValue(transaction.transactionDate ?? transaction.createdAt))
   const [accountNumber, setAccountNumber] = useState(transaction.accountNumber ?? '')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -104,6 +125,7 @@ export function TransactionItem({ transaction, categories, bankAccounts, canEdit
         amount,
         categoryId,
         notes: notes.trim() || undefined,
+        transactionDate,
         accountNumber: accountNumber || null,
       })
       setIsEditing(false)
@@ -120,6 +142,7 @@ export function TransactionItem({ transaction, categories, bankAccounts, canEdit
     setAmountInput(String(transaction.amount || ''))
     setCategoryId(transaction.categoryId ?? '')
     setNotes(transaction.notes)
+    setTransactionDate(formatDateInputValue(transaction.transactionDate ?? transaction.createdAt))
     setAccountNumber(transaction.accountNumber ?? '')
     setErrorMessage(null)
     setIsEditing(false)
@@ -237,6 +260,17 @@ export function TransactionItem({ transaction, categories, bankAccounts, canEdit
             <label className="history-transaction-item__field">
               <span>Notes</span>
               <input value={notes} onChange={(event) => setNotes(event.target.value)} disabled={isSaving} />
+            </label>
+
+            <label className="history-transaction-item__field">
+              <span>Date</span>
+              <input
+                type="date"
+                value={transactionDate}
+                onChange={(event) => setTransactionDate(event.target.value)}
+                disabled={isSaving}
+                required
+              />
             </label>
 
             <Dropdown
