@@ -127,7 +127,7 @@ p {
    height: 2rem;
    padding: var(--space-1);
    background: transparent;
-   border: none;
+   border: 1px solid rgb(255 255 255 / 0.78);
    border-radius: var(--radius-sm);
    color: var(--color-text-muted);
    cursor: pointer;
@@ -4150,7 +4150,7 @@ body {
    width: min(23rem, calc(100% - 1.1rem));
    height: auto;
    padding: 0.9rem 1rem calc(0.9rem + var(--safe-bottom));
-   border: 1px solid rgb(255 255 255 / 0.78);
+   border: none;
    border-radius: 2rem;
    background: rgb(255 255 255 / 0.84);
    box-shadow:
