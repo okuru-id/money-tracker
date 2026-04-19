@@ -41,6 +41,7 @@ import {
   type UpdateUserRequest,
   type CreateFamilyRequest,
   type UpdateFamilyRequest,
+  type UpdateTransactionRequest,
   updateTransactionAdmin,
   deleteTransactionAdmin,
 } from "../api";
@@ -52,6 +53,10 @@ import { Dropdown } from "../../../components/dropdown";
 import { DataTable, type Column } from "../../../components/data-table";
 
 type Tab = "transactions" | "families" | "users";
+
+function toDateInputValue(value: string) {
+  return value.includes("T") ? value.slice(0, 10) : value;
+}
 
 export function AdminPage() {
   const navigate = useNavigate();
@@ -203,7 +208,7 @@ export function AdminPage() {
 
   // Transaction mutations
   const updateTransactionMutation = useMutation({
-    mutationFn: ({ txId, data }: { txId: string; data: { amount?: number; category_id?: string | null; note?: string } }) =>
+    mutationFn: ({ txId, data }: { txId: string; data: UpdateTransactionRequest }) =>
       updateTransactionAdmin(txId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "transactions"] });
@@ -554,15 +559,26 @@ export function AdminPage() {
               e.preventDefault();
               const formData = new FormData(e.currentTarget);
               const amount = parseFloat(formData.get("amount") as string);
+              const transactionDate = formData.get("transaction_date") as string;
               updateTransactionMutation.mutate({
                 txId: editingTransaction.id,
                 data: {
                   amount: isNaN(amount) ? undefined : amount,
                   note: formData.get("note") as string || undefined,
+                  transaction_date: transactionDate || undefined,
                 },
               });
             }}
           >
+            <div className="form-field">
+              <label>Date</label>
+              <input
+                type="date"
+                name="transaction_date"
+                required
+                defaultValue={toDateInputValue(editingTransaction.transaction_date)}
+              />
+            </div>
             <div className="form-field">
               <label>Amount</label>
               <input
