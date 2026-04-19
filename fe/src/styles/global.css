@@ -2190,28 +2190,24 @@ p {
    display: grid;
    grid-template-columns: repeat(2, minmax(0, 1fr));
    gap: var(--space-2);
+   background: #0c4a4e;
+   padding: var(--space-3);
+   border-radius: var(--radius-md);
 }
 
 .balance-card__stats div {
    display: grid;
    gap: 0.15rem;
-}
-
-.balance-card__stats dt {
-   font-size: 0.75rem;
-   color: var(--color-text-muted);
+   background: #0c4a4e;
+   padding: 0.25rem 0.5rem;
+   border-radius: 4px;
 }
 
 .balance-card__stats dd {
    margin: 0;
    font-size: 0.9rem;
    font-weight: 700;
-}
-
-.balance-card__hint {
-   font-size: 0.88rem;
-   color: var(--color-text-muted);
-   line-height: 1.4;
+   color: #f0fdfa;
 }
 
 .home-quick-actions {
@@ -4138,25 +4134,28 @@ body {
 }
 
 .mobile-shell__content {
-   position: relative;
-   z-index: 1;
-   padding-top: 0.75rem;
-   padding-bottom: calc(var(--tab-bar-height) + var(--safe-bottom) + 2rem);
+    position: relative;
+    z-index: 1;
+    padding-top: 0.75rem;
+    padding-bottom: calc(var(--tab-bar-height) + var(--safe-bottom) + 3rem);
 }
 
 .mobile-shell__tabs {
-   bottom: 0.85rem;
-   z-index: 10;
-   width: min(23rem, calc(100% - 1.1rem));
-   height: auto;
-   padding: 0.9rem 1rem calc(0.9rem + var(--safe-bottom));
-   border: none;
-   border-radius: 2rem;
-   background: rgb(255 255 255 / 0.84);
-   box-shadow:
-      0 20px 36px -28px rgb(20 48 53 / 0.58),
-      inset 0 1px 0 rgb(255 255 255 / 0.88);
-   gap: 1rem;
+    position: fixed;
+    left: 50%;
+    bottom: 0.85rem;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: min(23rem, calc(100% - 1.1rem));
+    height: auto;
+    padding: 0.9rem 1rem calc(0.9rem + var(--safe-bottom));
+    border: none;
+    border-radius: 2rem;
+    background: rgb(255 255 255 / 0.84);
+    box-shadow:
+       0 20px 36px -28px rgb(20 48 53 / 0.58),
+       inset 0 1px 0 rgb(255 255 255 / 0.88);
+    gap: 1rem;
 }
 
 .mobile-shell__tab-link {
@@ -4404,8 +4403,7 @@ body {
 .add-page__hero-card p,
 .insights-page__hero-card p,
 .family-page__hero-card p {
-   color: rgb(234 245 244 / 0.78);
-   background: rgb(255 255 255 / 0.08);
+   color: #eaf5f4;
 }
 
 .home-hero__summary-card .balance-card__value,
@@ -4417,10 +4415,14 @@ body {
 }
 
 .home-hero__summary-card .balance-card__stats dt,
+.home-hero__summary-card .balance-card__stats dd,
+.home-hero__summary-card .balance-card__stats div,
 .home-hero__summary-card .balance-card__hint,
 .balance-card--dark .balance-card__hint,
-.balance-card--dark .balance-card__stats dt {
-   color: rgb(233 245 244 / 0.75);
+.balance-card--dark .balance-card__stats dt,
+.balance-card--dark .balance-card__stats dd,
+.balance-card--dark .balance-card__stats div {
+    color: #f0fdfa;
 }
 
 .home-balance {
@@ -4521,7 +4523,8 @@ body {
 }
 
 .home-quick-actions__button:last-child {
-   background: #e4f4ef;
+    background: #e4f4ef;
+    color: #0f5f65;
 }
 
 .home-recent {
