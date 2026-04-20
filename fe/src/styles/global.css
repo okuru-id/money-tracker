@@ -2190,17 +2190,18 @@ p {
    display: grid;
    grid-template-columns: repeat(2, minmax(0, 1fr));
    gap: var(--space-2);
-   background: #0c4a4e;
-   padding: var(--space-3);
+    background: transparent;
    border-radius: var(--radius-md);
 }
 
 .balance-card__stats div {
-   display: grid;
-   gap: 0.15rem;
-   background: #0c4a4e;
-   padding: 0.25rem 0.5rem;
-   border-radius: 4px;
+    display: grid;
+    gap: 0.15rem;
+    justify-items: start;
+    text-align: left;
+    background: #0d4a4f;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
 }
 
 .balance-card__stats dd {
@@ -4495,13 +4496,13 @@ body {
 }
 
 .balance-card__stats div {
-   padding: 0.8rem;
+   padding: 0.5rem 0.75rem;
    border-radius: 1.1rem;
-   background: rgb(255 255 255 / 0.58);
+   background: #0d4a4f;
 }
 
 .balance-card--dark .balance-card__stats div {
-   background: rgb(255 255 255 / 0.08);
+   background: #0d4a4f;
 }
 
 .home-quick-actions {
