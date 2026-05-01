@@ -1,4 +1,4 @@
-h1:DNmt/NtQ1m2FfUY1lIwD96Jzh6bNp4sG+3Pyjir0v9Y=
+h1:Xspm/I26Mw0lf/GTgZ47UcKF9ScwGOW/hJXm0UGELjg=
 20260325001_init_core_tables.sql h1:JyzlAqr970mQ/FQhB2dSivwFHEpLI54IG06XROj24cE=
 20260325002_upgrade_transactions_for_family.sql h1:uzHB3zQOJXnUkNfGzgTJ2oFwW89Oe9saSR+iBor98Xo=
 20260325003_seed_default_categories.sql h1:2Cbu75piFTxt1BVsdEmCX0c/QPdYKpH550VQnbn+LUc=
@@ -8,3 +8,4 @@ h1:DNmt/NtQ1m2FfUY1lIwD96Jzh6bNp4sG+3Pyjir0v9Y=
 20260329007_create_bank_accounts.sql h1:dmpx305BI/cexnGvkNPKgkg5qzv/xOVdSDmEAXIfmFY=
 20260329008_add_account_number_to_bank_accounts.sql h1:TTfloc7AJk4mby6y15Cyh/KQIH6AeGrxaxqFcJ8qndo=
 20260329009_add_name_to_users.sql h1:N6D38JxFHzKfagEa7qiwknYBa4kHj+gah16DRBehgT0=
+20260406010_add_bank_account_numbers.sql h1:SQFvnUFIg6YSQy5f6n0i0eCi9X35y5dL6A3SaNOyOY8=

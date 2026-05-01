@@ -21,4 +21,5 @@ set +a
 
 cd "$SCRIPT_DIR"
 
+atlas migrate hash --env local
 atlas migrate apply --env local

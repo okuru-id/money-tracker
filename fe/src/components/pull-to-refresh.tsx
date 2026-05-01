@@ -5,9 +5,10 @@ type PullToRefreshProps = {
   children: React.ReactNode
   onRefresh?: () => Promise<void>
   disabled?: boolean
+  className?: string
 }
 
-export function PullToRefresh({ children, onRefresh, disabled }: PullToRefreshProps) {
+export function PullToRefresh({ children, onRefresh, disabled, className }: PullToRefreshProps) {
   const { bind, isPulling, pullDistance, isRefreshing, pullProgress } = usePullToRefresh({
     onRefresh,
     disabled,
@@ -17,7 +18,7 @@ export function PullToRefresh({ children, onRefresh, disabled }: PullToRefreshPr
   const rotation = pullProgress * 360
 
   return (
-    <div {...bind} className="pull-to-refresh">
+    <div {...bind} className={["pull-to-refresh", className].filter(Boolean).join(' ')}>
       {showIndicator && (
         <div
           className="pull-to-refresh__indicator"

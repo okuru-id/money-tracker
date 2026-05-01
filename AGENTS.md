@@ -16,6 +16,7 @@ Tidak ada `.cursorrules`, `.cursor/rules/`, atau `.github/copilot-instructions.m
 - Jangan membuat file test baru atau menambah test case kecuali user meminta eksplisit.
 - Jangan ubah file generated kecuali benar-benar diperlukan.
 - Jangan menambah dependency baru tanpa kebutuhan nyata.
+- Simpan screenshot/image hasil automation browser (`playwright`, `agent-browser`, atau sejenisnya) hanya di `.tmp-shots/`; jangan taruh di root repo atau `fe/public/`.
 
 ## Build, Run, Lint, Typecheck
 

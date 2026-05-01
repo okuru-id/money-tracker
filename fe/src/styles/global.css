@@ -145,6 +145,9 @@ p {
 
 .pull-to-refresh {
    flex: 1;
+   display: flex;
+   flex-direction: column;
+   min-height: 0;
    overflow-y: auto;
    overscroll-behavior: none;
    position: relative;
@@ -183,6 +186,9 @@ p {
 }
 
 .mobile-shell__content {
+   flex: 1;
+   min-height: 0;
+   min-height: 100%;
    padding: var(--space-6) var(--space-4)
       calc(var(--tab-bar-height) + var(--safe-bottom) + var(--space-5));
 }
@@ -341,23 +347,6 @@ p {
    align-content: stretch;
    overflow-y: auto;
    overscroll-behavior: none;
-}
-
-.family-setup-screen {
-   height: 100%;
-   display: flex;
-   flex-direction: column;
-   overflow-y: auto;
-   overscroll-behavior: none;
-}
-
-.family-setup-screen .auth-screen {
-   flex: 1;
-}
-
-.family-setup-screen .auth-screen__panel {
-   min-height: auto;
-   padding-top: var(--space-6);
 }
 
 .auth-screen__panel {
@@ -2211,6 +2200,65 @@ p {
    color: #f0fdfa;
 }
 
+/* High contrast for home-dashboard__summary */
+.home-dashboard__summary {
+   background: #125e59;
+   border-radius: 1.5rem;
+   padding: 1.5rem;
+   box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.25);
+}
+
+.home-dashboard__summary .balance-card__eyebrow {
+   color: #7dd3c0;
+}
+
+.home-dashboard__summary .balance-card__value {
+   color: #ffffff;
+   font-weight: 800;
+   padding-bottom: 0.8rem;
+}
+
+.home-dashboard__summary .balance-card__stats dt {
+   color: #a8e6d8;
+   font-weight: 600;
+}
+
+.home-dashboard__summary .balance-card__stats dd {
+   color: #ffffff;
+   font-weight: 700;
+}
+
+.home-dashboard__summary .balance-card__stats div {
+   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+   border-radius: 0.5rem;
+   padding: 0.6rem 0.8rem;
+}
+
+.home-dashboard__chart {
+   margin-top: 1rem;
+   background: #0d4a4f;
+   border-radius: 0.5rem;
+   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.home-dashboard__summary .empty-state {
+   border: none;
+   background: transparent;
+}
+
+.home-dashboard__summary .empty-state__icon {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   background: #0d4a4f;
+   color: #ffffff;
+   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.home-dashboard__summary .empty-state__message {
+   color: #f0fdfa;
+}
+
 .home-quick-actions {
    display: grid;
    grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2230,6 +2278,43 @@ p {
    font: inherit;
    font-weight: 700;
    padding: 0.78rem;
+   cursor: pointer;
+   transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.home-quick-actions__button--expense {
+   border-color: #b85a49;
+   background: #0d4a4f;
+   border-color: #0d4a4f;
+   color: #f2fffb;
+}
+
+.home-quick-actions__button--expense:hover {
+   background: #0a3d42;
+   border-color: #0a3d42;
+   box-shadow: 0 10px 20px rgba(13, 74, 79, 0.18);
+}
+
+.home-quick-actions__button--expense:active {
+   background: #083338;
+   transform: translateY(1px);
+}
+
+.home-quick-actions__button--income {
+   background: #f0a746;
+   border-color: #f0a746;
+   color: #ffffff;
+}
+
+.home-quick-actions__button--income:hover {
+   background: #e09733;
+   border-color: #e09733;
+   box-shadow: 0 10px 20px rgba(240, 167, 70, 0.22);
+}
+
+.home-quick-actions__button--income:active {
+   background: #cc8627;
+   transform: translateY(1px);
 }
 
 .home-recent {
@@ -2296,14 +2381,16 @@ p {
 .home-recent__item-category {
    font-weight: 700;
    font-size: 0.92rem;
+   color: #1a1a1a;
    white-space: nowrap;
    overflow: hidden;
    text-overflow: ellipsis;
 }
 
 .home-recent__item-date {
-   color: var(--color-text-muted);
+   color: #666666;
    font-size: 0.78rem;
+   font-weight: 500;
 }
 
 .home-recent__item-amount {
@@ -2748,23 +2835,13 @@ p {
       box-shadow: var(--shadow-elevated);
    }
 
-   .mobile-shell {
-      height: calc(100dvh - (var(--space-6) * 2));
-      border-radius: 2rem;
-      overflow: clip;
-   }
+    .mobile-shell {
+       height: calc(100dvh - (var(--space-6) * 2));
+       border-radius: 2rem;
+       overflow: clip;
+    }
 
-   .family-setup-screen {
-      max-width: 32rem;
-      margin: 0 auto;
-      height: calc(100dvh - (var(--space-6) * 2));
-      border-radius: 2rem;
-      overflow: clip;
-      border: 1px solid color-mix(in srgb, var(--color-border), #fff 18%);
-      box-shadow: var(--shadow-elevated);
-   }
-
-   .mobile-shell__tabs {
+    .mobile-shell__tabs {
       bottom: var(--space-6);
       border-radius: 1.25rem;
    }
@@ -4340,8 +4417,8 @@ body {
 .settings-page__desktop-main,
 .settings-page__desktop-side,
 .family-page__desktop-grid {
-   display: grid;
-   gap: 1rem;
+    display: grid;
+    gap: 1rem;
 }
 
 .home-hero,
@@ -4512,20 +4589,23 @@ body {
 
 .home-quick-actions__button {
    min-height: 4.25rem;
-   border: 1px solid rgb(255 255 255 / 0.74);
+   border: 1px solid #001a16;
    border-radius: 1.45rem;
-   background: rgb(255 255 255 / 0.76);
+   background: #001f1b;
    box-shadow: 0 16px 30px -28px rgb(23 42 47 / 0.42);
-   color: #184447;
+   color: #ffffff;
 }
 
 .home-quick-actions__button:first-child {
-   background: #fff1dc;
+   background: #0d4a4f;
+   border-color: #0d4a4f;
+   color: #f2fffb;
 }
 
 .home-quick-actions__button:last-child {
-    background: #e4f4ef;
-    color: #0f5f65;
+   background: #f0a746;
+   border-color: #f0a746;
+   color: #ffffff;
 }
 
 .home-recent {
@@ -7357,7 +7437,6 @@ body {
 }
 
 .balance-card--soft,
-.home-quick-actions__button:first-child,
 .transaction-form__section--hero,
 .settings-page__family-prompt,
 .empty-state,
@@ -7365,7 +7444,6 @@ body {
    background: #fff4e3;
 }
 
-.home-quick-actions__button:last-child,
 .dropdown__option--selected {
    background: #e9f4ef;
 }
@@ -7523,6 +7601,7 @@ body {
    max-width: 30rem;
    display: grid;
    gap: 1.15rem;
+   color: #2a2a2a;
 }
 
 .auth-screen__main-header {
@@ -7628,9 +7707,7 @@ body {
    .auth-screen--split {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      height: calc(100dvh - (var(--space-6) * 2));
       align-content: stretch;
-      overflow: hidden;
       border-radius: var(--radius-xl);
       box-shadow: var(--shadow-elevated);
    }
@@ -7641,12 +7718,11 @@ body {
       justify-content: center;
       background: #0c4a46;
       padding: 3rem 2.5rem;
-      overflow-y: auto;
    }
 
-   .auth-screen__brand-inner {
-      max-width: 24rem;
-   }
+    .auth-screen__brand-inner {
+       max-width: 45rem;
+    }
 
    .auth-screen__mobile-brand {
       display: none;
@@ -7656,11 +7732,11 @@ body {
       min-height: auto;
       padding: 2.5rem 2rem;
       background: var(--color-surface);
-      overflow-y: auto;
    }
 
    .auth-screen__main-inner {
       max-width: 30rem;
+      color: #2a2a2a;
    }
 }
 

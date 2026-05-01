@@ -19,6 +19,8 @@ set -a
 source "$ENV_FILE"
 set +a
 
+RESET_DB_CONFIRM=yes
+
 if [[ "${RESET_DB_CONFIRM:-}" != "yes" ]]; then
   printf 'Error: set RESET_DB_CONFIRM=yes untuk mengizinkan reset schema lokal.\n' >&2
   exit 1

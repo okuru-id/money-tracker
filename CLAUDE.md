@@ -16,6 +16,11 @@ Target utama: Fast transaction input dalam < 15 detik untuk pengguna keluarga.
 
 ## Commands
 
+## Workspace Artifacts
+
+- Simpan screenshot/image hasil automation browser (`playwright`, `agent-browser`, atau sejenisnya) hanya di `.tmp-shots/`; jangan taruh di root repo atau `fe/public/`.
+- `.tmp-shots/` adalah artefak lokal dan tidak untuk dicommit.
+
 ### Backend (be/)
 
 ```bash

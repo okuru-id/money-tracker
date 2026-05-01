@@ -11,6 +11,8 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/server
 
+FROM arigaio/atlas:latest AS atlas
+
 # Runtime stage
 FROM alpine:latest
 
@@ -19,6 +21,9 @@ RUN apk --no-cache add ca-certificates tzdata
 WORKDIR /root/
 
 COPY --from=builder /app/server .
+COPY --from=atlas /atlas /usr/local/bin/atlas
+COPY atlas.hcl .
+COPY migrations ./migrations
 
 EXPOSE 8080
 

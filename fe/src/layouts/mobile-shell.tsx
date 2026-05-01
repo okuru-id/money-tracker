@@ -75,11 +75,11 @@ export function MobileShell() {
    return (
       <div className="mobile-shell">
          <TopBar title={pageTitle} subtitle={`Welcome back, ${userName}`} />
-         <PullToRefresh>
-            <main className="mobile-shell__content">
+         <PullToRefresh className="mobile-shell__content">
+            <main>
                <Outlet />
             </main>
-         </PullToRefresh>
+          </PullToRefresh>
 
          <div className="mobile-shell__pwa-prompt-mobile">
             <PwaInstallPrompt position="bottom" />
